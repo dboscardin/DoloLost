@@ -7,12 +7,12 @@ import './App.css'
 import { useState, useEffect } from 'react'
 
 function App() {
-  const [pubs, setPubs] = useState([]); // Array per pubs
+  const [publications, setPublications] = useState([]); // Array per pubs
   const [loading, setLoading] = useState(true); // Stato di caricamento
 
   useEffect(() => {
     // http://localhost:8080/api/v1/pubs
-    fetch('/api/v1/pubs')
+    fetch('/api/v1/publications')
       .then((response) => response.json())
       .then((data) => {
         setPubs(data); 
@@ -32,13 +32,24 @@ function App() {
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
       
-      {pubs.length === 0 ? (
-        <p>Il database è vuoto. Aggiungi da Postman!</p>
+      {publications.length === 0 ? (
+        <p>Il database è vuoto.</p>
       ) : (
         <ul>
-          {pubs.map((pubs) => (
-            <li key={pub._id} style={{ margin: '10px 0', fontSize: '18px' }}>
-            
+          {publications.map((publication) => (
+            <li key={publication._id} style={{ margin: '10px 0', fontSize: '18px' }}>
+              <h4>{publication.description}</h4>
+              {publication.category}
+              {publication.notes}
+              {publication.date}
+              {publication.type}
+              {publication.image && (
+              <img 
+                src={publication.image} 
+                
+                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} 
+              />
+            )}
             </li>
           ))}
         </ul>
