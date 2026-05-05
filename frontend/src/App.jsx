@@ -37,16 +37,16 @@ function App() {
         <p>Il database è vuoto.</p>
       ) : (
         <ul>
-          {publications.map((publications) => (
+          {publications.map((publication) => (
             <li key={publication._id} style={{ margin: '10px 0', fontSize: '18px' }}>
               <h4>{publication.description}</h4>
               {publication.category}
               {publication.notes}
               {publication.date}
               {publication.type}
-              {item.image && (
+              {publication.image && (
               <img 
-                src={item.image} 
+                src={publication.image} 
                 
                 style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} 
               />
