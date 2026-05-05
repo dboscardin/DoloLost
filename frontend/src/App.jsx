@@ -5,6 +5,7 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 import { useState, useEffect } from 'react'
+import pub from '../../backend/app/models/pub'
 
 function App() {
   const [pubs, setPubs] = useState([]); // Array per pubs
@@ -33,12 +34,16 @@ function App() {
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
       
       {pubs.length === 0 ? (
-        <p>Il database è vuoto. Aggiungi da Postman!</p>
+        <p>Il database è vuoto.</p>
       ) : (
         <ul>
           {pubs.map((pubs) => (
             <li key={pub._id} style={{ margin: '10px 0', fontSize: '18px' }}>
-            
+              <h4>{pub.description}</h4>
+              {pub.category}
+              {pub.notes}
+              {pub.date}
+              {pub.type}
             </li>
           ))}
         </ul>
