@@ -1,12 +1,8 @@
-//import mongoose from 'mongoose';
-//import { startTransition } from 'react';
-//eventualemnte importare users per il riferimento
-
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 //var Schema = mongoose.Schema;
 
-const pubSchema = new mongoose.Schema({
+const publicationSchema = new mongoose.Schema({
     description: { type: String, required: true },
     category: { type: String },
     notes: { type: String },
@@ -45,7 +41,6 @@ const pubSchema = new mongoose.Schema({
   }
 });
 //per GPS
-pubSchema.index({ location: '2dsphere' });
+publicationSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Publication', pubSchema);
-//export default mongoose.model('Pub', PubSchema);
+export default mongoose.model('Publication', publicationSchema);

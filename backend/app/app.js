@@ -1,7 +1,7 @@
 import express from 'express';
 
 import userRouter from './routes/users.js'
-import pubRouter from './routes/pubs.js'
+import publicationRouter from './routes/publications.js'
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 
 //in secondo sprint saranno v2
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/pubs', pubRouter);
+app.use('/api/v1/publications', publicationRouter);
 
 export default app;
 
