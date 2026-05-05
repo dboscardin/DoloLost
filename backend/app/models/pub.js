@@ -1,8 +1,8 @@
-//import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 //import { startTransition } from 'react';
 //eventualemnte importare users per il riferimento
 
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 
 //var Schema = mongoose.Schema;
 
@@ -47,5 +47,5 @@ const pubSchema = new mongoose.Schema({
 //per GPS
 pubSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Publication', pubSchema);
-//export default mongoose.model('Pub', PubSchema);
+//module.exports = mongoose.model('Publication', pubSchema);
+export default mongoose.model('Pub', pubSchema);
