@@ -8,12 +8,12 @@ import { useState, useEffect } from 'react'
 import pub from '../../backend/app/models/pub'
 
 function App() {
-  const [pubs, setPubs] = useState([]); // Array per pubs
+  const [publications, setPublications] = useState([]); // Array per pubs
   const [loading, setLoading] = useState(true); // Stato di caricamento
 
   useEffect(() => {
     // http://localhost:8080/api/v1/pubs
-    fetch('/api/v1/pubs')
+    fetch('/api/v1/publications')
       .then((response) => response.json())
       .then((data) => {
         setPubs(data); 
@@ -33,17 +33,24 @@ function App() {
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
       
-      {pubs.length === 0 ? (
+      {publications.length === 0 ? (
         <p>Il database è vuoto.</p>
       ) : (
         <ul>
-          {pubs.map((pubs) => (
-            <li key={pub._id} style={{ margin: '10px 0', fontSize: '18px' }}>
-              <h4>{pub.description}</h4>
-              {pub.category}
-              {pub.notes}
-              {pub.date}
-              {pub.type}
+          {publications.map((publications) => (
+            <li key={publication._id} style={{ margin: '10px 0', fontSize: '18px' }}>
+              <h4>{publication.description}</h4>
+              {publication.category}
+              {publication.notes}
+              {publication.date}
+              {publication.type}
+              {item.image && (
+              <img 
+                src={item.image} 
+                
+                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} 
+              />
+            )}
             </li>
           ))}
         </ul>
