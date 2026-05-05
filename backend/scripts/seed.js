@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: './app/.env' });
 import mongoose from 'mongoose';
 import User from '../app/models/user.js';
 import Publication from '../app/models/publication.js';
@@ -160,11 +161,11 @@ const seedUsers = [
 
 const seedPublications = (users) => [
   {
-    descrizione: 'Portafoglio nero smarrito vicino alla stazione',
-    categoria: 'accessori',
-    note: 'Conteneva documenti e una tessera universitaria',
-    immagineURL: 'https://example.com/images/portafoglio.jpg',
-    data: new Date('2026-04-01'),
+    description: 'Portafoglio nero smarrito vicino alla stazione',
+    category: 'accessori',
+    notes: 'Conteneva documenti e una tessera universitaria',
+    image: 'https://www.latigredicarta.it/wp-content/uploads/2019/11/Pokemon-1.jpg',
+    date: new Date('2026-04-01'),
     location: {
       type: 'Point',
       coordinates: [11.0395, 45.8902],
@@ -175,11 +176,11 @@ const seedPublications = (users) => [
     user: users[0]._id
   },
   {
-    descrizione: 'Mazzo di chiavi trovato in Piazza Rosmini',
-    categoria: 'chiavi',
-    note: 'Portachiavi rosso',
-    immagineURL: 'https://example.com/images/chiavi.jpg',
-    data: new Date('2026-04-02'),
+    description: 'Mazzo di chiavi trovato in Piazza Rosmini',
+    category: 'chiavi',
+    notes: 'Portachiavi rosso',
+    image: 'https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png',
+    date: new Date('2026-04-02'),
     location: {
       type: 'Point',
       coordinates: [11.0388, 45.8869],
@@ -188,12 +189,12 @@ const seedPublications = (users) => [
     state: 'unresolved',
     type: 'found',
     user: users[1]._id
-  },
-  {
+  }
+  /*, {
     descrizione: 'Zaino blu smarrito su un autobus urbano',
     categoria: 'borse',
     note: null,
-    immagineURL: 'https://example.com/images/zaino.jpg',
+    immagine: 'https://example.com/images/zaino.jpg',
     data: new Date('2026-04-03'),
     location: {
       type: 'Point',
@@ -208,7 +209,7 @@ const seedPublications = (users) => [
     descrizione: 'Telefono trovato al parco',
     categoria: 'elettronica',
     note: 'Schermo leggermente graffiato',
-    immagineURL: 'https://example.com/images/telefono.jpg',
+    immagine: 'https://example.com/images/telefono.jpg',
     data: new Date('2026-04-04'),
     location: {
       type: 'Point',
@@ -223,7 +224,7 @@ const seedPublications = (users) => [
     descrizione: 'Ombrello nero smarrito in biblioteca',
     categoria: 'accessori',
     note: null,
-    immagineURL: 'https://example.com/images/ombrello.jpg',
+    immagine: 'https://example.com/images/ombrello.jpg',
     data: new Date('2026-03-05'),
     location: {
       type: 'Point',
@@ -238,7 +239,7 @@ const seedPublications = (users) => [
     descrizione: 'Carta d’identità trovata vicino al municipio',
     categoria: 'documenti',
     note: null,
-    immagineURL: 'https://example.com/images/documento.jpg',
+    immagine: 'https://example.com/images/documento.jpg',
     data: new Date('2026-04-06'),
     location: {
       type: 'Point',
@@ -253,7 +254,7 @@ const seedPublications = (users) => [
     descrizione: 'Auricolari wireless smarriti al bar',
     categoria: 'elettronica',
     note: 'Custodia bianca',
-    immagineURL: 'https://example.com/images/auricolari.jpg',
+    immagine: 'https://example.com/images/auricolari.jpg',
     data: new Date('2026-04-07'),
     location: {
       type: 'Point',
@@ -268,7 +269,7 @@ const seedPublications = (users) => [
     descrizione: 'Borraccia metallica trovata al campo sportivo',
     categoria: 'oggetti personali',
     note: null,
-    immagineURL: 'https://example.com/images/borraccia.jpg',
+    immagine: 'https://example.com/images/borraccia.jpg',
     data: new Date('2026-04-08'),
     location: {
       type: 'Point',
@@ -283,7 +284,7 @@ const seedPublications = (users) => [
     descrizione: 'Giacca grigia smarrita in università',
     categoria: 'abbigliamento',
     note: 'Taglia M, dipartimento di lettere',
-    immagineURL: 'https://example.com/images/giacca.jpg',
+    immagine: 'https://example.com/images/giacca.jpg',
     data: new Date('2026-04-09'),
     location: {
       type: 'Point',
@@ -298,14 +299,14 @@ const seedPublications = (users) => [
     descrizione: 'Braccialetto trovato in centro storico',
     categoria: 'gioielli',
     note: 'Color argento',
-    immagineURL: 'https://example.com/images/braccialetto.jpg',
+    immagine: 'https://example.com/images/braccialetto.jpg',
     data: new Date('2026-04-10'),
     location: {
       type: 'Point',
       coordinates: [11.0381, 45.8864],
       address: 'Piazza Fiera, 38122 Trento TN'
     }
-  }
+  }*/
 ];
 
 async function seedDB() {
@@ -329,4 +330,4 @@ async function seedDB() {
     }
 }
 
-seedDB;
+await seedDB();
