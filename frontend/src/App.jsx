@@ -11,11 +11,11 @@ function App() {
   const [loading, setLoading] = useState(true); // Stato di caricamento
 
   useEffect(() => {
-    // http://localhost:8080/api/v1/pubs
+    // http://localhost:8080/api/v1/publications
     fetch('/api/v1/publications')
       .then((response) => response.json())
       .then((data) => {
-        setPubs(data); 
+        setPublications(data); 
         setLoading(false);
       })
       .catch((error) => {
