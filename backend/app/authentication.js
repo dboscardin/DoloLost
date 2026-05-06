@@ -8,6 +8,7 @@ const router = express.Router();
 
 //da chiamare in qualche modo quando si fa il login
 router.post('', async function(req, res) {
+    //console.log(req.body.username)
     let user = await User.findOne({ username: req.body.username }).exec()
     if (!user) return res.status(404).json({success:false,message:'User not found'})
     if (user.password!=req.body.password) return res.status(401).json({success:false,message:'Wrong password'})

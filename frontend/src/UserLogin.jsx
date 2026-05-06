@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Login = () => {
+const UserLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -10,6 +10,18 @@ const Login = () => {
     console.log("Password:", password);
 
     //chiamata API
+    fetch("/api/v1/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type" : "application/json",
+      }, 
+      body: JSON.stringify({
+        "username": username,
+        "password": password
+      })
+    }).then(response => {
+      console.log(response);
+    })
   };
 
   return (
@@ -86,4 +98,4 @@ const styles = {
   },
 };
 
-export default Login;
+export default UserLogin;
