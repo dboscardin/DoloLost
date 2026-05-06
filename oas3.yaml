@@ -1,0 +1,125 @@
+openapi: '3.0.3'
+info:
+  title: DoloLost OpenApi 3.0
+  description: Api per progetto DoloLost
+  version: '1.0'
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Api v1 in localhost
+paths:
+  /publications:
+    get:
+      description: Ottiene tutte le pubblicazioni
+      responses:
+        '200':
+          description: Collezione di pubblicazioni con relativi dati utente
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/Publication'
+  /publications/attive:
+    get:
+      description: Ottiene tutte le pubblicazioni attive
+      responses:
+        '200':
+          description: Collezione di pubblicazioni attive attualmente con relativi dati utente
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/Publication'
+
+
+
+
+components: 
+  schemas:
+
+    Publication:
+      type: object
+      required:
+        - description
+        - location
+        - type
+        - user
+      properties:
+        description:
+          type: string
+          description: 'Descrizione della Pubblicazione'
+        category:
+          type: string
+          description: 'Categoria della Pubblicazione'
+        notes:
+          type: string
+          description: 'Note aggiuntive'
+        image:
+          type: string
+          description: 'URL o percorso dell immagine'
+        date:
+          type: string
+          format: date-time
+          description: 'Data della Pubblicazione'
+        location:
+          type: object
+          description: 'Dati geografici'
+          required:
+            - type
+            - coordinates
+          properties:
+            type:
+              type: string
+              enum: [Point]
+              description: 'GeoJSON punto'
+            coordinates:
+              type: array
+              items:
+                type: number
+              description: 'Array di coordinate [longitudine, latitudine]'
+            address:
+              type: string
+              description: 'Indirizzo del luogo'
+        state:
+          type: string
+          enum: [solved, unresolved, decayed]
+          default: unresolved
+          description: 'Stato della Pubblicazione'
+        type:
+          type: string
+          enum: [lost, found]
+          description: 'Indica se è uno smarrimento o ritrovamento'
+        user:
+          type: string
+          description: 'ObjectId dello User'
+
+    User:
+      type: object
+      required:
+        - username
+        - password
+        - name
+        - surname
+        - role
+      properties:
+        username:
+          type: string
+          description: 'Username unico dell utente'
+        password:
+          type: string
+          description: 'Password'
+        email:
+          type: string
+          description: 'Indirizzo email (solo se il ruolo è "user")'
+        name:
+          type: string
+          description: 'Nome'
+        surname:
+          type: string
+          description: 'Cognome'
+        role:
+          type: string
+          enum: [user, admin]
+          default: user
+          description: 'Ruolo dell utente'

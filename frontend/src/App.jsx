@@ -6,7 +6,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/v1/publications')
+    fetch('/api/v1/publications/attive')
       .then((response) => response.json())
       .then((data) => {
         setPublications(data); 
@@ -84,10 +84,14 @@ function App() {
                     {publication.category}
                   </span>
                 </div>
-
-                <h3 style={{ margin: '0 0 10px 0', color: '#222', fontSize: '20px' }}>
-                  {publication.description}
+                  
+                  <h3 style={{ margin: '0 0 10px 0', color: '#222', fontSize: '20px' }}>
+                  {publication.user.username}
                 </h3>
+
+                <h4 style={{ margin: '0 0 10px 0', color: '#222', fontSize: '20px' }}>
+                  {publication.description}
+                </h4>
                 
                 <p style={{ color: '#555', fontSize: '14px', lineHeight: '1.5', flexGrow: 1 }}>
                   {publication.notes}
