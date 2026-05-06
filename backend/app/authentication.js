@@ -9,8 +9,8 @@ const router = express.Router();
 //da chiamare in qualche modo quando si fa il login
 router.post('', async function(req, res) {
     let user = await User.findOne({ username: req.body.username }).exec()
-    if (!user) res.json({success:false,message:'User not found'})
-    if (user.password!=req.body.password) res.json({success:false,message:'Wrong password'})
+    if (!user) return res.status(404).json({success:false,message:'User not found'})
+    if (user.password!=req.body.password) return res.status(401).json({success:false,message:'Wrong password'})
     // user authenticated -> create a token
     //dati criptati
     var payload = { username: user.username, id: user._id, role: user.role , other_data: encrypted_in_the_token }
