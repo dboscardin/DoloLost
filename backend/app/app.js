@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 //in secondo sprint saranno v2
 
-app.use('/api/v1/authentications', authentication);
+app.use('/api/v1/auth', authentication);
 
 
 app.use(tokenChecker);
