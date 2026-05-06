@@ -49,7 +49,7 @@ function App() {
               {/* Gestione Immagine Base64 intelligente */}
               {publication.image ? (
                 <img 
-                  src={publication.image.startsWith('data:') ? publication.image : `data:image/jpeg;base64,${publication.image}`} 
+                  src={publication.image} 
                   alt={publication.description} 
                   style={{ width: '100%', height: '220px', objectFit: 'cover' }} 
                 />
