@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
+<<<<<<< HEAD
 function App() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+=======
+import { useState, useEffect } from 'react'
+import pub from '../../backend/app/models/pub'
+
+function App() {
+  const [publications, setPublications] = useState([]); // Array per pubs
+  const [loading, setLoading] = useState(true); // Stato di caricamento
+
+  useEffect(() => {
+    // http://localhost:8080/api/v1/pubs
+>>>>>>> c272f29515dc6284461ed3bfd37e9506e3f34b32
     fetch('/api/v1/publications')
       .then((response) => response.json())
       .then((data) => {
@@ -27,6 +39,7 @@ function App() {
       <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>Bacheca Segnalazioni</h1>
       
       {publications.length === 0 ? (
+<<<<<<< HEAD
         <p style={{ textAlign: 'center', fontSize: '18px', color: '#666' }}>Il database è vuoto.</p>
       ) : (
         <div style={{ 
@@ -101,6 +114,26 @@ function App() {
 
               </div>
             </div>
+=======
+        <p>Il database è vuoto.</p>
+      ) : (
+        <ul>
+          {publications.map((publication) => (
+            <li key={publication._id} style={{ margin: '10px 0', fontSize: '18px' }}>
+              <h4>{publication.description}</h4>
+              {publication.category}
+              {publication.notes}
+              {publication.date}
+              {publication.type}
+              {publication.image && (
+              <img 
+                src={publication.image} 
+                
+                style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '4px' }} 
+              />
+            )}
+            </li>
+>>>>>>> c272f29515dc6284461ed3bfd37e9506e3f34b32
           ))}
         </div>
       )}
