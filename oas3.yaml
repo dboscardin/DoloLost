@@ -33,8 +33,6 @@ paths:
                 $ref: '#/components/schemas/Publication'
 
 
-
-
 components: 
   schemas:
 

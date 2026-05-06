@@ -1,0 +1,15 @@
+
+import User from './models/user'
+
+router.post('', async function(req, res) {
+    let user = await User.findOne({ username: req.body.username }).exec()
+    if (!user) res.json({success:false,message:'User not found'})
+    if (user.password!=req.body.password) res.json({success:false,message:'Wrong password'})
+    // user authenticated -> create a token
+    var payload = { username: user.username, id: user._id, other_data: encrypted_in_the_token }
+    var options = { expiresIn: 86400 } // expires in 24 hours
+    var token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+    res.json({ success: true, message: 'Enjoy your token!',
+        token: token, username: user.username, name: user.name, id: user._id, self: "api/v1/" + user._id
+    });
+});

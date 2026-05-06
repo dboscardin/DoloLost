@@ -2,6 +2,7 @@ import express from 'express';
 
 import userRouter from './routes/users.js'
 import publicationRouter from './routes/publications.js'
+import authentication from './authentication.js'
 
 const app = express();
 
@@ -13,8 +14,13 @@ app.get('/', (req, res) => {
 });
 
 //in secondo sprint saranno v2
-app.use('/api/v1/users', userRouter);
-app.use('/api/v1/publications', publicationRouter);
 
+app.use('/api/v1/publications', publicationRouter);
+app.use('/api/v1/authentications', authentication);
+
+
+//app.use(tokenChecker);
+//da qua in poi le route sono autenticate
+app.use('/api/v1/users', userRouter);
 export default app;
 
