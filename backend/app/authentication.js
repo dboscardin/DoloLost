@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-
+//da chiamare in qualche modo quando si fa il login
 router.post('', async function(req, res) {
     let user = await User.findOne({ username: req.body.username }).exec()
     if (!user) res.json({success:false,message:'User not found'})
