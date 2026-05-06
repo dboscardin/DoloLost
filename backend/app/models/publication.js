@@ -7,7 +7,7 @@ const publicationSchema = new mongoose.Schema({
     category: { type: String },
     notes: { type: String },
     image: { type: String },
-    date: { type: Date },
+    date: { type: Date, required: true },
     //mongoDB vuole i dati geografici in formato GeoJSON 
     location: {
         type: {
