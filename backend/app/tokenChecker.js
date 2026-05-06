@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 const tokenChecker = function(req, res, next) {
     // header or url parameters or post parameters
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    var token = req.body?.token || req.query?.token || req.headers['x-access-token'];
     if (!token) return res.status(401).json({success:false,message:'No token provided.'})
         // decode token, verifies secret and checks expiration
         jwt.verify(token, process.env.SUPER_SECRET, function(err, decoded) {
