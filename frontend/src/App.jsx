@@ -9,13 +9,13 @@ function App() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
-  //console.log("cacca");
+  
 
   useEffect(() => {
     fetch('/api/v1/publications/attive')
       .then((response) => response.json())
       .then((data) => {
-        //console.log("Dati ricevuti:", data);
+        
         setPublications(data); 
         setLoading(false);
       })
@@ -26,9 +26,11 @@ function App() {
   }, []);
 
   
-  //searchParams.get("username");
-  const autenticato = searchParams.get("username")
-  //const username = searchParams.get(username)
+
+  const autenticato = searchParams.get("username");
+  const role = searchParams.get("role");
+  const name = searchParams.get("name");
+  const token = searchParams.get("token");
 
   if (loading) {
     return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Caricamento in corso... ⏳</h2>;
@@ -143,7 +145,7 @@ function App() {
         </div>
         <div>
         {!autenticato ? (
-          
+          //link se non autenticato (login e registra)
           <Link to="/userLogin" style={{
             textDecoration: 'none',
             color: 'white',
@@ -155,11 +157,13 @@ function App() {
             Login
           </Link>
         
-        ) : "Benvenuto " + autenticato}
+        ) : "Benvenuto " + name}
         </div>
       </nav>
 
           <Routes>
+         {// ricordarsi di prendere i paramentri con searchParams.get("XXX") per passarli alle routes
+         }
         <Route path="/" element={<HomePage />} />
         <Route path="/userLogin" element={<UserLogin />} />
       </Routes>
