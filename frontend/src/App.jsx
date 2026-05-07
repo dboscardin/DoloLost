@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import { Routes, Route, Link } from 'react-router-dom'
+import UserLogin from './UserLogin.jsx'
+
 
 function App() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log("cacca");
 
   useEffect(() => {
     fetch('/api/v1/publications/attive')
       .then((response) => response.json())
       .then((data) => {
+        console.log("Dati ricevuti:", data);
         setPublications(data); 
         setLoading(false);
       })
@@ -21,9 +26,8 @@ function App() {
   if (loading) {
     return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Caricamento in corso... ⏳</h2>;
   }
-
-  return (
-    <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+  const HomePage = () => (
+    <div style={{ padding: '40px 20px' }}>
       <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>Bacheca Segnalazioni</h1>
       
       {publications.length === 0 ? (
@@ -46,7 +50,7 @@ function App() {
               flexDirection: 'column'
             }}>
               
-              {/* Gestione Immagine Base64 intelligente */}
+              
               {publication.image ? (
                 <img 
                   src={publication.image} 
@@ -108,6 +112,48 @@ function App() {
           ))}
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div style={{ padding: '40px 20px', fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+
+
+      <nav style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '15px 40px',
+        backgroundColor: '#ffffff',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+        position: 'sticky',
+        top: 0,
+       
+      }}>
+        <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#1565c0' }}>
+          DoloLost
+        </div>
+        <div>
+          <Link to="/userLogin" style={{
+            textDecoration: 'none',
+            color: 'white',
+            backgroundColor: '#1565c0',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+          }}>
+            Login
+          </Link>
+        </div>
+      </nav>
+
+          <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/userLogin" element={<UserLogin />} />
+      </Routes>
+
+
+      
     </div>
   )
 }
