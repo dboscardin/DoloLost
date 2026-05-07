@@ -7,8 +7,8 @@ const UserLogin = () => {
 
   const sendLoginInfo = (e) => {
     e.preventDefault();
-    console.log("Username:", username);
-    console.log("Password:", password);
+    //console.log("Username:", username);
+    //console.log("Password:", password);
 
     //chiamata API
     fetch("/api/v1/auth", {

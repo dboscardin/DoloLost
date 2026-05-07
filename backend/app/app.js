@@ -2,9 +2,9 @@ import express from 'express';
 
 import userRouter from './routes/users.js'
 import publicationRouter from './routes/publications.js'
-import authentication from './authentication.js'
-import tokenChecker from './tokenChecker.js'
-import adminChecker from './adminChecker.js'
+import authentication from './routes/authentication.js'
+import tokenChecker from './middleware/tokenChecker.js'
+import adminChecker from './middleware/adminChecker.js'
 const app = express();
 
 app.use(express.json());

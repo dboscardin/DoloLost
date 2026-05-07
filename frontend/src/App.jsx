@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { Routes, Route, Link } from 'react-router-dom'
+import { useSearchParams } from "react-router-dom";
 import UserLogin from './UserLogin.jsx'
 
 
 function App() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
-  console.log("cacca");
+  const [searchParams, setSearchParams] = useSearchParams();
+  //console.log("cacca");
 
   useEffect(() => {
     fetch('/api/v1/publications/attive')
       .then((response) => response.json())
       .then((data) => {
-        console.log("Dati ricevuti:", data);
+        //console.log("Dati ricevuti:", data);
         setPublications(data); 
         setLoading(false);
       })
@@ -22,6 +24,11 @@ function App() {
         setLoading(false);
       });
   }, []);
+
+  
+  //searchParams.get("username");
+  const autenticato = searchParams.get("username")
+  //const username = searchParams.get(username)
 
   if (loading) {
     return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Caricamento in corso... ⏳</h2>;
@@ -132,8 +139,11 @@ function App() {
       }}>
         <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#1565c0' }}>
           DoloLost
+          
         </div>
         <div>
+        {!autenticato ? (
+          
           <Link to="/userLogin" style={{
             textDecoration: 'none',
             color: 'white',
@@ -144,6 +154,8 @@ function App() {
           }}>
             Login
           </Link>
+        
+        ) : "Benvenuto " + autenticato}
         </div>
       </nav>
 
