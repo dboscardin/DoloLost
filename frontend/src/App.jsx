@@ -158,7 +158,9 @@ function App() {
           </Link>
         
         ) : (
-        
+          //link se autenticato
+          <div>
+          <p style={{padding: '10px'}} >Benvenuto {name}</p>
         <Link to="/" style={{
             textDecoration: 'none',
             color: 'white',
@@ -169,6 +171,7 @@ function App() {
           }}>
             Logout
           </Link>
+          </div>
           )
         
         }
