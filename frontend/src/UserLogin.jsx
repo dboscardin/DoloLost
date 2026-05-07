@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 
 const UserLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errText, setErrText] = useState("");
 
   const sendLoginInfo = (e) => {
     e.preventDefault();
@@ -20,7 +21,16 @@ const UserLogin = () => {
         "password": password
       })
     }).then(response => {
-      console.log(response);
+      return response.json();
+    }).then(data => {
+      //console.log(data)
+      let success = data.success
+      if(!success){
+        setErrText(data.message)
+        return
+      }
+      let ref = "/?token="+data.token+"&username="+data.username+"&name="+data.name+"&id="+data.id+"&role="+data.role
+      window.location.href = ref
     })
   };
 
@@ -28,7 +38,7 @@ const UserLogin = () => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Login</h2>
-
+        <p style={styles.info}>{errText}</p>
         <form onSubmit={sendLoginInfo} style={styles.form}>
           <input
             type="text"
@@ -95,6 +105,10 @@ const styles = {
     color: "#ffffff",
     cursor: "pointer",
     fontWeight: "bold",
+  },
+  info: {
+    color: "#ff0000",
+    marginBottom: "1.5rem"
   },
 };
 
