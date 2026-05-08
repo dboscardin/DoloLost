@@ -24,6 +24,12 @@ router.get('/', async (req, res) => {
     return;
 });
 
+//paramentri per filtrare:
+//Description (stringa contenuta in description)
+//Category (drop down list tra una serie preimpostata) -> comunque stringa contenuta
+//data -> a partire da
+//tipologia (lost o found)
+//posizione (sprint 2)
 router.get('/attive', async(req, res) => {
     let pubs = await req["pubs"].where('state').equals('unresolved').exec();
     //console.log("get attive");
