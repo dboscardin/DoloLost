@@ -192,7 +192,7 @@ const seedPublications = (users) => [
   }
   /*, {
     descrizione: 'Zaino blu smarrito su un autobus urbano',
-    categoria: 'borse',
+    categoria: 'Borse e Zaini',
     note: null,
     immagine: 'https://example.com/images/zaino.jpg',
     data: new Date('2026-04-03'),
@@ -207,7 +207,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Telefono trovato al parco',
-    categoria: 'elettronica',
+    categoria: 'Elettronica',
     note: 'Schermo leggermente graffiato',
     immagine: 'https://example.com/images/telefono.jpg',
     data: new Date('2026-04-04'),
@@ -222,7 +222,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Ombrello nero smarrito in biblioteca',
-    categoria: 'accessori',
+    categoria: 'Accessori',
     note: null,
     immagine: 'https://example.com/images/ombrello.jpg',
     data: new Date('2026-03-05'),
@@ -237,7 +237,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Carta d’identità trovata vicino al municipio',
-    categoria: 'documenti',
+    categoria: 'Documenti',
     note: null,
     immagine: 'https://example.com/images/documento.jpg',
     data: new Date('2026-04-06'),
@@ -252,7 +252,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Auricolari wireless smarriti al bar',
-    categoria: 'elettronica',
+    categoria: 'Elettronica',
     note: 'Custodia bianca',
     immagine: 'https://example.com/images/auricolari.jpg',
     data: new Date('2026-04-07'),
@@ -267,7 +267,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Borraccia metallica trovata al campo sportivo',
-    categoria: 'oggetti personali',
+    categoria: 'Altro',
     note: null,
     immagine: 'https://example.com/images/borraccia.jpg',
     data: new Date('2026-04-08'),
@@ -282,7 +282,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Giacca grigia smarrita in università',
-    categoria: 'abbigliamento',
+    categoria: 'Abbigliamento',
     note: 'Taglia M, dipartimento di lettere',
     immagine: 'https://example.com/images/giacca.jpg',
     data: new Date('2026-04-09'),
@@ -297,7 +297,7 @@ const seedPublications = (users) => [
   },
   {
     descrizione: 'Braccialetto trovato in centro storico',
-    categoria: 'gioielli',
+    categoria: 'Accessori',
     note: 'Color argento',
     immagine: 'https://example.com/images/braccialetto.jpg',
     data: new Date('2026-04-10'),
