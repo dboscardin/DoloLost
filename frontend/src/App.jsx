@@ -157,7 +157,24 @@ function App() {
             Login
           </Link>
         
-        ) : "Benvenuto " + name}
+        ) : (
+          //link se autenticato
+          <div>
+          <p style={{padding: '10px'}} >Benvenuto {name}</p>
+        <Link to="/" style={{
+            textDecoration: 'none',
+            color: 'white',
+            backgroundColor: '#1565c0',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+          }}>
+            Logout
+          </Link>
+          </div>
+          )
+        
+        }
         </div>
       </nav>
 
