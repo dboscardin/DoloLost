@@ -11,6 +11,34 @@ paths:
     get:
       summary: Tutte le pubblicazioni pubblicazioni
       description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
+      parameters:
+        - in: query
+          name: description
+          description: stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
+          
       responses:
         '200':
           description: Collezione di pubblicazioni
@@ -24,6 +52,33 @@ paths:
     get:
       summary: Pubblicazioni attive
       description: Ottiene tutte le pubblicazioni attive
+      parameters:
+        - in: query
+          name: description
+          description: stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
       responses:
         '200':
           description: Collezione di pubblicazioni attive attualmente con relativi dati utente
