@@ -1,45 +1,45 @@
 import { useState } from "react";
 
 const UserSignUp = () => {
-    const [name, setName] = useState("");
-    const [surname, setSurname] = useState("");
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const role = "User";
+const [name, setName] = useState("");
+const [surname, setSurname] = useState("");
+const [username, setUsername] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const role = "user";
 
-    const sendSignUpInfo = async (e) => {
-        e.preventDefault();
+const sendSignUpInfo = async (e) => {
+    e.preventDefault();
 
-        try {
-            const response = await fetch("/api/v1/auth/signup", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({
-                name,
-                surname,
-                username,
-                email,
-                password,
-                role,
-            }),
-        });
+    try {
+        const response = await fetch("/api/v1/auth/signup", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+            name,
+            surname,
+            username,
+            email,
+            password,
+            role,
+        }),
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.message || "Errore nella registrazione");
-        }
+    if (!response.ok) {
+        throw new Error(data.message || "Errore nella registrazione");
+    }
 
-        console.log("Signup OK:", data);
+    console.log("Signup OK:", data);
 
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
   return (
     <div style={styles.container}>

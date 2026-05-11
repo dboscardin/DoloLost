@@ -10,6 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
+
     try {
         const { name, surname, username, email, password, role } = req.body;
 
@@ -25,6 +26,8 @@ router.post("/signup", async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        console.log("JWT secret presente?", !!process.env.SUPER_SECRET);
+
         const newUser = await User.create({
             name,
             surname,
@@ -33,16 +36,17 @@ router.post("/signup", async (req, res) => {
             password: hashedPassword,
             role,
         });
-
+        console.log("Utente creato:", newUser);
         const token = jwt.sign(
             {
                 id: newUser._id,
                 email: newUser.email,
                 role: newUser.role,
             },
-            process.env.JWT_SECRET,
+            process.env.SUPER_SECRET,
             { expiresIn: "1h"}
         );
+        console.log("Token creato");
 
         res.status(201).json({
             message: "registrazione completata",
@@ -58,6 +62,7 @@ router.post("/signup", async (req, res) => {
         });
     }
     catch (error) {
+        console.error("Errore signup:", error);
         res.status(500).json({
             message: "Errore nella registrazione",
             error: error.message
