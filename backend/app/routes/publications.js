@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 
     if(category)
     {
-        query = query.where('category').equals(category);
+        query = query.where('category').regex(new RegExp(category, 'i'));
     }
 
     if (type) {
@@ -86,7 +86,7 @@ router.get('/attive', async(req, res) => {
 
     if(category)
     {
-        query = query.where('category').equals(category);
+        query = query.where('category').regex(new RegExp(category, 'i'));
     }
 
     if (type) {
