@@ -6,11 +6,12 @@ const UserLogin = () => {
 
   const sendLoginInfo = (e) => {
     e.preventDefault();
+    
     console.log("Username:", username);
     console.log("Password:", password);
 
     //chiamata API
-    fetch("/api/v1/auth", {
+    fetch("/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type" : "application/json",

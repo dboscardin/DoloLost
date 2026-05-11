@@ -8,33 +8,38 @@ const UserSignUp = () => {
     const [password, setPassword] = useState("");
     const role = "User";
 
-    const sendSignUpInfo = (e) => {
+    const sendSignUpInfo = async (e) => {
         e.preventDefault();
-        console.log("Name: ", name);
-        console.log("Surname: ", surname);
-        console.log("Username: ", username);
-        console.log("Email: ", email);
-        console.log("Password: ", password);
-        console.log("Role: ", role);
 
-    //chiamata API
-    fetch("/api/v1/auth", {
-        method: "POST",
-        headers: {
-            "Content-Type" : "application/json",
-        }, 
-        body: JSON.stringify({
-            "name": name,
-            "surname": surname,
-            "username": username,
-            "email": email,
-            "password": password,
-            "role": role
-        })
-    }).then(response => {
-      console.log(response);
-    })
-  };
+        try {
+            const response = await fetch("/api/v1/auth/signup", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                name,
+                surname,
+                username,
+                email,
+                password,
+                role,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Errore nella registrazione");
+        }
+
+        console.log("Signup OK:", data);
+
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
 
   return (
     <div style={styles.container}>
@@ -88,7 +93,7 @@ const UserSignUp = () => {
           />
 
           <button type="submit" style={styles.button}>
-            Accedi
+            Crea account
           </button>
         </form>
       </div>

@@ -5,8 +5,6 @@ import User from '../models/user.js';
 
 const router = express.Router();
 
-//aggiungere qui le route per gli utenti
-
 router.get('/', (req, res) => {
     res.send("Funziona!");
 });
@@ -32,8 +30,8 @@ router.post("/signup", async (req, res) => {
             surname,
             username,
             email,
-            password: hashedPasssword,
-            role
+            password: hashedPassword,
+            role,
         });
 
         const token = jwt.sign(
@@ -46,7 +44,18 @@ router.post("/signup", async (req, res) => {
             { expiresIn: "1h"}
         );
 
-        
+        res.status(201).json({
+            message: "registrazione completata",
+            token,
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                surname: newUser.surname,
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role,
+            },
+        });
     }
     catch (error) {
         res.status(500).json({
