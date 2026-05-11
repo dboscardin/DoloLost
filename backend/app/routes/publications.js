@@ -106,4 +106,9 @@ router.get('/attive', async(req, res) => {
     return;
 });
 
+router.post('', async(req, res) => {
+
+    return;
+})
+
 export default router;
