@@ -107,6 +107,37 @@ router.get('/attive', async(req, res) => {
 });
 
 router.post('', async(req, res) => {
+    
+    /*
+    let book = new Book({
+        title: req.body.title
+    });
+    
+	book = await book.save();
+    
+    let bookId = book._id;
+
+    console.log('Book saved successfully');
+
+    
+    res.location("/api/v1/books/" + bookId).status(201).send();
+    */
+   //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
+    try {
+        //quando si creano sono unresolved
+        const { description, category, notes, image, date, type, user } = req.body;
+        const newPub = await Publication.create({description, category, notes, image, date, type, user});
+        let pubId = newPub._id;
+        //da togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
+        //res.location("/api/v1/publications/" + pubId).status(201).send();
+    }
+    catch (error) {
+        console.error("Errore signup:", error);
+        res.status(500).json({
+            message: "Errore nella creazione pubblicazione",
+            error: error.message
+        });
+    };
 
     return;
 })
