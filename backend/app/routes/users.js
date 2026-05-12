@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
     res.send("Funziona!");
 });
 
-router.post("/signup", async (req, res) => {
+/*router.post("/signup", async (req, res) => {
 
     try {
         const { name, surname, username, email, password, role } = req.body;
@@ -68,7 +68,7 @@ router.post("/signup", async (req, res) => {
             error: error.message
         });
     };
-});
+});*/
 
 
 export default router;
