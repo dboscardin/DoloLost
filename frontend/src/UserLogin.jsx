@@ -1,27 +1,38 @@
-import /*React,*/ { useState } from "react";
+import React, { useState, useEffect} from "react";
+import bcrypt from "bcryptjs";
 
 const UserLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errText, setErrText] = useState("");
 
   const sendLoginInfo = (e) => {
     e.preventDefault();
-    
-    console.log("Username:", username);
-    console.log("Password:", password);
+    //console.log("Username:", username);
+    //console.log("Password:", password);
 
     //chiamata API
-    fetch("/api/v1/auth/login", {
+    const hashPassword = bcrypt.hash(password, 10) 
+    fetch("/api/v1/auth", {
       method: "POST",
       headers: {
         "Content-Type" : "application/json",
       }, 
       body: JSON.stringify({
         "username": username,
-        "password": password
+        "password": hashPassword
       })
     }).then(response => {
-      console.log(response);
+      return response.json();
+    }).then(data => {
+      //console.log(data)
+      let success = data.success
+      if(!success){
+        setErrText(data.message)
+        return
+      }
+      let ref = "/?token="+data.token+"&username="+data.username+"&name="+data.name+"&id="+data.id+"&role="+data.role
+      window.location.href = ref
     })
   };
 
@@ -29,7 +40,7 @@ const UserLogin = () => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Login</h2>
-
+        <p style={styles.info}>{errText}</p>
         <form onSubmit={sendLoginInfo} style={styles.form}>
           <input
             type="text"

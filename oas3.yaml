@@ -7,21 +7,78 @@ servers:
   - url: http://localhost:8080/api/v1
     description: Api v1 in localhost
 paths:
-  /publications:
+  /api/v1/publications:
     get:
-      description: Ottiene tutte le pubblicazioni
+      summary: Tutte le pubblicazioni pubblicazioni
+      description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
+      parameters:
+        - in: query
+          name: description
+          description: stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
+          
       responses:
         '200':
-          description: Collezione di pubblicazioni con relativi dati utente
+          description: Collezione di pubblicazioni
           content:
            application/json:
              schema:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
-  /publications/attive:
+  /api/v1/publications/attive:
     get:
+      summary: Pubblicazioni attive
       description: Ottiene tutte le pubblicazioni attive
+      parameters:
+        - in: query
+          name: description
+          description: stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
       responses:
         '200':
           description: Collezione di pubblicazioni attive attualmente con relativi dati utente
@@ -31,8 +88,54 @@ paths:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
-
-
+  /api/v1/auth:
+    post:
+      summary: Autentica un utente e restituisce un JWT
+      description: Invia username e password per ricevere un token di accesso e i dettagli del profilo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  token:
+                    type: string
+                    description: JWT con ruolo da usare nelle successive chiamate
+                  username:
+                    type: string
+                  role:
+                    type: string
+                    enum: [user, admin]
+                  id:
+                    type: string
+        '401':
+          description: Password errata
+         
+        '404':
+          description: Utente non trovato
+          
+        
 
 
 components: 
