@@ -19,12 +19,9 @@ app.use('/api/v1/publications', publicationRouter);
 app.use('/api/v1/auth', authentication);
 
 
-app.use(tokenChecker);
-//da qua in poi le route sono autenticate
+//app.use(tokenChecker);
+//app.use(adminChecker);
 
-
-app.use(adminChecker);
-//da qua in poi le route sono admin
 app.use('/api/v1/users', userRouter);
 
 

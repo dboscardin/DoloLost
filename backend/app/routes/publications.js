@@ -1,7 +1,13 @@
 import express from 'express';
 import Publication from '../models/publication.js'
 import User from '../models/user.js'
+import tokenChecker from '../middleware/tokenChecker.js'
+import adminChecker from '../middleware/adminChecker.js'
 const router = express.Router();
+
+
+
+
 
 //aggiungere qui le route per le pubblicazioni
 //TENERE IN MINUSCOLO !!!!!!!
@@ -63,7 +69,7 @@ router.get('/attive', async(req, res) => {
 });
 
 
-router.post('', async(req, res) => {
+router.post('', tokenChecker ,async(req, res) => {
     
    //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
@@ -123,7 +129,7 @@ router.post('', async(req, res) => {
 })
 
 
-router.use('/:id', async (req, res, next) => {
+router.use('/:id', tokenChecker , async (req, res, next) => {
     if (req.params.id === 'attive') return next();
     let pub = await Publication.findById(req.params.id).exec();
     if (!pub) {
@@ -138,7 +144,7 @@ router.use('/:id', async (req, res, next) => {
     next()
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', tokenChecker, async (req, res) => {
     let pub = req['pub'];
     res.status(200).json({
         self: '/api/v1/pub/' + pub._id,
