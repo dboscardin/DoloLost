@@ -3,8 +3,6 @@ import express from 'express';
 import userRouter from './routes/users.js'
 import publicationRouter from './routes/publications.js'
 import authentication from './routes/authentication.js'
-import tokenChecker from './middleware/tokenChecker.js'
-import adminChecker from './middleware/adminChecker.js'
 import swaggerUi from 'swagger-ui-express';
 import Path from 'path';
 import { readFileSync } from 'fs';
@@ -33,11 +31,10 @@ app.use('/api/v1/publications', publicationRouter);
 app.use('/api/v1/auth', authentication);
 
 
-app.use(tokenChecker);
+
 //da qua in poi le route sono autenticate
 
 
-app.use(adminChecker);
 //da qua in poi le route sono admin
 app.use('/api/v1/users', userRouter);
 
