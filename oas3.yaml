@@ -9,7 +9,7 @@ servers:
 paths:
   /api/v1/publications:
     get:
-      summary: Tutte le pubblicazioni pubblicazioni
+      summary: Tutte le pubblicazioni
       description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
       parameters:
         - in: query

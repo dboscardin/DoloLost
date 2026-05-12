@@ -4,6 +4,7 @@ import User from '../models/user.js'
 const router = express.Router();
 
 //aggiungere qui le route per le pubblicazioni
+const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
 
 router.use('/', async (req, res, next) => {
     let pubs = Publication.find().populate('user');
@@ -108,28 +109,53 @@ router.get('/attive', async(req, res) => {
 
 router.post('', async(req, res) => {
     
-    /*
-    let book = new Book({
-        title: req.body.title
-    });
-    
-	book = await book.save();
-    
-    let bookId = book._id;
-
-    console.log('Book saved successfully');
-
-    
-    res.location("/api/v1/books/" + bookId).status(201).send();
-    */
    //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
         //quando si creano sono unresolved
         const { description, category, notes, image, date, type, user } = req.body;
-        const newPub = await Publication.create({description, category, notes, image, date, type, user});
+
+        const userExists = await User.findById(req.loggedUser.id);
+        if (!userExists) {
+            return res.status(404).json({ error: "Utente non trovato" });
+        }
+        if (!description || description.trim().length < 10) {
+            return res.status(400).json({ error: "La descrizione deve essere di almeno 10 caratteri." });
+        }
+        if (description.length > 500) {
+            return res.status(400).json({ error: "La descrizione è troppo lunga (max 500 caratteri)." });
+        }
+
+        if (!category || !validCategories.includes(category.toLowerCase())) {
+            return res.status(400).json({ error: "Categoria non valida" });
+        }
+
+        if (notes && notes.length > 1000) {
+            return res.status(400).json({ error: "Le note non possono superare i 1000 caratteri." });
+        }
+
+        const eventDate = new Date(date);
+        if (!date || isNaN(eventDate.getTime())) {
+            return res.status(400).json({ error: "Data non valida o mancante." });
+        }
+        if (eventDate > new Date()) {
+            return res.status(400).json({ error: "La data non può essere nel futuro." });
+        }
+
+
+
+        const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
+        const newPub = await Publication.create({description, category, notes, location, image, date, type, user});
+
+        
+
+
+
         let pubId = newPub._id;
+
         //da togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
         //res.location("/api/v1/publications/" + pubId).status(201).send();
+        res.status(201).send();
+
     }
     catch (error) {
         console.error("Errore signup:", error);
