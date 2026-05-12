@@ -108,6 +108,38 @@ router.get('/attive', async(req, res) => {
     return;
 });
 
+
+
+router.use('/:id', async (req, res, next) => {
+    // https://mongoosejs.com/docs/api.html#model_Model.findById
+    let pub = await Publication.findById(req.params.id).exec();
+    if (!pub) {
+        res.status(404).send()
+        console.log('pub not found')
+        return;
+    }
+    req['pub'] = pub;
+    next()
+});
+
+router.get('/:id', async (req, res) => {
+    let pub = req['pub'];
+    res.status(200).json({
+        self: '/api/v1/pub/' + pub._id,
+        _id: pub._id,
+        description: pub.description,
+        category: pub.category,
+        user: pub.User,
+        date: pub.date,
+        notes: pub.notes,
+        image: pub.image,
+        state: pub.state,
+        type: pub.type,
+        //se da problemi si più decomporre nei singolo elementi
+        location: pub.location
+    });
+});
+
 router.post('', async(req, res) => {
     
    //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
@@ -120,8 +152,8 @@ router.post('', async(req, res) => {
         if (!userExists) {
             return res.status(404).json({ error: "Utente non trovato" });
         }
-        if (!description || description.trim().length < 10) {
-            return res.status(400).json({ error: "La descrizione deve essere di almeno 10 caratteri." });
+        if (!description || description.trim().length < 5) {
+            return res.status(400).json({ error: "La descrizione deve essere di almeno 5 caratteri." });
         }
         if (description.length > 500) {
             return res.status(400).json({ error: "La descrizione è troppo lunga (max 500 caratteri)." });
@@ -148,15 +180,12 @@ router.post('', async(req, res) => {
         const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
         const newPub = await Publication.create({description, category, notes, location, image, date, type, user});
 
-        
-
-
 
         let pubId = newPub._id;
 
         //togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
-        //res.location("/api/v1/publications/" + pubId).status(201).send();
-        res.status(201).send();
+        res.location("/api/v1/publications/" + pubId).status(201).send();
+        //res.status(201).send();
 
     }
     catch (error) {
