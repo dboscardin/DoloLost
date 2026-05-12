@@ -108,10 +108,6 @@ const styles = {
     cursor: "pointer",
     fontWeight: "bold",
   },
-  info: {
-    color: "#ff0000",
-    marginBottom: "1.5rem"
-  },
 };
 
 export default UserLogin;
