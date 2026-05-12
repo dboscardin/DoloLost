@@ -48,6 +48,24 @@ paths:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
+    post:
+      summary: Crea una nuova pubblicazione
+      description: Permette a un utente autenticato di segnalare un oggetto smarrito o ritrovato.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publication'
+      responses:
+        '201':
+          description: Pubblicazione creata con successo.
+        '400':
+          description: Errore di validazione (es. descrizione troppo breve, data nel futuro, categoria errata).
+        '404':
+          description: Utente non trovato nel database.
+        '500':
+          description: Errore interno del server.
   /api/v1/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -55,17 +73,17 @@ paths:
       parameters:
         - in: query
           name: description
-          description: stringa contenuta nel campo description
+          description: Stringa contenuta nel campo description
           schema:
             type: string
         - in: query
           name: category 
-          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          description: Stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
         - in: query
           name: type
-          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          description: Tipologia della pubblicazione, può essere smarrimento o ritrovamento
           schema: 
             type: string
             enum: [lost, found]
@@ -76,7 +94,7 @@ paths:
             type: string
         - in: query
           name: date_before
-          description: data entro cui filtrare le pubblicazioni
+          description: Data entro cui filtrare le pubblicazioni
           schema: 
             type: string
       responses:

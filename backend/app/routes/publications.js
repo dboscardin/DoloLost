@@ -114,7 +114,7 @@ router.post('', async(req, res) => {
         //quando si creano sono unresolved
         const { description, category, notes, image, date, type, user } = req.body;
 
-        const userExists = await User.findById(req.loggedUser.id);
+        const userExists = await User.findById(req.user);
         if (!userExists) {
             return res.status(404).json({ error: "Utente non trovato" });
         }
@@ -142,7 +142,7 @@ router.post('', async(req, res) => {
         }
 
 
-
+        //location di default
         const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
         const newPub = await Publication.create({description, category, notes, location, image, date, type, user});
 
@@ -152,7 +152,7 @@ router.post('', async(req, res) => {
 
         let pubId = newPub._id;
 
-        //da togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
+        //togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
         //res.location("/api/v1/publications/" + pubId).status(201).send();
         res.status(201).send();
 
