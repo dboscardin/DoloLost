@@ -4,7 +4,8 @@ import User from '../models/user.js'
 const router = express.Router();
 
 //aggiungere qui le route per le pubblicazioni
-const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
+//TENERE IN MINUSCOLO !!!!!!!
+const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
 
 router.use('/', async (req, res, next) => {
     let pubs = Publication.find().populate('user');
@@ -114,7 +115,8 @@ router.post('', async(req, res) => {
         //quando si creano sono unresolved
         const { description, category, notes, image, date, type, user } = req.body;
 
-        const userExists = await User.findById(req.user);
+        const userExists = await User.findById(user);
+        //console.log(user)
         if (!userExists) {
             return res.status(404).json({ error: "Utente non trovato" });
         }
@@ -125,7 +127,7 @@ router.post('', async(req, res) => {
             return res.status(400).json({ error: "La descrizione è troppo lunga (max 500 caratteri)." });
         }
 
-        if (!category || !validCategories.includes(category.toLowerCase())) {
+        if (!category || !categories.includes(category.toLowerCase())) {
             return res.status(400).json({ error: "Categoria non valida" });
         }
 
