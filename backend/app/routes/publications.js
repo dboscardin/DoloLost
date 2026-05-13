@@ -1,6 +1,8 @@
 import express from 'express';
 import Publication from '../models/publication.js'
 import User from '../models/user.js'
+import tokenChecker from '../middleware/tokenChecker.js'
+import adminChecker from '../middleware/adminChecker.js'
 const router = express.Router();
 
 //aggiungere qui le route per le pubblicazioni
@@ -17,6 +19,15 @@ router.use('/', async (req, res, next) => {
     next();
 });
 
+router.get('/proprie', tokenChecker, async(req, res) => {
+    
+    const decoded = req.loggedUser;
+    //console.log(decoded);
+    let pubs = await req["pubs"].where('user').equals(decoded.id).exec();
+
+    res.status(200).json(pubs);
+    return;
+});
 
 //paramentri per filtrare:
 //Description (stringa contenuta in description) -> description
