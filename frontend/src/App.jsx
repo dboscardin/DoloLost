@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
+import PropriePub from './PropriePub.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -160,7 +161,6 @@ function App() {
 
       }
     loadData();
-    
   }, []);
 
   const handleFilterChange = (e) => {
@@ -183,10 +183,6 @@ function App() {
   /*
 const token = searchParams.get("token")
     
-
-
-  CIAO MASSI
-  <Route path="/propriePub" element={<PropriePub  token={token} />} />
   }*/
  
 
@@ -220,7 +216,7 @@ const token = searchParams.get("token")
           />} />
          
         <Route path="/userLogin" element={<UserLogin />} />
-        
+        <Route path="/propriePub" element={<PropriePub  token={token} />} />
       </Routes>
     </div>
   )

@@ -26,6 +26,15 @@ router.use('', async (req, res, next) => {
     next();
 });
 
+router.get('/proprie', tokenChecker, async(req, res) => {
+    
+    const decoded = req.loggedUser;
+    //console.log(decoded);
+    let pubs = await req["pubs"].where('user').equals(decoded.id).exec();
+
+    res.status(200).json(pubs);
+    return;
+});
 router.get('/attive', async(req, res) => {
     
     //let pubs = await req["pubs"].where('state').equals('unresolved').exec();

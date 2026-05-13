@@ -1,4 +1,5 @@
-import React, { useState, useEffect} from "react";
+import /*React,*/ { useState/*, useEffect*/} from "react";
+//import bcrypt from "bcryptjs";
 
 const UserLogin = () => {
   const [username, setUsername] = useState("");
@@ -11,6 +12,7 @@ const UserLogin = () => {
     //console.log("Password:", password);
 
     //chiamata API
+    //const hashPassword = bcrypt.hash(password, 10) 
     fetch("/api/v1/auth", {
       method: "POST",
       headers: {
@@ -105,10 +107,6 @@ const styles = {
     color: "#ffffff",
     cursor: "pointer",
     fontWeight: "bold",
-  },
-  info: {
-    color: "#ff0000",
-    marginBottom: "1.5rem"
   },
 };
 
