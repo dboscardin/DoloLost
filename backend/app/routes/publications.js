@@ -19,10 +19,11 @@ router.use('/', async (req, res, next) => {
     next();
 });
 
-router.get('/proprie/:id', async(req, res) => {
+router.get('/proprie', tokenChecker, async(req, res) => {
     
-    const uid = req.params.id;
-    let pubs = await req["pubs"].where('user').equals(uid).exec();
+    const decoded = req.loggedUser;
+    //console.log(decoded);
+    let pubs = await req["pubs"].where('user').equals(decoded.id).exec();
 
     res.status(200).json(pubs);
     return;
