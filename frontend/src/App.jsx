@@ -3,6 +3,7 @@ import './App.css'
 import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
 import UserSignUp from './UserSignUp.jsx'
+import PropriePub from './PropriePub.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -112,8 +113,8 @@ function App() {
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  
+  const [token, setToken] = useState('');
+  const [userData, setUserData] = useState({});
   const [filters, setFilters] = useState({
     description: '',
     category: '',
@@ -122,6 +123,8 @@ function App() {
     date_before: ''
   });
   
+  //const name = searchParams.get("name");
+  //const autenticato = searchParams.get("username");
   const loadData = () => {
     setLoading(true);
     
@@ -146,17 +149,45 @@ function App() {
 
   // Carica i dati all'avvio
   useEffect(() => {
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenParam = urlParams.get('token');
+   
+    if (tokenParam) {
+      setToken(tokenParam);
+      setUserData({
+        username: urlParams.get('username'),
+        name: urlParams.get('name'),
+        id: urlParams.get('id')
+      });
+
+      }
     loadData();
+    
   }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
   };
+  const logout = () => {
+    
+    localStorage.clear(); 
 
-  const autenticato = searchParams.get("username");
-  const name = searchParams.get("name");
+    
+    setToken(null);
+    setUserData(null);
+    setAutenticato(false);
 
+    
+    window.location.href = "/userLogin"; 
+};
+    
+  /*
+const token = searchParams.get("token")
+    
+  }*/
+ 
 
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -172,8 +203,9 @@ function App() {
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <span>Benvenuto <b>{name}</b></span>
-              <Link to={{}} style={btnStyle}>Logout</Link>
+              <span>Benvenuto <b>{userData.username}</b></span>
+              <Link onClick={logout} style={{btnStyle}}>Logout</Link>
+              <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
             </div>
           )}
         </div>
@@ -186,10 +218,12 @@ function App() {
             filters={filters} 
             handleFilterChange={handleFilterChange} 
             loadData={loadData} 
+            token={token}
           />} />
          
         <Route path="/userLogin" element={<UserLogin />} />
         <Route path="/userSignUp" element={<UserSignUp />} />
+        <Route path="/propriePub" element={<PropriePub  token={token} />} />
       </Routes>
     </div>
   )

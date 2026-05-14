@@ -88,6 +88,33 @@ paths:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
+  /api/v1/publications/proprie:
+    get:
+      summary: Recupera le pubblicazioni dell'utente autenticato
+      description: Restituisce un array di pubblicazioni create dall'utente identificato dal token JWT.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []  #definito sotto
+      responses:
+        '200':
+          description: Elenco delle pubblicazioni recuperato con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+        '401':
+          description: Token mancante o non valido
+        '404':
+          description: Nessuna pubblicazione trovata
+        '500':
+          description: Errore interno del server
+
+
+  
+
   /api/v1/auth:
     post:
       summary: Autentica un utente e restituisce un JWT
@@ -139,6 +166,13 @@ paths:
 
 
 components: 
+
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: x-access-token
+
   schemas:
 
     Publication:
