@@ -6,13 +6,28 @@ const CreaPub = (props) => {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("altro")
   const [notes, setNotes] = useState("")
-  //const [image, setImage] = useState("");
+  const [image, setImage] = useState("https://images.pexels.com/photos/4568373/pexels-photo-4568373.jpeg");
   const [date, setDate] = useState((new Date()).getFullYear() + "-" + String((new Date()).getMonth() + 1).padStart(2,0) + "-" + String((new Date()).getDate()).padStart(2,0))
   const [type, setType] = useState("found")
 
   const sendInfo = (e) => {
     e.preventDefault()
-    console.log(description, category, notes, date, type)
+    console.log(description, category, notes, image,date, type, props.token)
+    fetch("/api/v1/publications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-access-token": props.token
+      },
+      body: JSON.stringify({
+        "description": description,
+        "category": category,
+        "image": image,
+        "notes": notes,
+        "date": date,
+        "type": type
+      })
+    })
   }
 
   return (
@@ -36,11 +51,11 @@ const CreaPub = (props) => {
           <input id="data" type="date" value={date} onChange={(e) => setDate(e.target.value)} style={styles.input}></input>
           <label style={styles.label}>Tipo Segnalazione:</label>
           <div className="radioDiv">
-            <input id="typeTrovato" type="radio" name="type" value="found" onChange={(e) => setType(e.target.value)} style={styles.input} checked></input> <label htmlFor="typeTrovato" style={styles.label}>trovato</label>
+            <input id="typeTrovato" type="radio" name="type" value="found" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typeTrovato" style={styles.label}>trovato</label>
              
           </div>
           <div className="radioDiv">
-            <input id="typePerduto" type="radio" name="type" value="lost" onChange={(e) => setType(e.target.value)} style={styles.input}></input> <label htmlFor="typePerduto" style={styles.label}>perduto</label>
+            <input id="typePerduto" type="radio" name="type" value="lost" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typePerduto" style={styles.label}>perduto</label>
           </div>
           <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Note aggiuntive" style={styles.input}></input>
           <button type="submit" style={styles.button}>
