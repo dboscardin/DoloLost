@@ -87,11 +87,7 @@ router.post('', tokenChecker ,async(req, res) => {
         //prendo user da middleware
         const user = req.loggedUser.id;
 
-       /* const userExists = await User.findById(user);
-        //console.log(user)
-        if (!userExists) {
-            return res.status(404).json({ error: "Utente non trovato" });
-        }*/
+       
         if (!description || description.trim().length < 5) {
             return res.status(400).json({ error: "La descrizione deve essere di almeno 5 caratteri." });
         }

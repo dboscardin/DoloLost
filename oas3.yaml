@@ -50,22 +50,56 @@ paths:
                 $ref: '#/components/schemas/Publication'
     post:
       summary: Crea una nuova pubblicazione
-      description: Permette a un utente autenticato di segnalare un oggetto smarrito o ritrovato.
+      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Publication'
+              type: object
+              required:
+                - description
+                - category
+                - date
+                - type
+              properties:
+                description:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+                  example: "Ho smarrito un mazzo di chiavi vicino alla stazione"
+                category:
+                  type: string
+                  enum: [accessori, elettronica, documenti, chiavi, abbigliamento, "borse e zaini", animali, altro]
+                  example: "chiavi"
+                notes:
+                  type: string
+                  maxLength: 1000
+                  example: "Il mazzo ha un portachiavi a forma di gatto"
+                image:
+                  type: string
+                  description: URL o stringa base64 dell'immagine
+                date:
+                  type: string
+                  format: date-time
+                  description: La data dell'evento (non può essere nel futuro)
+                type:
+                  type: string
+                  enum: [lost, found]
+                  example: "lost"
       responses:
         '201':
-          description: Pubblicazione creata con successo.
+          description: Pubblicazione creata con successo
         '400':
-          description: Errore di validazione (es. descrizione troppo breve, data nel futuro, categoria errata).
-        '404':
-          description: Utente non trovato nel database.
+          description: Errore di validazione (es. descrizione troppo corta, categoria non valida o data futura)
+        '401':
+          description: Token mancante o non valido (gestito dal tokenChecker)
         '500':
-          description: Errore interno del server.
+          description: Errore interno del server durante la creazione
   /api/v1/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -157,6 +191,13 @@ paths:
 
 
 components: 
+
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: x-access-token
+
   schemas:
 
     Publication:
