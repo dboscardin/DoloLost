@@ -29,7 +29,11 @@ const CreaPub = (props) => {
       })
     })
   }
-
+  if(!props.token){
+    return(
+      <p>Sessione Scaduta. Effettua di nuovo il login.</p>
+    )
+  }
   return (
     <div style={styles.container}>
       <div style={styles.card}>

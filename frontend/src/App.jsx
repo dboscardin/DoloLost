@@ -171,16 +171,14 @@ function App() {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
   const logout = () => {
-    
+
     localStorage.clear(); 
 
-    
+  
     setToken(null);
     setUserData(null);
-    setAutenticato(false);
-
     
-    window.location.href = "/userLogin"; 
+    window.location.href = "/userLogin";
 };
     
   /*
@@ -196,7 +194,7 @@ const token = searchParams.get("token")
     DoloLost
   </Link>
         <div>
-          {!autenticato ? (
+          {!(userData && userData.username) ? (
             <div>
               <Link to="/userLogin" style={btnStyle}>Login</Link>
               <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
