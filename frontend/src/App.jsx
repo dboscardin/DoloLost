@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
+import UserSignUp from './UserSignUp.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -120,10 +121,6 @@ function App() {
     date_from: '',
     date_before: ''
   });
-
-
-  
-
   
   const loadData = () => {
     setLoading(true);
@@ -169,7 +166,10 @@ function App() {
   </Link>
         <div>
           {!autenticato ? (
-            <Link to="/userLogin" style={btnStyle}>Login</Link>
+            <div>
+              <Link to="/userLogin" style={btnStyle}>Login</Link>
+              <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
+            </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <span>Benvenuto <b>{name}</b></span>
@@ -189,6 +189,7 @@ function App() {
           />} />
          
         <Route path="/userLogin" element={<UserLogin />} />
+        <Route path="/userSignUp" element={<UserSignUp />} />
       </Routes>
     </div>
   )
@@ -201,6 +202,6 @@ const imageStyle = { width: '100%', height: '220px', objectFit: 'cover' };
 const placeholderStyle = { width: '100%', height: '220px', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' };
 const badgeStyle = { padding: '5px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
 const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 10 };
-const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold' };
+const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
 
 export default App

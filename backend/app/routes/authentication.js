@@ -8,6 +8,7 @@ router.post("/signup", async (req, res) => {
 
     try {
         const { name, surname, username, email, password, role } = req.body;
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
         const existingUser = await User.findOne({
             $or: [{email}, {username}],
@@ -16,6 +17,14 @@ router.post("/signup", async (req, res) => {
         if(existingUser) {
             return res.status(400).json({
                 message: "Email o username già esistente",
+            });
+        } else if(!emailRegex.test(email)) {
+            return res.status(400).json({
+                message: "Email non valida",
+            });
+        } else if(password.length < 8) {
+            return res.status(400).json({
+                message: "La password deve contenere almeno 8 caratteri",
             });
         }
 
@@ -38,7 +47,7 @@ router.post("/signup", async (req, res) => {
                 role: newUser.role,
             },
             process.env.SUPER_SECRET,
-            { expiresIn: "1h"}
+            { expiresIn: 86400 }
         );
         console.log("Token creato");
 
@@ -65,20 +74,14 @@ router.post("/signup", async (req, res) => {
     };
 });
 
-//da chiamare in qualche modo quando si fa il login
 router.post('', async function(req, res) {
-    //console.log(req.body.username)
-   // console.log(String(req.body.password));
-    //console.log(typeof req.body.password);
-   // const hashPassword = await bcrypt.hash(req.body.password,10)
-    //console.log(hashPassword)
     try {
         let user = await User.findOne({ username: req.body.username }).exec()
 
         if (!user) {
             return res.status(404).json({
                 success:false,
-                message:'User not found'
+                message:'Utente non trovato'
             });
         }
 
@@ -86,7 +89,7 @@ router.post('', async function(req, res) {
         if (!isMatch) {
             return res.status(401).json({
                 success:false,
-                message:'Wrong password'
+                message:'Password errata'
             });
         }
         

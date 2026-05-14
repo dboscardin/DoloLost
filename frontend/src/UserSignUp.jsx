@@ -7,9 +7,14 @@ const [username, setUsername] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const role = "user";
+/*const [errors, setErrors] = useState({});*/
+
 
 const sendSignUpInfo = async (e) => {
     e.preventDefault();
+    console.log("submit partito");
+
+    //if (!validateForm()) return;
 
     try {
         const response = await fetch("/api/v1/auth/signup", {
@@ -28,7 +33,9 @@ const sendSignUpInfo = async (e) => {
         }),
     });
 
+    console.log("response arrivata", response);
     const data = await response.json();
+    console.log("data ricevuti", data);
 
     if (!response.ok) {
         throw new Error(data.message || "Errore nella registrazione");
@@ -36,10 +43,40 @@ const sendSignUpInfo = async (e) => {
 
     console.log("Signup OK:", data);
 
+    const params = new URLSearchParams({
+        token: data.token,
+        username: data.user.username,
+        name: data.user.name,
+        id: data.user.id,
+        role: data.user.role,
+    });
+    window.location.href = "/?" + params.toString();
+
   } catch (error) {
     console.error(error.message);
   }
 };
+
+/*const validateForm = () => {
+  const newErrors = {};
+  if (!name.trim()) newErrors.name = "Il nome è obbligatorio";
+  if (!surname.trim()) newErrors.surname = "Il cognome è obbligatorio";
+  if (!username.trim()) newErrors.username = "Lo username è obbligatorio";
+
+  if (!email.trim()) {
+    newErrors.email = "L'email è obbligatoria";
+  } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
+    newErrors.email = "Inserisci un'email valida";
+  }
+  if (!password) {
+    newErrors.password = "La password è obbligatoria";
+  } else if (password.length < 8) {
+    newErrors.password = "La password deve contenere almeno 8 caratteri";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};*/
 
   return (
     <div style={styles.container}>
@@ -55,6 +92,7 @@ const sendSignUpInfo = async (e) => {
             style={styles.input}
             required
           />
+          {/*} {errors.name && <p style={styles.error}>{errors.name}</p>} */}
 
           <input
             type="text"
@@ -64,6 +102,7 @@ const sendSignUpInfo = async (e) => {
             style={styles.input}
             required
           />
+          {/* {errors.surname && <p style={styles.error}>{errors.surname}</p>} */}
 
           <input
             type="text"
@@ -73,6 +112,7 @@ const sendSignUpInfo = async (e) => {
             style={styles.input}
             required
           />
+          {/* {errors.username && <p style={styles.error}>{errors.username}</p>} */}
 
           <input
             type="email"
@@ -80,17 +120,23 @@ const sendSignUpInfo = async (e) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={styles.input}
+            pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+            title="Inserisci un'email valida, ad esempio nome@email.com"
             required
           />
+          {/* {errors.email && <p style={styles.error}>{errors.email}</p>} */}
 
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={8}
             style={styles.input}
+            title="La password deve contenere almeno 8 caratteri"
             required
           />
+          {/* {errors.password && <p style={styles.error}>{errors.password}</p>} */}
 
           <button type="submit" style={styles.button}>
             Crea account
