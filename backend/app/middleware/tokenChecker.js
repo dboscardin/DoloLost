@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 //controlla l'autenticità del toekn, quindi che l'user sia loggato almeno come user base
 const tokenChecker = function(req, res, next) {
-    console.log("tokennn")
+    //console.log("tokennn")
     
     // header or url parameters or post parameters
     var token = req.body?.token || req.query?.token || req.headers['x-access-token'];

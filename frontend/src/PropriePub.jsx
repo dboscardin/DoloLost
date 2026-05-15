@@ -42,80 +42,51 @@ const PropriePub = (props) => {
     if (error) return <div className="alert alert-danger m-4">{error}</div>;
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center mb-5" style={{ color: '#4a4a4a', fontWeight: '300' }}>Le Mie Pubblicazioni</h2>
-            
-            {publications.length === 0 ? (
-                <div className="text-center text-muted">Non hai ancora creato nessuna pubblicazione.</div>
-            ) : (
-                <div className="row justify-content-center">
-                    {publications.map((pub) => (
-                        <div key={pub._id} className="col-12 col-md-8 col-lg-6 mb-5">
-                            {/* Card pulita senza bordi pesanti */}
-                            <div className="card border-0 text-center" style={{ backgroundColor: 'transparent' }}>
-                                
-                                {/* Immagine con angoli arrotondati e ombra leggera */}
-                                {pub.image && (
-                                    <div className="mb-3 d-flex justify-content-center">
-                                        <img 
-                                            src={pub.image} 
-                                            alt={pub.category} 
-                                            style={{
-                                                width: '100%',
-                                                maxWidth: '500px',
-                                                height: '300px', 
-                                                objectFit: 'cover',
-                                                borderRadius: '8px',
-                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                            }} 
-                                        />
-                                    </div>
-                                )}
+       <div style={{ padding: '40px 20px' }}>
+             <h2 className="text-center mb-5" style={{ color: '#4a4a4a', fontWeight: '300' }}>Le Mie Pubblicazioni</h2>
+             {
+                publications.length === 0 ? (<div className="text-center text-muted">Non hai ancora creato nessuna pubblicazione.</div>
+                ) : (
+                    <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+          gap: '25px', maxWidth: '1200px', margin: '0 auto' 
+        }}>
+          {publications.map((publication) => (
+            <div key={publication._id} style={cardStyle}>
+              {publication.image ? (
+                <img src={publication.image} alt={publication.description} style={imageStyle} />
+              ) : (
+                <div style={placeholderStyle}>Nessuna immagine</div>
+              )}
 
-                                <div className="card-body p-0">
-                                    {/* Categoria in grigio (stile Home) */}
-                                    <p className="text-muted text-uppercase small mb-2" style={{ letterSpacing: '1px' }}>
-                                        {pub.category}
-                                    </p>
-
-                                    {/* Status con pallino colorato */}
-                                    <div className="mb-2">
-                                        {pub.type === 'lost' ? (
-                                            <span><span style={{color: '#dc3545'}}>●</span> Smarrito</span>
-                                        ) : (
-                                            <span><span style={{color: '#28a745'}}>●</span> Ritrovato</span>
-                                        )}
-                                    </div>
-
-                                    {/* Titolo/Descrizione principale */}
-                                    <h4 className="card-title mb-1" style={{ color: '#555' }}>{pub.description}</h4>
-                                    
-                                    {/* Data formattata leggermente */}
-                                    <p className="text-muted mb-3">
-                                        Data: {new Date(pub.date).toLocaleDateString('it-IT')}
-                                    </p>
-
-                                    {/* Badge di Stato (Attivo/Risolto) */}
-                                    <div className="mb-3">
-                                        <span className={`badge rounded-pill ${pub.state === 'resolved' ? 'bg-success' : 'bg-secondary'}`} style={{ padding: '8px 15px' }}>
-                                            {pub.state === 'resolved' ? 'Risolto' : 'Attivo'}
-                                        </span>
-                                    </div>
-
-                                    {/* Pulsante Dettagli stile DoloLost */}
-                                    <button className="btn btn-dark px-4 py-2" style={{ borderRadius: '5px' }}>
-                                        Dettagli
-                                    </button>
-                                </div>
-                            </div>
-                            {/* Separatore orizzontale opzionale tra card */}
-                            <hr className="mt-5 w-50 mx-auto" style={{ opacity: '0.1' }} />
-                        </div>
-                    ))}
+              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                  <span style={{ ...badgeStyle, backgroundColor: publication.type === 'lost' ? '#ffebee' : '#e8f5e9', color: publication.type === 'lost' ? '#d32f2f' : '#2e7d32' }}>
+                    {publication.type === 'lost' ? 'SMARRITO' : 'RITROVATO'}
+                  </span>
+                  <span style={{ ...badgeStyle, backgroundColor: '#e3f2fd', color: '#1565c0' }}>
+                    {publication.category}
+                  </span>
                 </div>
-            )}
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
+                <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
+                <button style={btnStyle}>Dettagli</button>
+
+                <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
+                <div style={{ fontSize: '12px', color: '#888' }}>📅 {new Date(publication.date).toLocaleDateString('it-IT')}</div>
+              </div>
+            </div>
+          ))}
         </div>
+                )
+             }
+       </div>
     );
 };
 
+const cardStyle = { backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' };
+const imageStyle = { width: '100%', height: '220px', objectFit: 'cover' };
+const badgeStyle = { padding: '5px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
+const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
 export default PropriePub;
