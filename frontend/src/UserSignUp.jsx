@@ -6,6 +6,7 @@ const [surname, setSurname] = useState("");
 const [username, setUsername] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
+const [errText, setErrText] = useState("");
 const role = "user";
 /*const [errors, setErrors] = useState({});*/
 
@@ -17,7 +18,7 @@ const sendSignUpInfo = async (e) => {
     //if (!validateForm()) return;
 
     try {
-        const response = await fetch("/api/v1/auth/signup", {
+        const response = await fetch("/api/v1/users/", {
         method: "POST",
         headers: {
         "Content-Type": "application/json",
@@ -38,6 +39,7 @@ const sendSignUpInfo = async (e) => {
     console.log("data ricevuti", data);
 
     if (!response.ok) {
+        setErrText(data.message)
         throw new Error(data.message || "Errore nella registrazione");
     }
 
@@ -82,7 +84,7 @@ const sendSignUpInfo = async (e) => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Registrazione</h2>
-
+        <p style={styles.info}>{errText}</p>
         <form onSubmit={sendSignUpInfo} style={styles.form}>
           <input
             type="text"

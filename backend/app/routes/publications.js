@@ -39,7 +39,7 @@ router.get('/attive', async(req, res) => {
     
     //let pubs = await req["pubs"].where('state').equals('unresolved').exec();
     let query = req["pubs"].where('state').equals('unresolved');
-    console.log("attive")
+    //console.log("attive")
 
 
     const url = new URL(req.url, `http://${req.headers.host}`);
