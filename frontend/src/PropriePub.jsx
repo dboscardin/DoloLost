@@ -68,6 +68,10 @@ const PropriePub = (props) => {
                   <span style={{ ...badgeStyle, backgroundColor: '#e3f2fd', color: '#1565c0' }}>
                     {publication.category}
                   </span>
+                   <span style={{ ...badgeStyle,  color: publication.state === 'unresolved' ? '#d32f2f' : publication.state  ===  'resolved' ? '#2e7d32' : '#888' }}>
+                     {publication.state === 'resolved' ? 'Risolto' : publication.state  ===  'unresolved' ? 'Non risolto' : 'Decaduto' }
+                    </span>
+                                   
                 </div>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
