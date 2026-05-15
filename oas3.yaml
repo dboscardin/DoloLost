@@ -163,10 +163,83 @@ paths:
           description: Nessuna pubblicazione trovata
         '500':
           description: Errore interno del server
-
-
-  
-
+  /api/v1/users:
+    post:
+      summary: Registra un nuovo utente
+      description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - surname
+                - username
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                  description: Nome dell'utente
+                  example: Mario
+                surname:
+                  type: string
+                  description: Cognome dell'utente
+                  example: Rossi
+                username:
+                  type: string
+                  description: Username del profilo che l'utente desidera registrare
+                  example: SuperUtente123
+                email:
+                  type: string
+                  format: email
+                  description: Email associata al profilo
+                  example: mario.rossi@email.com
+                password:
+                  type: string
+                  minLength: 8
+                  description: Password che verrà usata per accedere al profilo
+                  example: Pass-Word.123@
+                role:
+                  type: string
+                  enum: [user]       
+      responses:
+        '201':
+          description: Registrazione completata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: registrazione completata
+                  token:
+                    type: string
+                    description: 'JWT token'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
+        '500':
+          description: Errore sconosciuto nella registrazione
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Falso in caso di errore
+                  message:
+                    type: string
+                    example: Errore nella registrazione
+                  error:
+                    type: string
+                    description: Descrizione dell'errore
   /api/v1/auth:
     post:
       summary: Autentica un utente e restituisce un JWT
@@ -213,7 +286,7 @@ paths:
          
         '404':
           description: Utente non trovato
-          
+
         
 
 
