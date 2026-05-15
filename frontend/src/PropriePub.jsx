@@ -8,9 +8,9 @@ const PropriePub = (props) => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                
                 const token = props.token; 
-                
+                if (!token) return;
+
                 const response = await fetch('/api/v1/publications/proprie', {
                     method: 'GET',
                     headers: {
@@ -42,31 +42,74 @@ const PropriePub = (props) => {
     if (error) return <div className="alert alert-danger m-4">{error}</div>;
 
     return (
-        <div className="container mt-4">
-            <h2 className="mb-4">Le Mie Pubblicazioni</h2>
+        <div className="container mt-5">
+            <h2 className="text-center mb-5" style={{ color: '#4a4a4a', fontWeight: '300' }}>Le Mie Pubblicazioni</h2>
+            
             {publications.length === 0 ? (
-                <p>Non hai ancora creato nessuna pubblicazione.</p>
+                <div className="text-center text-muted">Non hai ancora creato nessuna pubblicazione.</div>
             ) : (
-                <div className="row">
+                <div className="row justify-content-center">
                     {publications.map((pub) => (
-                        <div key={pub._id} className="col-md-4 mb-4">
-                            <div className={`card h-100 ${pub.state === 'resolved' ? 'border-success' : 'border-primary'}`}>
+                        <div key={pub._id} className="col-12 col-md-8 col-lg-6 mb-5">
+                            {/* Card pulita senza bordi pesanti */}
+                            <div className="card border-0 text-center" style={{ backgroundColor: 'transparent' }}>
+                                
+                                {/* Immagine con angoli arrotondati e ombra leggera */}
                                 {pub.image && (
-                                    <img src={pub.image} className="card-img-top" alt={pub.category} style={{height: '200px', objectFit: 'cover'}} />
+                                    <div className="mb-3 d-flex justify-content-center">
+                                        <img 
+                                            src={pub.image} 
+                                            alt={pub.category} 
+                                            style={{
+                                                width: '100%',
+                                                maxWidth: '500px',
+                                                height: '300px', 
+                                                objectFit: 'cover',
+                                                borderRadius: '8px',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                            }} 
+                                        />
+                                    </div>
                                 )}
-                                <div className="card-body">
-                                    <span className="badge bg-secondary mb-2">{pub.category}</span>
-                                    <h5 className="card-title">{pub.type === 'lost' ? '🔴 Smarrito' : '🟢 Ritrovato'}</h5>
-                                    <p className="card-text">{pub.description}</p>
-                                    <p className="text-muted small">Data: {new Date(pub.date).toLocaleDateString()}</p>
-                                </div>
-                                <div className="card-footer d-flex justify-content-between">
-                                    <button className="btn btn-sm btn-outline-info">Dettagli</button>
-                                    <span className={`text-${pub.state === 'resolved' ? 'success' : 'warning'}`}>
-                                        {pub.state === 'resolved' ? 'Risolto' : 'Attivo'}
-                                    </span>
+
+                                <div className="card-body p-0">
+                                    {/* Categoria in grigio (stile Home) */}
+                                    <p className="text-muted text-uppercase small mb-2" style={{ letterSpacing: '1px' }}>
+                                        {pub.category}
+                                    </p>
+
+                                    {/* Status con pallino colorato */}
+                                    <div className="mb-2">
+                                        {pub.type === 'lost' ? (
+                                            <span><span style={{color: '#dc3545'}}>●</span> Smarrito</span>
+                                        ) : (
+                                            <span><span style={{color: '#28a745'}}>●</span> Ritrovato</span>
+                                        )}
+                                    </div>
+
+                                    {/* Titolo/Descrizione principale */}
+                                    <h4 className="card-title mb-1" style={{ color: '#555' }}>{pub.description}</h4>
+                                    
+                                    {/* Data formattata leggermente */}
+                                    <p className="text-muted mb-3">
+                                        Data: {new Date(pub.date).toLocaleDateString('it-IT')}
+                                    </p>
+
+                                    {/* Badge di Stato (Attivo/Risolto) */}
+                                    <div className="mb-3">
+                                        <span className={`badge rounded-pill ${pub.state === 'resolved' ? 'bg-success' : 'bg-secondary'}`} style={{ padding: '8px 15px' }}>
+                                            {pub.state === 'resolved' ? 'Risolto' : 'Attivo'}
+                                        </span>
+                                    </div>
+
+                                    {/* Pulsante Dettagli stile DoloLost */}
+                                    <button className="btn btn-dark px-4 py-2" style={{ borderRadius: '5px' }}>
+                                        Dettagli
+                                    </button>
                                 </div>
                             </div>
+                            {/* Separatore orizzontale opzionale tra card */}
+                            <hr className="mt-5 w-50 mx-auto" style={{ opacity: '0.1' }} />
                         </div>
                     ))}
                 </div>
