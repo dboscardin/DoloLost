@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 
 const PropriePub = (props) => {
     const [publications, setPublications] = useState([]);
@@ -75,7 +77,9 @@ const PropriePub = (props) => {
                 </div>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
-                <button style={btnStyle}>Dettagli</button>
+                <Link to={`/modificaPub/${publication._id}`} style={{ color: "#4f46e5", fontWeight: "bold" }}>
+                  Modifica Pubblicazione
+                </Link>
 
                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
                 <div style={{ fontSize: '12px', color: '#888' }}>📅 {new Date(publication.date).toLocaleDateString('it-IT')}</div>
@@ -85,12 +89,23 @@ const PropriePub = (props) => {
         </div>
                 )
              }
+
+
+
+
+
+
+            
        </div>
-    );
+    
+  
+  
+  );
 };
 
 const cardStyle = { backgroundColor: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' };
 const imageStyle = { width: '100%', height: '220px', objectFit: 'cover' };
 const badgeStyle = { padding: '5px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
 const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
+const placeholderStyle = { width: '100%', height: '220px', backgroundColor: '#f0f0f0', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#999' };
 export default PropriePub;

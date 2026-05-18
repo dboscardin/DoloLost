@@ -12,9 +12,9 @@ const [errText, setErrText] = useState("");
 
 const sendSignUpInfo = async (e) => {
     e.preventDefault();
-    console.log("submit partito");
+    //console.log("submit partito");
 
-    //if (!validateForm()) return;
+    
 
     try {
         const response = await fetch("/api/v2/users/", {
@@ -32,16 +32,16 @@ const sendSignUpInfo = async (e) => {
         }),
     });
 
-    console.log("response arrivata", response);
+    //console.log("response arrivata", response);
     const data = await response.json();
-    console.log("data ricevuti", data);
+    //console.log("data ricevuti", data);
 
     if (!response.ok) {
         setErrText(data.message)
         throw new Error(data.message || "Errore nella registrazione");
     }
 
-    console.log("Signup OK:", data);
+    //console.log("Signup OK:", data);
 
     const params = new URLSearchParams({
         token: data.token,

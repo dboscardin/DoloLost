@@ -2,7 +2,7 @@ import React, { useState/*, useEffect*/} from "react";
 //import bcrypt from "bcryptjs";
 
 const CreaPub = (props) => {
-  const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", , "altro"];
+  const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("altro")
   const [notes, setNotes] = useState("")
