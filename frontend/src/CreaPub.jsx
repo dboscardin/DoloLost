@@ -9,10 +9,11 @@ const CreaPub = (props) => {
   const [image, setImage] = useState("https://images.pexels.com/photos/4568373/pexels-photo-4568373.jpeg");
   const [date, setDate] = useState((new Date()).getFullYear() + "-" + String((new Date()).getMonth() + 1).padStart(2,0) + "-" + String((new Date()).getDate()).padStart(2,0))
   const [type, setType] = useState("found")
+  const [errText, setErrText] = useState("")
 
   const sendInfo = (e) => {
     e.preventDefault()
-    console.log(description, category, notes, image,date, type, props.token)
+    //console.log(description, category, notes, image,date, type, props.token)
     fetch("/api/v2/publications", {
       method: "POST",
       headers: {
@@ -27,8 +28,18 @@ const CreaPub = (props) => {
         "date": date,
         "type": type
       })
+    }).then(response => {
+      return response.json()
+    }).then(data => {
+      let success = data.success
+      if(!success){
+        setErrText(data.error)
+        return
+      }
+      window.location.href="/"
     })
   }
+
   if(!props.token){
     return(
       <p>Sessione Scaduta. Effettua di nuovo il login.</p>
@@ -38,6 +49,7 @@ const CreaPub = (props) => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Creazione Pubblicazione</h2>
+        <p style={styles.info}>{errText}</p>
         <form onSubmit={sendInfo} style={styles.form}>
           <label htmlFor="description" style={styles.label}>Descrizione:</label>
           <textarea
@@ -115,6 +127,9 @@ const styles = {
     marginTop: "0.25rem",
     color: "#300818",
     fontWeight: "bold"
+  },
+  info: {
+    marginBottom: "0.75rem"
   }
 };
 
