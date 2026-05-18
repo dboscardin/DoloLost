@@ -27,11 +27,11 @@ const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbiglia
 
 router.use('', async (req, res, next) => {
     let pubs = Publication.find().populate('user');
-    if(!pubs){
+   /* if(!pubs){
         res.status(404).send();
         console.log("Nessuna pubblicazione trovata");
         return;
-    }
+    }*/
     req["pubs"] = pubs;
     //console.log("Use Pubblicazioni");
     next();

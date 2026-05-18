@@ -4,10 +4,9 @@ info:
   description: Api per progetto DoloLost
   version: '2.0'
 servers:
-  - url: http://localhost:8080/api/v1
-    description: Api v1 in localhost
-  - url: http://localhost:8080/api/v2
-    description: Api v2 in localhost
+  - url: http://localhost:8080
+    description: Api  in localhost
+
 paths:
   /api/v1/publications:
     get:
@@ -223,7 +222,7 @@ paths:
                     type: string
                     description: 'JWT token'
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserRegisterInput'
         '400':
           description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
         '500':
@@ -290,8 +289,10 @@ paths:
           description: Utente non trovato
 
 
+
   /api/v2/publications:
     get:
+
       summary: Tutte le pubblicazioni
       description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
       parameters:
@@ -305,6 +306,7 @@ paths:
           description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
+            enum: [accessori, elettronica, documenti, chiavi, abbigliamento, borse e zaini, animali, altro]
         - in: query
           name: type
           description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
@@ -331,33 +333,6 @@ paths:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
-  /api/v1/publications/{id}:
-    get:
-      summary: Recupera una singola pubblicazione tramite ID
-      description: Restituisce i dettagli completi di una specifica pubblicazione (segnalazione) identificata dal suo ID univoco.
-      tags:
-        - Publications
-      security:
-        - tokenAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: L'ID della pubblicazione da recuperare
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Dettagli della pubblicazione recuperati con successo
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/Publication'
-        '401':
-          description: Token mancante o non valido (Errore restituito dal tokenChecker)
-        '404':
-          description: Pubblicazione non trovata nel database
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
@@ -410,6 +385,32 @@ paths:
           description: Token mancante o non valido (gestito dal tokenChecker)
         '500':
           description: Errore interno del server durante la creazione
+  /api/v2/publications/{id}:
+    get:
+      summary: Recupera una singola pubblicazione tramite ID
+      description: Restituisce i dettagli completi di una specifica pubblicazione (segnalazione) identificata dal suo ID univoco.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID della pubblicazione da recuperare
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli della pubblicazione recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+        '401':
+          description: Token mancante o non valido (Errore restituito dal tokenChecker)
+        '404':
+          description: Pubblicazione non trovata nel database 
   /api/v2/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -469,8 +470,6 @@ paths:
                   $ref: '#/components/schemas/Publication'
         '401':
           description: Token mancante o non valido
-        '404':
-          description: Nessuna pubblicazione trovata
         '500':
           description: Errore interno del server
   /api/v2/users:
@@ -482,7 +481,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Publication'
+              $ref: '#/components/schemas/UserRegisterInput'
       responses:
         '201':
           description: Registrazione completata con successo
@@ -498,7 +497,7 @@ paths:
                     type: string
                     description: 'JWT token'
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserResponse'
         '400':
           description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
         '500':
@@ -632,7 +631,7 @@ components:
           type: string
           description: 'ObjectId dello User'
 
-    User:
+    UserRegisterInput:
       type: object
       required:
         - username
@@ -640,18 +639,50 @@ components:
         - name
         - surname
         - role
+        - email
       properties:
         username:
           type: string
-          description: 'Username unico dell utente'
+          description: 'Username unico che l''utente desidera registrare'
         password:
           type: string
           minLength: 8
-          description: 'Password'
+          description: 'Password di accesso (minimo 8 caratteri)'
         email:
           type: string
           format: email
-          description: 'Indirizzo email (solo se il ruolo è "user")'
+          description: 'Indirizzo email associato al profilo'
+        name:
+          type: string
+          description: 'Nome dell''utente'
+        surname:
+          type: string
+          description: 'Cognome dell''utente'
+        role:
+          type: string
+          enum: [user, admin]
+          default: user
+          description: 'Ruolo dell''utente in fase di registrazione'
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - username
+        - name
+        - surname
+        - role
+      properties:
+        id:
+          type: string
+          description: 'ID univoco dell''utente generato dal sistema (es. ObjectId)'
+        username:
+          type: string
+          description: 'Username dell''utente'
+        email:
+          type: string
+          format: email
+          description: 'Indirizzo email dell''utente'
         name:
           type: string
           description: 'Nome'
@@ -661,5 +692,3 @@ components:
         role:
           type: string
           enum: [user, admin]
-          default: user
-          description: 'Ruolo dell utente'
