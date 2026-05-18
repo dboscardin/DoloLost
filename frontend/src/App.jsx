@@ -6,6 +6,8 @@ import UserLogin from './UserLogin.jsx'
 import UserSignUp from './UserSignUp.jsx'
 import PropriePub from './PropriePub.jsx'
 import CreaPub from './CreaPub.jsx'
+import ModificaPub from './ModificaPub.jsx'
+
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -225,6 +227,7 @@ const token = searchParams.get("token")
         <Route path="/userSignUp" element={<UserSignUp />} />
         <Route path="/propriePub" element={<PropriePub  token={token} />} />
         <Route path="/creaPub" element={<CreaPub token={token}/>} />
+        <Route path="/modificaPub/:pubId" element={<ModificaPub token={token} />} />
       </Routes>
     </div>
   )

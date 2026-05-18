@@ -7,7 +7,18 @@ const router = express.Router();
 
 
 
+/*
+output messages
+get 200
+post 201
+put 200 -> con obj, 204 -> no obj
+delete 200 -> conferma, 204 -> no body
 
+400 bad input
+401/403 errori di autenticazione
+404 obj non trovato
+500 problema interno server
+*/
 
 //aggiungere qui le route per le pubblicazioni
 //TENERE IN MINUSCOLO !!!!!!!
@@ -16,11 +27,11 @@ const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbiglia
 
 router.use('', async (req, res, next) => {
     let pubs = Publication.find().populate('user');
-    if(!pubs){
+   /* if(!pubs){
         res.status(404).send();
         console.log("Nessuna pubblicazione trovata");
         return;
-    }
+    }*/
     req["pubs"] = pubs;
     //console.log("Use Pubblicazioni");
     next();
@@ -125,7 +136,7 @@ router.post('', tokenChecker ,async(req, res) => {
 
     }
     catch (error) {
-        console.error("Errore signup:", error);
+        console.error("Errore creazione:", error);
         res.status(500).json({
             success: false,
             message: "Errore nella creazione pubblicazione",
@@ -136,8 +147,82 @@ router.post('', tokenChecker ,async(req, res) => {
     return;
 })
 
+router.put('/:id', tokenChecker,async(req, res) => {
+    try {
+       
+        const user = req.loggedUser.id;
+        const publication = await Publication.findById(req.params.id);
+
+        if (!publication) {
+            return res.status(404).json({ error: "Pubblicazione non trovata." });
+        }
+        
+        //controllo che la pub sia dell'user o chiamata da un admin
+        if (publication.user.toString() !== user && req.loggedUser.role !== "admin") {
+            return res.status(403).json({ error: "Non sei autorizzato a modificare questa pubblicazione." });
+        }
+
+        const { description, category, notes, image, date, type, state } = req.body;
+
+        if (description) {
+            if (description.trim().length < 5 || description.length > 500) {
+                return res.status(400).json({ error: "La descrizione deve essere tra 5 e 500 caratteri." });
+            }
+            publication.description = description;
+        }
+
+        if (category) {
+            if (!categories.includes(category.toLowerCase())) {
+                return res.status(400).json({ error: "Categoria non valida." });
+            }
+            publication.category = category;
+        }
+
+        if (date) {
+            const eventDate = new Date(date);
+            if (isNaN(eventDate.getTime()) || eventDate > new Date()) {
+                return res.status(400).json({ error: "Data non valida o nel futuro." });
+            }
+            publication.date = date;
+        }
+
+        if (state) {
+            const validStates = ['unresolved', 'solved', 'decayed'];
+            if (!validStates.includes(state)) {
+                return res.status(400).json({ error: "Stato non valido (deve essere 'unresolved', 'solved', 'decayed')." });
+            }
+            publication.state = state;
+        }
+
+       
+        if (notes !== undefined) publication.notes = notes;
+        if (image !== undefined) publication.image = image;
+        if (type) publication.type = type;
+
+        
+        const updatedPub = await publication.save();
+
+        
+        res.status(200).json({
+            message: "Pubblicazione aggiornata con successo!",
+            publication: updatedPub
+        });
+
+    }
+    catch (error) {
+        console.error("Errore modifica:", error);
+        res.status(500).json({
+            message: "Errore nella modifica pubblicazione",
+            error: error.message
+        });
+    };
+
+    return;
+})
+
 
 router.use('/:id', tokenChecker , async (req, res, next) => {
+    //se entra in questa route perchè crede che /attive sia l'id va avanti
     if (req.params.id === 'attive') return next();
     let pub = await Publication.findById(req.params.id).exec();
     if (!pub) {
@@ -146,8 +231,7 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
         return;
     }
     
-    console.log("id")
-    //console.log(req.params.id)
+    
     req['pub'] = pub;
     next()
 });

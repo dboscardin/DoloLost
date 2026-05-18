@@ -221,7 +221,7 @@ paths:
                     type: string
                     description: 'JWT token'
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserRegisterInput'
         '400':
           description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
         '500':
@@ -288,8 +288,10 @@ paths:
           description: Utente non trovato
 
 
+
   /api/v2/publications:
     get:
+
       summary: Tutte le pubblicazioni
       description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
       parameters:
@@ -303,6 +305,7 @@ paths:
           description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
+            enum: [accessori, elettronica, documenti, chiavi, abbigliamento, borse e zaini, animali, altro]
         - in: query
           name: type
           description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
@@ -381,6 +384,114 @@ paths:
           description: Token mancante o non valido (gestito dal tokenChecker)
         '500':
           description: Errore interno del server durante la creazione
+  /api/v2/publications/{id}:
+    get:
+      summary: Recupera una singola pubblicazione tramite ID
+      description: Restituisce i dettagli completi di una specifica pubblicazione (segnalazione) identificata dal suo ID univoco.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID della pubblicazione da recuperare
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli della pubblicazione recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+        '401':
+          description: Token mancante o non valido (Errore restituito dal tokenChecker)
+        '404':
+          description: Pubblicazione non trovata nel database 
+    put:
+      summary: Modifica una pubblicazione esistente
+      description: Consente all'autore originale della pubblicazione o a un utente con ruolo 'admin' di aggiornare i campi di una segnalazione
+      security:
+        - XAccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID univoco della pubblicazione da modificare
+          schema:
+            type: string
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: I campi inviati nel body sono facoltativi
+                properties:
+                  description:
+                    type: string
+                    minLength: 5
+                    maxLength: 500
+                  category:
+                    type: string
+                  date:
+                    type: string
+                    format: date-time
+                  state:
+                    type: string
+                    enum: [unresolved, solved, decayed]
+                  notes:
+                    type: string
+                  image:
+                    type: string
+                  type:
+                    type: string
+                    enum: [lost, found]
+      responses:
+          '200':
+            description: Pubblicazione aggiornata con successo
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    publication:
+                      $ref: '#/components/schemas/Publication'
+          '400':
+            description: Errore di validazione nei dati inviati
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '401':
+            description: Token x-access-token mancante o non valido
+          '403':
+            description: Utente non autorizzato 
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '404':
+            description: La pubblicazione non esiste.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '500':
+            description: Errore interno del server.
   /api/v2/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -440,8 +551,6 @@ paths:
                   $ref: '#/components/schemas/Publication'
         '401':
           description: Token mancante o non valido
-        '404':
-          description: Nessuna pubblicazione trovata
         '500':
           description: Errore interno del server
   /api/v2/users:
@@ -453,40 +562,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - name
-                - surname
-                - username
-                - email
-                - password
-                - role
-              properties:
-                name:
-                  type: string
-                  description: Nome dell'utente
-                  example: Mario
-                surname:
-                  type: string
-                  description: Cognome dell'utente
-                  example: Rossi
-                username:
-                  type: string
-                  description: Username del profilo che l'utente desidera registrare
-                  example: SuperUtente123
-                email:
-                  type: string
-                  format: email
-                  description: Email associata al profilo
-                  example: mario.rossi@email.com
-                password:
-                  type: string
-                  minLength: 8
-                  description: Password che verrà usata per accedere al profilo
-                  example: Pass-Word.123@
-                role:
-                  type: string
-                  enum: [user]       
+              $ref: '#/components/schemas/UserRegisterInput'
       responses:
         '201':
           description: Registrazione completata con successo
@@ -502,7 +578,7 @@ paths:
                     type: string
                     description: 'JWT token'
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: '#/components/schemas/UserResponse'
         '400':
           description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
         '500':
@@ -636,7 +712,7 @@ components:
           type: string
           description: 'ObjectId dello User'
 
-    User:
+    UserRegisterInput:
       type: object
       required:
         - username
@@ -644,16 +720,50 @@ components:
         - name
         - surname
         - role
+        - email
       properties:
         username:
           type: string
-          description: 'Username unico dell utente'
+          description: 'Username unico che l''utente desidera registrare'
         password:
           type: string
-          description: 'Password'
+          minLength: 8
+          description: 'Password di accesso (minimo 8 caratteri)'
         email:
           type: string
-          description: 'Indirizzo email (solo se il ruolo è "user")'
+          format: email
+          description: 'Indirizzo email associato al profilo'
+        name:
+          type: string
+          description: 'Nome dell''utente'
+        surname:
+          type: string
+          description: 'Cognome dell''utente'
+        role:
+          type: string
+          enum: [user, admin]
+          default: user
+          description: 'Ruolo dell''utente in fase di registrazione'
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - username
+        - name
+        - surname
+        - role
+      properties:
+        id:
+          type: string
+          description: 'ID univoco dell''utente generato dal sistema (es. ObjectId)'
+        username:
+          type: string
+          description: 'Username dell''utente'
+        email:
+          type: string
+          format: email
+          description: 'Indirizzo email dell''utente'
         name:
           type: string
           description: 'Nome'
@@ -663,5 +773,3 @@ components:
         role:
           type: string
           enum: [user, admin]
-          default: user
-          description: 'Ruolo dell utente'

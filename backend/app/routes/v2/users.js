@@ -7,8 +7,18 @@ const router = express.Router();
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
 
-//aggiungere qui le route per le pubblicazioni
+/*
+output messages
+get 200
+post 201
+put 200 -> con obj, 204 -> no obj
+delete 200 -> conferma, 204 -> no body
 
+400 bad input
+401/403 errori di autenticazione
+404 obj non trovato
+500 problema interno server
+*/
 router.post("/", async (req, res) => {
 
     try {
