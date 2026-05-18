@@ -89,26 +89,26 @@ router.post('', tokenChecker ,async(req, res) => {
 
        
         if (!description || description.trim().length < 5) {
-            return res.status(400).json({ error: "La descrizione deve essere di almeno 5 caratteri." });
+            return res.status(400).json({success: false, error: "La descrizione deve essere di almeno 5 caratteri." });
         }
         if (description.length > 500) {
-            return res.status(400).json({ error: "La descrizione è troppo lunga (max 500 caratteri)." });
+            return res.status(400).json({success: false, error: "La descrizione è troppo lunga (max 500 caratteri)." });
         }
 
         if (!category || !categories.includes(category.toLowerCase())) {
-            return res.status(400).json({ error: "Categoria non valida" });
+            return res.status(400).json({success: false, error: "Categoria non valida" });
         }
 
         if (notes && notes.length > 1000) {
-            return res.status(400).json({ error: "Le note non possono superare i 1000 caratteri." });
+            return res.status(400).json({success: false, error: "Le note non possono superare i 1000 caratteri." });
         }
 
         const eventDate = new Date(date);
         if (!date || isNaN(eventDate.getTime())) {
-            return res.status(400).json({ error: "Data non valida o mancante." });
+            return res.status(400).json({success: false, error: "Data non valida o mancante." });
         }
         if (eventDate > new Date()) {
-            return res.status(400).json({ error: "La data non può essere nel futuro." });
+            return res.status(400).json({success: false, error: "La data non può essere nel futuro." });
         }
 
 
@@ -121,12 +121,13 @@ router.post('', tokenChecker ,async(req, res) => {
 
         //togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
         //res.location("/api/v1/publications/" + pubId).status(201).send();
-        res.status(201).send();
+        res.status(201).json({success: true});
 
     }
     catch (error) {
         console.error("Errore signup:", error);
         res.status(500).json({
+            success: false,
             message: "Errore nella creazione pubblicazione",
             error: error.message
         });

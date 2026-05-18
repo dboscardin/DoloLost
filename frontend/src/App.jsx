@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import {useCookies} from "react-cookie"
 import './App.css'
 import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
@@ -113,6 +114,9 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
 
 
 function App() {
+
+  const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
+
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -153,15 +157,14 @@ function App() {
   // Carica i dati all'avvio
   useEffect(() => {
     
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenParam = urlParams.get('token');
-   
+    const urlParams = cookies.userCookies? cookies.userCookies: {token: false};
+    const tokenParam = urlParams.token
     if (tokenParam) {
       setToken(tokenParam);
       setUserData({
-        username: urlParams.get('username'),
-        name: urlParams.get('name'),
-        id: urlParams.get('id')
+        username: urlParams.username,
+        name: urlParams.name,
+        id: urlParams.id
       });
 
       }
@@ -174,9 +177,7 @@ function App() {
   };
   const logout = () => {
 
-    localStorage.clear(); 
-
-  
+    removeCookies("userCookies") 
     setToken(null);
     setUserData(null);
     

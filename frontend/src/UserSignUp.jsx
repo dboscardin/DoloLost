@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import {useCookies} from "react-cookie"
 const UserSignUp = () => {
 const [name, setName] = useState("");
 const [surname, setSurname] = useState("");
@@ -7,6 +7,7 @@ const [username, setUsername] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [errText, setErrText] = useState("");
+const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
 /*const [errors, setErrors] = useState({});*/
 
 
@@ -43,6 +44,7 @@ const sendSignUpInfo = async (e) => {
 
     //console.log("Signup OK:", data);
 
+    /*
     const params = new URLSearchParams({
         token: data.token,
         username: data.user.username,
@@ -50,7 +52,14 @@ const sendSignUpInfo = async (e) => {
         id: data.user.id,
         role: data.user.role,
     });
-    window.location.href = "/?" + params.toString();
+    */
+    setCookies("userCookies", {
+      token: data.token, 
+      username: data.user.username,
+      name: data.user.name,
+      id: data.user.id,
+      role: data.user.role}, {path: "/", sameSite: "strict"})
+    window.location.href = "/"
 
   } catch (error) {
     console.error(error.message);

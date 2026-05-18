@@ -1,7 +1,15 @@
-import /*React,*/ { useState/*, useEffect*/} from "react";
+import /*React,*/ { useState, useEffect} from "react";
+import {useCookies} from "react-cookie";
 //import bcrypt from "bcryptjs";
 
 const UserLogin = () => {
+
+  const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
+  useEffect(() => {
+    removeCookies("userCookies")
+  }, [])
+
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errText, setErrText] = useState("");
@@ -31,9 +39,15 @@ const UserLogin = () => {
         setErrText(data.message)
         return
       }
-      let ref = "/?token="+data.token+"&username="+data.username+"&name="+data.name+"&id="+data.id+"&role="+data.role
-      window.location.href = ref
+      setCookies("userCookies", {
+        token: data.token,
+        username: data.username,
+        name: data.name,
+        id: data.id,
+        role: data.role}, {path: "/", sameSite: "strict"})
+      window.location.href = "/"
     })
+
   };
 
   return (

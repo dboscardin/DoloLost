@@ -4,8 +4,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 const router = express.Router();
 
-
-
 router.post('', async function(req, res) {
     try {
         let user = await User.findOne({ username: req.body.username }).exec()

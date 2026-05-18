@@ -5,8 +5,7 @@ info:
   version: '2.0'
 servers:
   - url: http://localhost:8080
-    description: Api  in localhost
-
+    description: Api in localhost
 paths:
   /api/v1/publications:
     get:
