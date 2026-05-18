@@ -411,6 +411,88 @@ paths:
           description: Token mancante o non valido (Errore restituito dal tokenChecker)
         '404':
           description: Pubblicazione non trovata nel database 
+    put:
+      summary: Modifica una pubblicazione esistente
+      description: Consente all'autore originale della pubblicazione o a un utente con ruolo 'admin' di aggiornare i campi di una segnalazione
+      security:
+        - XAccessTokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID univoco della pubblicazione da modificare
+          schema:
+            type: string
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                description: I campi inviati nel body sono facoltativi
+                properties:
+                  description:
+                    type: string
+                    minLength: 5
+                    maxLength: 500
+                  category:
+                    type: string
+                  date:
+                    type: string
+                    format: date-time
+                  state:
+                    type: string
+                    enum: [unresolved, solved, decayed]
+                  notes:
+                    type: string
+                  image:
+                    type: string
+                  type:
+                    type: string
+                    enum: [lost, found]
+      responses:
+          '200':
+            description: Pubblicazione aggiornata con successo
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    publication:
+                      $ref: '#/components/schemas/Publication'
+          '400':
+            description: Errore di validazione nei dati inviati
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '401':
+            description: Token x-access-token mancante o non valido
+          '403':
+            description: Utente non autorizzato 
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '404':
+            description: La pubblicazione non esiste.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '500':
+            description: Errore interno del server.
   /api/v2/publications/attive:
     get:
       summary: Pubblicazioni attive

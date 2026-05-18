@@ -147,8 +147,6 @@ router.post('', tokenChecker ,async(req, res) => {
 })
 
 router.put('/:id', tokenChecker,async(req, res) => {
-    
-   
     try {
        
         const user = req.loggedUser.id;
@@ -190,7 +188,7 @@ router.put('/:id', tokenChecker,async(req, res) => {
         if (state) {
             const validStates = ['unresolved', 'solved', 'decayed'];
             if (!validStates.includes(state)) {
-                return res.status(400).json({ error: "Stato non valido (deve essere 'unresolved', 'resolved', 'decayed')." });
+                return res.status(400).json({ error: "Stato non valido (deve essere 'unresolved', 'solved', 'decayed')." });
             }
             publication.state = state;
         }
