@@ -331,6 +331,33 @@ paths:
                type: array
                items:
                 $ref: '#/components/schemas/Publication'
+  /api/v1/publications/{id}:
+    get:
+      summary: Recupera una singola pubblicazione tramite ID
+      description: Restituisce i dettagli completi di una specifica pubblicazione (segnalazione) identificata dal suo ID univoco.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID della pubblicazione da recuperare
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dettagli della pubblicazione recuperati con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Publication'
+        '401':
+          description: Token mancante o non valido (Errore restituito dal tokenChecker)
+        '404':
+          description: Pubblicazione non trovata nel database
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
@@ -455,40 +482,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - name
-                - surname
-                - username
-                - email
-                - password
-                - role
-              properties:
-                name:
-                  type: string
-                  description: Nome dell'utente
-                  example: Mario
-                surname:
-                  type: string
-                  description: Cognome dell'utente
-                  example: Rossi
-                username:
-                  type: string
-                  description: Username del profilo che l'utente desidera registrare
-                  example: SuperUtente123
-                email:
-                  type: string
-                  format: email
-                  description: Email associata al profilo
-                  example: mario.rossi@email.com
-                password:
-                  type: string
-                  minLength: 8
-                  description: Password che verrà usata per accedere al profilo
-                  example: Pass-Word.123@
-                role:
-                  type: string
-                  enum: [user]       
+              $ref: '#/components/schemas/Publication'
       responses:
         '201':
           description: Registrazione completata con successo
@@ -652,9 +646,11 @@ components:
           description: 'Username unico dell utente'
         password:
           type: string
+          minLength: 8
           description: 'Password'
         email:
           type: string
+          format: email
           description: 'Indirizzo email (solo se il ruolo è "user")'
         name:
           type: string
