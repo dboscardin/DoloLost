@@ -30,7 +30,7 @@ router.post('', async function(req, res) {
             role: user.role,
         }
         const options = { expiresIn: 3600 } // expires in 1 hour
-        console.log("Token creato");
+       // console.log("Token creato");
         const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
         //dati in chiaro
