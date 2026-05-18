@@ -155,9 +155,8 @@ function App() {
   // Carica i dati all'avvio
   useEffect(() => {
     
-    const urlParams = cookies.userCookies;
-    const tokenParam = urlParams.token;
-   
+    const urlParams = cookies.userCookies? cookies.userCookies: {token: false};
+    const tokenParam = urlParams.token
     if (tokenParam) {
       setToken(tokenParam);
       setUserData({
@@ -176,9 +175,7 @@ function App() {
   };
   const logout = () => {
 
-    localStorage.clear(); 
-
-  
+    removeCookies("userCookies") 
     setToken(null);
     setUserData(null);
     

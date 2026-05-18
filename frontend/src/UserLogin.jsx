@@ -43,9 +43,11 @@ const UserLogin = () => {
         token: data.token,
         username: data.username,
         name: data.name,
-        role: data.role}, {path: "/", sameSite: "strict", httpOnly: true})
+        id: data.id,
+        role: data.role}, {path: "/", sameSite: "strict"})
       window.location.href = "/"
     })
+
   };
 
   return (
