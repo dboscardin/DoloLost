@@ -1,25 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-async function updatePublication(publicationId, updatedData, token) {
-  if (!token) throw new Error("Autenticazione richiesta");
 
-  const response = await fetch(`/api/v2/publications/${publicationId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-access-token': token
-    },
-    body: JSON.stringify(updatedData)
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({})); 
-    throw new Error(errorData.message || `Errore HTTP: ${response.status}`);
-  }
-
-  return await response.json();
-}
 
 
 const ModificaPub = (props) => {
@@ -33,7 +15,8 @@ const ModificaPub = (props) => {
     notes: "",
     image: "",
     date: "",
-    type: "found"
+    type: "found",
+    state: ""
   });
 
   
@@ -57,12 +40,13 @@ const ModificaPub = (props) => {
         const data = await response.json();
         
         setFormData({
-          description: data.description || "",
-          category: data.category || "altro",
-          notes: data.notes || "",
-          image: data.image || "",
-          date: data.date ? data.date.split('T')[0] : "",
-          type: data.type || "found"
+          description: data.description,
+          category: data.category,
+          notes: data.notes,
+          image: data.image,
+          date:data.date.split('T')[0],
+          type: data.type,
+          state: data.state
         });
       } catch (err) {
         setError(err.message);
@@ -86,14 +70,24 @@ const ModificaPub = (props) => {
     setSaving(true);
     setError(null);
     setSuccessMsg("");
-
     try {
-      
-      await updatePublication(pubId, formData, token);
-      setSuccessMsg("Pubblicazione aggiornata con successo!");
-      
+        const response = await fetch(`/api/v2/publications/${pubId}`, {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token
+        },
+        body: JSON.stringify(formData)
+        });
 
-      
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({})); 
+        throw new Error(errorData.message || `Errore HTTP: ${response.status}`);
+    }
+
+  await response.json();
+
+    setSuccessMsg("Pubblicazione aggiornata con successo!");  
     } catch (err) {
       setError(err.message);
     } finally {
@@ -127,7 +121,7 @@ const ModificaPub = (props) => {
           <label style={styles.label}>Categoria:</label>
           <select name="category" value={formData.category} onChange={handleChange} style={styles.input} required>
             {categories.map(c => (
-              <option key={c} value={c}>{c.toUpperCase()}</option>
+              <option key={c} value={c}>{c.toLowerCase()}</option>
             ))}
           </select>
           
@@ -150,7 +144,7 @@ const ModificaPub = (props) => {
                 value="found" 
                 checked={formData.type === "found"} 
                 onChange={handleChange} 
-              /> Trovato
+              /> Ritrovato
             </label>
             <label style={styles.radioLabel}>
               <input 
@@ -159,9 +153,43 @@ const ModificaPub = (props) => {
                 value="lost" 
                 checked={formData.type === "lost"} 
                 onChange={handleChange} 
-              /> Perduto
+              /> Smarrito
             </label>
           </div>
+
+            <label style={styles.label}>Stato della Segnalazione:</label>
+          <div style={styles.radioGroup}>
+            <label style={styles.radioLabel}>
+              <input 
+                type="radio" 
+                name="state" 
+                value="unresolved" 
+                checked={formData.state === "unresolved"} 
+                onChange={handleChange} 
+              /> Non risolto
+            </label>
+            <label style={styles.radioLabel}>
+              <input 
+                type="radio" 
+                name="state" 
+                value="solved" 
+                checked={formData.state === "solved"} 
+                onChange={handleChange} 
+              /> Risolto
+            </label>
+            <label style={styles.radioLabel}>
+              <input 
+                type="radio" 
+                name="state" 
+                value="decayed" 
+                checked={formData.state === "decayed"} 
+                onChange={handleChange} 
+              /> Decaduto
+            </label>
+          </div>
+
+
+
           
           <label style={styles.label}>Note Aggiuntive:</label>
           <input 

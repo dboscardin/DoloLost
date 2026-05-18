@@ -188,7 +188,7 @@ router.put('/:id', tokenChecker,async(req, res) => {
         }
 
         if (state) {
-            const validStates = ['unresolved', 'resolved', 'decayed'];
+            const validStates = ['unresolved', 'solved', 'decayed'];
             if (!validStates.includes(state)) {
                 return res.status(400).json({ error: "Stato non valido (deve essere 'unresolved', 'resolved', 'decayed')." });
             }
