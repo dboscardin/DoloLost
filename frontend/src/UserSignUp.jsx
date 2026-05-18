@@ -17,7 +17,7 @@ const sendSignUpInfo = async (e) => {
     //if (!validateForm()) return;
 
     try {
-        const response = await fetch("/api/v1/users/", {
+        const response = await fetch("/api/v2/users/", {
         method: "POST",
         headers: {
         "Content-Type": "application/json",
@@ -56,27 +56,6 @@ const sendSignUpInfo = async (e) => {
     console.error(error.message);
   }
 };
-
-/*const validateForm = () => {
-  const newErrors = {};
-  if (!name.trim()) newErrors.name = "Il nome è obbligatorio";
-  if (!surname.trim()) newErrors.surname = "Il cognome è obbligatorio";
-  if (!username.trim()) newErrors.username = "Lo username è obbligatorio";
-
-  if (!email.trim()) {
-    newErrors.email = "L'email è obbligatoria";
-  } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)) {
-    newErrors.email = "Inserisci un'email valida";
-  }
-  if (!password) {
-    newErrors.password = "La password è obbligatoria";
-  } else if (password.length < 8) {
-    newErrors.password = "La password deve contenere almeno 8 caratteri";
-  }
-
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};*/
 
   return (
     <div style={styles.container}>

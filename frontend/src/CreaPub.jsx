@@ -13,7 +13,7 @@ const CreaPub = (props) => {
   const sendInfo = (e) => {
     e.preventDefault()
     console.log(description, category, notes, image,date, type, props.token)
-    fetch("/api/v1/publications", {
+    fetch("/api/v2/publications", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

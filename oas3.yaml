@@ -287,7 +287,287 @@ paths:
         '404':
           description: Utente non trovato
 
-        
+
+  /api/v2/publications:
+    get:
+      summary: Tutte le pubblicazioni
+      description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
+      parameters:
+        - in: query
+          name: description
+          description: stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
+          
+      responses:
+        '200':
+          description: Collezione di pubblicazioni
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/Publication'
+    post:
+      summary: Crea una nuova pubblicazione
+      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - description
+                - category
+                - date
+                - type
+              properties:
+                description:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+                  example: "Ho smarrito un mazzo di chiavi vicino alla stazione"
+                category:
+                  type: string
+                  enum: [accessori, elettronica, documenti, chiavi, abbigliamento, "borse e zaini", animali, altro]
+                  example: "chiavi"
+                notes:
+                  type: string
+                  maxLength: 1000
+                  example: "Il mazzo ha un portachiavi a forma di gatto"
+                image:
+                  type: string
+                  description: URL o stringa base64 dell'immagine
+                date:
+                  type: string
+                  format: date-time
+                  description: La data dell'evento (non può essere nel futuro)
+                type:
+                  type: string
+                  enum: [lost, found]
+                  example: "lost"
+      responses:
+        '201':
+          description: Pubblicazione creata con successo
+        '400':
+          description: Errore di validazione (es. descrizione troppo corta, categoria non valida o data futura)
+        '401':
+          description: Token mancante o non valido (gestito dal tokenChecker)
+        '500':
+          description: Errore interno del server durante la creazione
+  /api/v2/publications/attive:
+    get:
+      summary: Pubblicazioni attive
+      description: Ottiene tutte le pubblicazioni attive
+      parameters:
+        - in: query
+          name: description
+          description: Stringa contenuta nel campo description
+          schema:
+            type: string
+        - in: query
+          name: category 
+          description: Stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          schema: 
+            type: string
+        - in: query
+          name: type
+          description: Tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          schema: 
+            type: string
+            enum: [lost, found]
+        - in: query
+          name: date_from
+          description: data da cui iniziare a filtrare le pubblicazioni
+          schema: 
+            type: string
+        - in: query
+          name: date_before
+          description: Data entro cui filtrare le pubblicazioni
+          schema: 
+            type: string
+      responses:
+        '200':
+          description: Collezione di pubblicazioni attive attualmente con relativi dati utente
+          content:
+           application/json:
+             schema:
+               type: array
+               items:
+                $ref: '#/components/schemas/Publication'
+  /api/v2/publications/proprie:
+    get:
+      summary: Recupera le pubblicazioni dell'utente autenticato
+      description: Restituisce un array di pubblicazioni create dall'utente identificato dal token JWT.
+      tags:
+        - Publications
+      security:
+        - tokenAuth: []  #definito sotto
+      responses:
+        '200':
+          description: Elenco delle pubblicazioni recuperato con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+        '401':
+          description: Token mancante o non valido
+        '404':
+          description: Nessuna pubblicazione trovata
+        '500':
+          description: Errore interno del server
+  /api/v2/users:
+    post:
+      summary: Registra un nuovo utente
+      description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - surname
+                - username
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                  description: Nome dell'utente
+                  example: Mario
+                surname:
+                  type: string
+                  description: Cognome dell'utente
+                  example: Rossi
+                username:
+                  type: string
+                  description: Username del profilo che l'utente desidera registrare
+                  example: SuperUtente123
+                email:
+                  type: string
+                  format: email
+                  description: Email associata al profilo
+                  example: mario.rossi@email.com
+                password:
+                  type: string
+                  minLength: 8
+                  description: Password che verrà usata per accedere al profilo
+                  example: Pass-Word.123@
+                role:
+                  type: string
+                  enum: [user]       
+      responses:
+        '201':
+          description: Registrazione completata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: registrazione completata
+                  token:
+                    type: string
+                    description: 'JWT token'
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
+        '500':
+          description: Errore sconosciuto nella registrazione
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Falso in caso di errore
+                  message:
+                    type: string
+                    example: Errore nella registrazione
+                  error:
+                    type: string
+                    description: Descrizione dell'errore
+  /api/v2/auth:
+    post:
+      summary: Autentica un utente e restituisce un JWT
+      description: Invia username e password per ricevere un token di accesso e i dettagli del profilo.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login effettuato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  token:
+                    type: string
+                    description: JWT con ruolo da usare nelle successive chiamate
+                  username:
+                    type: string
+                  role:
+                    type: string
+                    enum: [user, admin]
+                  id:
+                    type: string
+        '401':
+          description: Password errata
+         
+        '404':
+          description: Utente non trovato
+
 
 
 components: 

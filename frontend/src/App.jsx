@@ -136,7 +136,7 @@ function App() {
     
     const queryString = new URLSearchParams(activeFilters).toString();
     
-    fetch(`/api/v1/publications/attive?${queryString}`)
+    fetch(`/api/v2/publications/attive?${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         setPublications(data);

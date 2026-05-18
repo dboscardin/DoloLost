@@ -13,7 +13,7 @@ const UserLogin = () => {
 
     //chiamata API
     //const hashPassword = bcrypt.hash(password, 10) 
-    fetch("/api/v1/auth", {
+    fetch("/api/v2/auth", {
       method: "POST",
       headers: {
         "Content-Type" : "application/json",

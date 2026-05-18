@@ -11,7 +11,7 @@ const PropriePub = (props) => {
                 const token = props.token; 
                 if (!token) return;
 
-                const response = await fetch('/api/v1/publications/proprie', {
+                const response = await fetch('/api/v2/publications/proprie', {
                     method: 'GET',
                     headers: {
                         'x-access-token': token,
