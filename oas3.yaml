@@ -4,10 +4,8 @@ info:
   description: Api per progetto DoloLost
   version: '2.0'
 servers:
-  - url: http://localhost:8080/api/v1
-    description: Api v1 in localhost
-  - url: http://localhost:8080/api/v2
-    description: Api v2 in localhost
+  - url: http://localhost:8080
+    description: Api in localhost
 paths:
   /api/v1/publications:
     get:
