@@ -12,7 +12,8 @@ import adminChecker from '../middleware/adminChecker.js'
 router.post("/", async (req, res) => {
 
     try {
-        const { name, surname, username, email, password, role } = req.body;
+        const { name, surname, username, email, password } = req.body;
+        const role = "user"
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
         const existingUser = await User.findOne({

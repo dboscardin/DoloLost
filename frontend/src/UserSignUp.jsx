@@ -7,7 +7,6 @@ const [username, setUsername] = useState("");
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [errText, setErrText] = useState("");
-const role = "user";
 /*const [errors, setErrors] = useState({});*/
 
 
@@ -30,7 +29,6 @@ const sendSignUpInfo = async (e) => {
             username,
             email,
             password,
-            role,
         }),
     });
 
