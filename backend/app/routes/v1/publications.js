@@ -1,8 +1,8 @@
 import express from 'express';
-import Publication from '../models/publication.js'
-import User from '../models/user.js'
-import tokenChecker from '../middleware/tokenChecker.js'
-import adminChecker from '../middleware/adminChecker.js'
+import Publication from '../../models/publication.js'
+import User from '../../models/user.js'
+import tokenChecker from '../../middleware/tokenChecker.js'
+import adminChecker from '../../middleware/adminChecker.js'
 const router = express.Router();
 
 
