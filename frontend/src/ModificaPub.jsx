@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 
 const ModificaPub = (props) => {
-  const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
+  const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
 
   const { pubId } = useParams();
   const { token } = props;
@@ -121,7 +121,7 @@ const ModificaPub = (props) => {
           <label style={styles.label}>Categoria:</label>
           <select name="category" value={formData.category} onChange={handleChange} style={styles.input} required>
             {categories.map(c => (
-              <option key={c} value={c}>{c.toLowerCase()}</option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
           
@@ -215,86 +215,44 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "100vh",
-    backgroundColor: "#f3f4f6",
-    fontFamily: "Arial, sans-serif"
+    height: "100vh",
+    
   },
   card: {
     backgroundColor: "#ffffff",
     padding: "2rem",
     borderRadius: "12px",
-    boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: "400px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+    width: "350px",
+    textAlign: "center",
   },
   title: {
-    color: "#1f2937",
+    color: "#4f46e5",
     marginBottom: "1.5rem",
-    textAlign: "center"
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "1rem",
+    gap: "0.75rem",
   },
   input: {
     padding: "0.75rem",
-    borderRadius: "6px",
-    border: "1px solid #d1d5db",
-    fontSize: "1rem",
-    width: "100%",
-    boxSizing: "border-box"
-  },
-  radioGroup: {
-    display: "flex",
-    gap: "1.5rem",
-    padding: "0.5rem 0"
-  },
-  radioLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    cursor: "pointer"
+    borderRadius: "8px",
+    border: "1px solid #ccc",
   },
   button: {
-    marginTop: "1rem",
-    padding: "0.8rem",
-    borderRadius: "6px",
+    padding: "0.75rem",
+    borderRadius: "8px",
     border: "none",
     backgroundColor: "#4f46e5",
     color: "#ffffff",
     cursor: "pointer",
     fontWeight: "bold",
-    fontSize: "1rem",
-    transition: "background-color 0.2s"
   },
   label: {
-    color: "#4b5563",
-    fontWeight: "600",
-    fontSize: "0.9rem",
-    marginBottom: "-0.5rem"
-  },
-  message: {
-    textAlign: "center",
-    marginTop: "20vh",
-    fontSize: "1.2rem",
-    color: "#6b7280"
-  },
-  errorBox: {
-    backgroundColor: "#fee2e2",
-    color: "#b91c1c",
-    padding: "0.75rem",
-    borderRadius: "6px",
-    marginBottom: "1rem",
-    textAlign: "center"
-  },
-  successBox: {
-    backgroundColor: "#d1fae5",
-    color: "#047857",
-    padding: "0.75rem",
-    borderRadius: "6px",
-    marginBottom: "1rem",
-    textAlign: "center"
+    marginTop: "0.25rem",
+    color: "#300818",
+    fontWeight: "bold"
   }
 };
 
