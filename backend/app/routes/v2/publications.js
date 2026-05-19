@@ -27,13 +27,7 @@ const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbiglia
 
 router.use('', async (req, res, next) => {
     let pubs = Publication.find().populate('user');
-   /* if(!pubs){
-        res.status(404).send();
-        console.log("Nessuna pubblicazione trovata");
-        return;
-    }*/
     req["pubs"] = pubs;
-    //console.log("Use Pubblicazioni");
     next();
 });
 
@@ -132,7 +126,7 @@ router.post('', tokenChecker ,async(req, res) => {
 
         //togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
         //res.location("/api/v1/publications/" + pubId).status(201).send();
-        res.status(201).json({success: true});
+        res.status(201).json({success: true, message: "Pubblicazione creata con successo"});
 
     }
     catch (error) {

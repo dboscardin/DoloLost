@@ -19,7 +19,7 @@ paths:
             type: string
         - in: query
           name: category 
-          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          description: stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
         - in: query
@@ -38,16 +38,15 @@ paths:
           description: data entro cui filtrare le pubblicazioni
           schema: 
             type: string
-          
       responses:
         '200':
           description: Collezione di pubblicazioni
           content:
-           application/json:
-             schema:
-               type: array
-               items:
-                $ref: '#/components/schemas/Publication'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
@@ -100,6 +99,7 @@ paths:
           description: Token mancante o non valido (gestito dal tokenChecker)
         '500':
           description: Errore interno del server durante la creazione
+
   /api/v1/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -112,7 +112,7 @@ paths:
             type: string
         - in: query
           name: category 
-          description: Stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          description: Stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
         - in: query
@@ -135,11 +135,12 @@ paths:
         '200':
           description: Collezione di pubblicazioni attive attualmente con relativi dati utente
           content:
-           application/json:
-             schema:
-               type: array
-               items:
-                $ref: '#/components/schemas/Publication'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+
   /api/v1/publications/proprie:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato
@@ -147,7 +148,7 @@ paths:
       tags:
         - Publications
       security:
-        - tokenAuth: []  #definito sotto
+        - tokenAuth: []
       responses:
         '200':
           description: Elenco delle pubblicazioni recuperato con successo
@@ -163,6 +164,7 @@ paths:
           description: Nessuna pubblicazione trovata
         '500':
           description: Errore interno del server
+
   /api/v1/users:
     post:
       summary: Registra un nuovo utente
@@ -172,40 +174,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - name
-                - surname
-                - username
-                - email
-                - password
-                - role
-              properties:
-                name:
-                  type: string
-                  description: Nome dell'utente
-                  example: Mario
-                surname:
-                  type: string
-                  description: Cognome dell'utente
-                  example: Rossi
-                username:
-                  type: string
-                  description: Username del profilo che l'utente desidera registrare
-                  example: SuperUtente123
-                email:
-                  type: string
-                  format: email
-                  description: Email associata al profilo
-                  example: mario.rossi@email.com
-                password:
-                  type: string
-                  minLength: 8
-                  description: Password che verrà usata per accedere al profilo
-                  example: Pass-Word.123@
-                role:
-                  type: string
-                  enum: [user]       
+              $ref: '#/components/schemas/UserRegisterInput'
       responses:
         '201':
           description: Registrazione completata con successo
@@ -221,7 +190,7 @@ paths:
                     type: string
                     description: 'JWT token'
                   user:
-                    $ref: '#/components/schemas/UserRegisterInput'
+                    $ref: '#/components/schemas/UserResponse'
         '400':
           description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
         '500':
@@ -240,6 +209,7 @@ paths:
                   error:
                     type: string
                     description: Descrizione dell'errore
+
   /api/v1/auth:
     post:
       summary: Autentica un utente e restituisce un JWT
@@ -283,15 +253,14 @@ paths:
                     type: string
         '401':
           description: Password errata
-         
         '404':
           description: Utente non trovato
 
 
 
+
   /api/v2/publications:
     get:
-
       summary: Tutte le pubblicazioni
       description: Ottiene la lista tutte le pubblicazioni con relativi dati utente
       parameters:
@@ -302,10 +271,10 @@ paths:
             type: string
         - in: query
           name: category 
-          description: stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          description: stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
-            enum: [accessori, elettronica, documenti, chiavi, abbigliamento, borse e zaini, animali, altro]
+            enum: [accessori, elettronica, documenti, chiavi, abbigliamento, "borse e zaini", animali, altro]
         - in: query
           name: type
           description: tipologia della pubblicazione, può essere smarrimento o ritrovamento
@@ -322,16 +291,15 @@ paths:
           description: data entro cui filtrare le pubblicazioni
           schema: 
             type: string
-          
       responses:
         '200':
           description: Collezione di pubblicazioni
           content:
-           application/json:
-             schema:
-               type: array
-               items:
-                $ref: '#/components/schemas/Publication'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
@@ -384,6 +352,7 @@ paths:
           description: Token mancante o non valido (gestito dal tokenChecker)
         '500':
           description: Errore interno del server durante la creazione
+
   /api/v2/publications/{id}:
     get:
       summary: Recupera una singola pubblicazione tramite ID
@@ -414,7 +383,7 @@ paths:
       summary: Modifica una pubblicazione esistente
       description: Consente all'autore originale della pubblicazione o a un utente con ruolo 'admin' di aggiornare i campi di una segnalazione
       security:
-        - XAccessTokenAuth: []
+        - tokenAuth: []
       parameters:
         - name: id
           in: path
@@ -423,75 +392,76 @@ paths:
           schema:
             type: string
       requestBody:
-          required: true
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: I campi inviati nel body sono facoltativi
+              properties:
+                description:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+                category:
+                  type: string
+                date:
+                  type: string
+                  format: date-time
+                state:
+                  type: string
+                  enum: [unresolved, solved, decayed]
+                notes:
+                  type: string
+                image:
+                  type: string
+                type:
+                  type: string
+                  enum: [lost, found]
+      responses:
+        '200':
+          description: Pubblicazione aggiornata con successo
           content:
             application/json:
               schema:
                 type: object
-                description: I campi inviati nel body sono facoltativi
                 properties:
-                  description:
+                  message:
                     type: string
-                    minLength: 5
-                    maxLength: 500
-                  category:
+                  publication:
+                    $ref: '#/components/schemas/Publication'
+        '400':
+          description: Errore di validazione nei dati inviati
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
                     type: string
-                  date:
+        '401':
+          description: Token x-access-token mancante o non valido
+        '403':
+          description: Utente non autorizzato 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
                     type: string
-                    format: date-time
-                  state:
+        '404':
+          description: La pubblicazione non esiste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
                     type: string
-                    enum: [unresolved, solved, decayed]
-                  notes:
-                    type: string
-                  image:
-                    type: string
-                  type:
-                    type: string
-                    enum: [lost, found]
-      responses:
-          '200':
-            description: Pubblicazione aggiornata con successo
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                    publication:
-                      $ref: '#/components/schemas/Publication'
-          '400':
-            description: Errore di validazione nei dati inviati
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-          '401':
-            description: Token x-access-token mancante o non valido
-          '403':
-            description: Utente non autorizzato 
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-          '404':
-            description: La pubblicazione non esiste.
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    error:
-                      type: string
-          '500':
-            description: Errore interno del server.
+        '500':
+          description: Errore interno del server.
+
   /api/v2/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -504,7 +474,7 @@ paths:
             type: string
         - in: query
           name: category 
-          description: Stringa perfettamente uguale al campo category, l'utente doverbbe poterne selezionare solo alcune pre-stabilite
+          description: Stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
           schema: 
             type: string
         - in: query
@@ -527,11 +497,12 @@ paths:
         '200':
           description: Collezione di pubblicazioni attive attualmente con relativi dati utente
           content:
-           application/json:
-             schema:
-               type: array
-               items:
-                $ref: '#/components/schemas/Publication'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+
   /api/v2/publications/proprie:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato
@@ -539,7 +510,7 @@ paths:
       tags:
         - Publications
       security:
-        - tokenAuth: []  #definito sotto
+        - tokenAuth: []
       responses:
         '200':
           description: Elenco delle pubblicazioni recuperato con successo
@@ -553,6 +524,7 @@ paths:
           description: Token mancante o non valido
         '500':
           description: Errore interno del server
+
   /api/v2/users:
     post:
       summary: Registra un nuovo utente
@@ -597,6 +569,7 @@ paths:
                   error:
                     type: string
                     description: Descrizione dell'errore
+
   /api/v2/auth:
     post:
       summary: Autentica un utente e restituisce un JWT
@@ -640,14 +613,10 @@ paths:
                     type: string
         '401':
           description: Password errata
-         
         '404':
           description: Utente non trovato
 
-
-
 components: 
-
   securitySchemes:
     tokenAuth:
       type: apiKey
@@ -655,7 +624,6 @@ components:
       name: x-access-token
 
   schemas:
-
     Publication:
       type: object
       required:
@@ -675,7 +643,7 @@ components:
           description: 'Note aggiuntive'
         image:
           type: string
-          description: 'URL o percorso dell immagine'
+          description: 'URL o percorso dell''immagine'
         date:
           type: string
           format: date-time
@@ -773,3 +741,5 @@ components:
         role:
           type: string
           enum: [user, admin]
+
+          

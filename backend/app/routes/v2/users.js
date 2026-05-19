@@ -26,6 +26,28 @@ router.post("/", async (req, res) => {
         const role = "user"
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
+        if(!username){
+            return res.status(400).json({
+                message: "Username mancante",
+            });
+        }
+        if(!surname){
+            return res.status(400).json({
+                message: "Cognome mancante",
+            });
+        }
+        if(!name){
+            return res.status(400).json({
+                message: "Nome mancante",
+            });
+        }
+        if(!email){
+            return res.status(400).json({
+                message: "Email mancante",
+            });
+        }
+        
+
         const existingUser = await User.findOne({
             $or: [{email}, {username}],
         })
@@ -34,15 +56,18 @@ router.post("/", async (req, res) => {
             return res.status(400).json({
                 message: "Email o username già esistente",
             });
-        } else if(!emailRegex.test(email)) {
+        }
+        if(!emailRegex.test(email)) {
             return res.status(400).json({
                 message: "Email non valida",
-            });
-        } else if(password.length < 8) {
+            });}
+        if(!password || password.length < 8) {
             return res.status(400).json({
                 message: "La password deve contenere almeno 8 caratteri",
             });
         }
+    
+
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
