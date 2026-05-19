@@ -7,6 +7,7 @@ const router = express.Router();
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
 
+
 /*
 output messages
 get 200
@@ -19,6 +20,32 @@ delete 200 -> conferma, 204 -> no body
 404 obj non trovato
 500 problema interno server
 */
+router.use('/:id', async (req, res, next) => {
+   
+    let pub = await User.findById(req.params.id).exec();
+    if (!pub) {
+        res.status(404).send()
+        console.log('user not found')
+        return;
+    }
+    req['user'] = pub;
+    next()
+});
+
+router.get('/:id', async (req, res) => {
+    let user = req['user'];
+    res.status(200).json({
+        self: '/api/v2/pub/' + user._id,
+        _id: user._id,
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        role: user.role,
+        email: user.email
+    });
+});
+
+
 router.post("/", async (req, res) => {
 
     try {
