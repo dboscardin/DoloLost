@@ -7,7 +7,7 @@ import UserSignUp from './UserSignUp.jsx'
 import PropriePub from './PropriePub.jsx'
 import CreaPub from './CreaPub.jsx'
 import ModificaPub from './ModificaPub.jsx'
-
+import Contatto from './Contatto.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -98,8 +98,11 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
                     {publication.category}
                   </span>
                 </div>
+
+                <Link to={`/contatto/${publication.user._id}`}>
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
+                  </Link>
                 
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
@@ -228,6 +231,7 @@ const token = searchParams.get("token")
         <Route path="/propriePub" element={<PropriePub  token={token} />} />
         <Route path="/creaPub" element={<CreaPub token={token}/>} />
         <Route path="/modificaPub/:pubId" element={<ModificaPub token={token} />} />
+        <Route path="/contatto/:userId" element={<Contatto />} />
       </Routes>
     </div>
   )
