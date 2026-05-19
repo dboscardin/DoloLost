@@ -24,8 +24,8 @@ router.use('/:id', async (req, res, next) => {
    
     let pub = await User.findById(req.params.id).exec();
     if (!pub) {
-        res.status(404).send()
-        console.log('user not found')
+        res.status(404).json({error: "Utente non trovato" })
+        //console.log('user not found')
         return;
     }
     req['user'] = pub;
@@ -35,7 +35,7 @@ router.use('/:id', async (req, res, next) => {
 router.get('/:id', async (req, res) => {
     let user = req['user'];
     res.status(200).json({
-        self: '/api/v2/pub/' + user._id,
+        self: '/api/v2/users/' + user._id,
         _id: user._id,
         username: user.username,
         name: user.name,

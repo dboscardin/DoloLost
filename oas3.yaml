@@ -50,8 +50,6 @@ paths:
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
-      tags:
-        - Publications
       security:
         - tokenAuth: []
       requestBody:
@@ -145,8 +143,6 @@ paths:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato
       description: Restituisce un array di pubblicazioni create dall'utente identificato dal token JWT.
-      tags:
-        - Publications
       security:
         - tokenAuth: []
       responses:
@@ -303,8 +299,6 @@ paths:
     post:
       summary: Crea una nuova pubblicazione
       description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
-      tags:
-        - Publications
       security:
         - tokenAuth: []
       requestBody:
@@ -357,8 +351,6 @@ paths:
     get:
       summary: Recupera una singola pubblicazione tramite ID
       description: Restituisce i dettagli completi di una specifica pubblicazione (segnalazione) identificata dal suo ID univoco.
-      tags:
-        - Publications
       security:
         - tokenAuth: []
       parameters:
@@ -507,8 +499,6 @@ paths:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato
       description: Restituisce un array di pubblicazioni create dall'utente identificato dal token JWT.
-      tags:
-        - Publications
       security:
         - tokenAuth: []
       responses:
@@ -569,6 +559,36 @@ paths:
                   error:
                     type: string
                     description: Descrizione dell'errore
+  /api/v2/users/{id}:
+    get:
+      summary: Recupera i dettagli di un utente
+      description: Cerca nel database un utente tramite il suo ID univoco e ne restituisce i dati di contatto (id ,nome, cognome, username, email, ruolo).
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: L'identificatore univoco dell'utente.
+          schema:
+            type: string
+            example: 69fa1f15cff2d08355d320f2
+      responses:
+        '200':
+          description: Utente trovato e dati restituiti con successo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+      
+        '404':
+          description: Utente non trovato nel database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: user not found
 
   /api/v2/auth:
     post:
@@ -721,10 +741,11 @@ components:
         - name
         - surname
         - role
+        - email
       properties:
         id:
           type: string
-          description: 'ID univoco dell''utente generato dal sistema (es. ObjectId)'
+          description: 'ID univoco dell''utente generato dal sistema'
         username:
           type: string
           description: 'Username dell''utente'

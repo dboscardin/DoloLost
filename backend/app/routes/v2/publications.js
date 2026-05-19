@@ -141,15 +141,29 @@ router.post('', tokenChecker ,async(req, res) => {
     return;
 })
 
+
+
+
+router.use('/:id', tokenChecker , async (req, res, next) => {
+    //se entra in questa route perchè crede che /attive sia l'id va avanti
+    if (req.params.id === 'attive') return next();
+    let pub = await Publication.findById(req.params.id).exec();
+    if (!pub) {
+        res.status(404).json({error: "Pubblicazione non trovata" })
+        //console.log('Pubblicazione non trovata.')
+        return;
+    }
+    
+    
+    req['pub'] = pub;
+    next()
+});
+
 router.put('/:id', tokenChecker,async(req, res) => {
     try {
        
         const user = req.loggedUser.id;
-        const publication = await Publication.findById(req.params.id);
-
-        if (!publication) {
-            return res.status(404).json({ error: "Pubblicazione non trovata." });
-        }
+        const publication = req['pub'];
         
         //controllo che la pub sia dell'user o chiamata da un admin
         if (publication.user.toString() !== user && req.loggedUser.role !== "admin") {
@@ -214,21 +228,6 @@ router.put('/:id', tokenChecker,async(req, res) => {
     return;
 })
 
-
-router.use('/:id', tokenChecker , async (req, res, next) => {
-    //se entra in questa route perchè crede che /attive sia l'id va avanti
-    if (req.params.id === 'attive') return next();
-    let pub = await Publication.findById(req.params.id).exec();
-    if (!pub) {
-        res.status(404).send()
-        console.log('pub not found')
-        return;
-    }
-    
-    
-    req['pub'] = pub;
-    next()
-});
 
 router.get('/:id', tokenChecker, async (req, res) => {
     let pub = req['pub'];
