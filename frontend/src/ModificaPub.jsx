@@ -204,11 +204,17 @@ const ModificaPub = (props) => {
           <button type="submit" style={styles.button} disabled={saving}>
             {saving ? "Salvataggio..." : "Salva Modifiche"}
           </button>
-          <button style={styles.button} onClick={() => setOpen(true)}>
+          <button style={styles.evilButton} onClick={() => setOpen(true)}>
               Elimina pubblicazione
           </button>
           <Popup open={open} closeOnDocumentClick onClose={() => setOpen(false)} position={"right center"}>
-            <p>POPUP!!</p>
+            <div style={styles.popUpcard}>
+              <p style={{marginBottom: "0.75rem"}}>Eliminare la pubblicazione?</p>
+              <div style={{display: "flex", gap:"0.75rem", justifyContent:"center"}}>
+                <button style={styles.button} onClick={() => setOpen(false)}>Annulla</button>
+                <button style={styles.evilButton} onClick={() => handleDelete()}>Conferma</button>
+              </div>
+            </div>
           </Popup>
         </form>
       </div>
@@ -234,6 +240,16 @@ const styles = {
     marginTop: "1rem",
     marginBottom: "1rem"
   },
+  popUpcard: {
+    backgroundColor: "rgb(35, 35, 35)",
+    color: "#ffffff",
+    padding: "2rem",
+    borderRadius: "12px",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+    width: "350px",
+    textAlign: "center",
+    display: "block"
+  },
   title: {
     color: "#4f46e5",
     marginBottom: "1.5rem",
@@ -253,6 +269,15 @@ const styles = {
     borderRadius: "8px",
     border: "none",
     backgroundColor: "#4f46e5",
+    color: "#ffffff",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  evilButton: {
+    padding: "0.75rem",
+    borderRadius: "8px",
+    border: "none",
+    backgroundColor: "#7f1111",
     color: "#ffffff",
     cursor: "pointer",
     fontWeight: "bold",
