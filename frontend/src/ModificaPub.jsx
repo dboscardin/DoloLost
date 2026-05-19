@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
+import Popup from 'reactjs-popup'
 
 
 
 const ModificaPub = (props) => {
+
+  const [open, setOpen] = useState(false)
   const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
 
   const { pubId } = useParams();
@@ -202,6 +204,12 @@ const ModificaPub = (props) => {
           <button type="submit" style={styles.button} disabled={saving}>
             {saving ? "Salvataggio..." : "Salva Modifiche"}
           </button>
+          <button style={styles.button} onClick={() => setOpen(true)}>
+              Elimina pubblicazione
+          </button>
+          <Popup open={open} closeOnDocumentClick onClose={() => setOpen(false)} position={"right center"}>
+            <p>POPUP!!</p>
+          </Popup>
         </form>
       </div>
     </div>
