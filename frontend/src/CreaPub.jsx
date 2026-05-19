@@ -89,7 +89,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    height: "100%",
     //backgroundColor: "#f5f5f5",
   },
   card: {
@@ -99,6 +99,8 @@ const styles = {
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
     width: "300px",
     textAlign: "center",
+    marginBottom: "1rem",
+    marginTop: "1rem"
   },
   title: {
     color: "#4f46e5",

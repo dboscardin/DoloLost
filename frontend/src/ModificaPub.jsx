@@ -104,8 +104,8 @@ const ModificaPub = (props) => {
       <div style={styles.card}>
         <h2 style={styles.title}>Modifica Segnalazione</h2>
 
-        {error && <div style={styles.errorBox}>{error}</div>}
-        {successMsg && <div style={styles.successBox}>{successMsg}</div>}
+        <div style={styles.errorBox}>{error}</div>
+        <div style={styles.successBox}>{successMsg}</div>
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <label style={styles.label}>Descrizione:</label>
@@ -114,12 +114,11 @@ const ModificaPub = (props) => {
             value={formData.description}
             onChange={handleChange}
             style={styles.input}
-            rows="3"
             required
           />
           
-          <label style={styles.label}>Categoria:</label>
-          <select name="category" value={formData.category} onChange={handleChange} style={styles.input} required>
+          <label htmlFor="category" style={styles.label}>Categoria:</label>
+          <select id="category" name="category" value={formData.category} onChange={handleChange} style={styles.input} required>
             {categories.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
@@ -215,8 +214,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
-    
+    height: "100%",
   },
   card: {
     backgroundColor: "#ffffff",
@@ -225,6 +223,8 @@ const styles = {
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
     width: "350px",
     textAlign: "center",
+    marginTop: "1rem",
+    marginBottom: "1rem"
   },
   title: {
     color: "#4f46e5",
