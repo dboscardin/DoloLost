@@ -26,7 +26,7 @@ const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbiglia
 
 
 router.use('', async (req, res, next) => {
-    let pubs = Publication.find().populate('user');
+    let pubs = Publication.find().populate('user', 'username');
     req["pubs"] = pubs;
     next();
 });
