@@ -247,7 +247,11 @@ router.get('/:id', tokenChecker, async (req, res) => {
     });
 });
 
-
+router.delete('/:id', tokenChecker, async (req, res) => {
+    let pub = req['pub'];
+    let result = await Publication.deleteOne({"_id": pub._id})
+    res.status(result? 200: 500).json({success: result})
+})
 
 
 //paramentri per filtrare:
