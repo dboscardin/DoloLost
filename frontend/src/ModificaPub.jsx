@@ -66,6 +66,22 @@ const ModificaPub = (props) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleDelete = async () => {
+    await fetch(`/api/v2/publications/${pubId}`, {
+        method: "DELETE",
+        headers: {"x-access-token": token}
+    }).then(response => {
+      return response.json()
+    }).then(data =>{
+      if(data.success){
+        setOpen(false)
+        window.location.href="/propriePub"
+      }else{
+        setError("Errore nell'eliminazione!")
+        setOpen(false)
+      }
+    })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
