@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../app.js';
 import { expect, jest } from '@jest/globals';
 import Publication from '../models/publication.js'; 
+import jwt from 'jsonwebtoken';
 
 describe('Visualizzazione pubblicazioni e Filtra pubblicazioni (get: publications)', () => {
 
@@ -364,6 +365,121 @@ describe('Visualizzazione pubblicazioni attive e filtraggio (get: publications/a
         expect(mockEquals).toHaveBeenCalledWith('unresolved');
       
     });
+
+    
+});
+
+
+describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    test('Caso 7: Recupero corretto con token valido', async () => {
+
+        const mockPublications =[
+    {
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                11.0395,
+                45.8902
+            ],
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
+        },
+        "_id": "69fa1f15cff2d08355d320f8",
+        "description": "Portafoglio nero",
+        "category": "accessori",
+        "notes": "",
+        "image": "https://images.pexels.com/photos/4568373/pexels-photo-4568373.jpeg",
+        "date": "2026-05-01T00:00:00.000Z",
+        "state": "unresolved",
+        "type": "found",
+        "user": {
+            "_id": "69fa1f15cff2d08355d320e5",
+            "username": "alice01"
+        },
+    }];
+
+        const mockWhere = jest.fn().mockReturnThis();
+        const mockRegex = jest.fn().mockReturnThis();
+        const mockEquals = jest.fn().mockReturnThis();
+        const mockGte = jest.fn().mockReturnThis();
+        const mockLte = jest.fn().mockReturnThis();
+        const mockExec = jest.fn().mockResolvedValue(mockPublications);
+        const mockQueryObject = {
+        where: mockWhere,
+        regex: mockRegex,
+        equals: mockEquals,
+        gte: mockGte,
+        lte: mockLte,
+        exec: mockExec,
+        populate: jest.fn().mockReturnThis(), 
+        exec: jest.fn().mockResolvedValue(mockPublications) 
+    };
+        jest.spyOn(Publication, 'find').mockReturnValue(mockQueryObject);
+        
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        const response = await request(app).get('/api/v2/publications/proprie').set('x-access-token',token);
+        
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body[0].user).toHaveProperty('_id', '69fa1f15cff2d08355d320e5');
+        expect(mockWhere).toHaveBeenCalledWith('user')
+        expect(mockEquals).toHaveBeenCalledWith('69fa1f15cff2d08355d320e5');
+      
+    });
+    test('Caso 8: Recupero corretto con token valido ma senza pubblicazioni', async () => {
+
+        const mockPublications =[];
+
+        const mockWhere = jest.fn().mockReturnThis();
+        const mockRegex = jest.fn().mockReturnThis();
+        const mockEquals = jest.fn().mockReturnThis();
+        const mockGte = jest.fn().mockReturnThis();
+        const mockLte = jest.fn().mockReturnThis();
+        const mockExec = jest.fn().mockResolvedValue(mockPublications);
+        const mockQueryObject = {
+        where: mockWhere,
+        regex: mockRegex,
+        equals: mockEquals,
+        gte: mockGte,
+        lte: mockLte,
+        exec: mockExec,
+        populate: jest.fn().mockReturnThis(), 
+        exec: jest.fn().mockResolvedValue(mockPublications) 
+    };
+        jest.spyOn(Publication, 'find').mockReturnValue(mockQueryObject);
+        
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        const response = await request(app).get('/api/v2/publications/proprie').set('x-access-token',token);
+        
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body).toHaveLength(0);
+        expect(mockWhere).toHaveBeenCalledWith('user')
+        expect(mockEquals).toHaveBeenCalledWith('69fa1f15cff2d08355d320e5');
+      
+    });
+
 
     
 });
