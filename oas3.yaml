@@ -453,7 +453,65 @@ paths:
                     type: string
         '500':
           description: Errore interno del server.
-
+    delete:
+      summary: Elimina una pubblicazione esistente
+      description: Rimuove in modo permanente una pubblicazione dal database. Richiede che l'utente sia autenticato e che la pubblicazione esista.
+      tags:
+        - Pubblicazioni
+      security:
+        - tokenAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: L'identificatore univoco della pubblicazione da eliminare.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Pubblicazione eliminata con successo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: object
+                    description: Risultato dell'operazione restituito.
+                    properties:
+                      acknowledged:
+                        type: boolean
+                        example: true
+                      deletedCount:
+                        type: integer
+                        example: 1
+        '401':
+          description: Token mancante o non valido .
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: La pubblicazione con l'ID fornito non è stata trovata.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Errore interno del server durante l'eliminazione.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
   /api/v2/publications/attive:
     get:
       summary: Pubblicazioni attive
@@ -589,6 +647,8 @@ paths:
                   message:
                     type: string
                     example: user not found
+
+
 
   /api/v2/auth:
     post:

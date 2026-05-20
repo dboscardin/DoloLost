@@ -483,3 +483,100 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
 
     
 });
+
+describe('Cancella Pubblicazione (delete: users/:id)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+
+    test('Caso 31: Eliminazione con successo', async () => {
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue({
+                _id: '69fa1f15cff2d08355d320f8',
+                user: '69fa1f15cff2d08355d320e5'
+            })
+        });
+
+        jest.spyOn(Publication, 'deleteOne').mockResolvedValue({
+            acknowledged: true,
+            deletedCount: 1
+        });
+
+
+        const response = await request(app)
+            .delete('/api/v2/publications/69fa1f15cff2d08355d320f8')
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toHaveProperty('acknowledged', true);
+        expect(response.body.success).toHaveProperty('deletedCount', 1);
+    });
+
+    test('Caso 32: Eliminazione pubblicazione non esistente', async () => {
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(null)
+        });
+
+
+        const response = await request(app)
+            .delete('/api/v2/publications/69fa1f15cff2d08355d320f9')
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty('error', 'Pubblicazione non trovata');
+    });
+    
+    test('Caso 33: Eliminazione pubblicazione di un altro utente', async () => {
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue({
+                _id: '69fa1f15cff2d08355d320f8',
+                user: '69fa1f15cff2d08355d320e4'
+            })
+        });
+
+
+        const response = await request(app)
+            .delete('/api/v2/publications/69fa1f15cff2d08355d320f8')
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(403);
+        expect(response.body).toHaveProperty('error', 'Non sei autorizzato a eliminare questa pubblicazione.');
+    });
+
+    
+});

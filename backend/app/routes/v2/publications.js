@@ -159,6 +159,18 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
     next()
 });
 
+router.delete('/:id', tokenChecker, async (req, res) => {
+    let pub = req['pub'];
+    const user = req.loggedUser.id;
+    //controllo che la pub sia dell'user o chiamata da un admin
+        if (pub.user.toString() !== user && req.loggedUser.role !== "admin") {
+            return res.status(403).json({ error: "Non sei autorizzato a eliminare questa pubblicazione." });
+        }
+    let result = await Publication.deleteOne({"_id": pub._id})
+    res.status(result? 200: 500).json({success: result})
+})
+
+
 router.put('/:id', tokenChecker,async(req, res) => {
     try {
        
@@ -247,11 +259,7 @@ router.get('/:id', tokenChecker, async (req, res) => {
     });
 });
 
-router.delete('/:id', tokenChecker, async (req, res) => {
-    let pub = req['pub'];
-    let result = await Publication.deleteOne({"_id": pub._id})
-    res.status(result? 200: 500).json({success: result})
-})
+
 
 
 //paramentri per filtrare:
