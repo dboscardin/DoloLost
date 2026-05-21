@@ -479,12 +479,40 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
         expect(mockEquals).toHaveBeenCalledWith('69fa1f15cff2d08355d320e5');
       
     });
+    test('Caso 9: Tentativo di accesso senza token', async () => {
+
+        const mockPublications =[];
+        const response = await request(app).get('/api/v2/publications/proprie');
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('message', 'No token provided.');
+      
+    });
+    test('Caso 10: Tentativo di accesso con token alterato o scaduto', async () => {
+
+        const mockPublications =[];
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: -1 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+
+        const response = await request(app).get('/api/v2/publications/proprie').set('x-access-token',token);
+        expect(response.status).toBe(403);
+        expect(response.body).toHaveProperty('message', 'Token not valid.');
+      
+    });
 
 
     
 });
 
-describe('Cancella Pubblicazione (delete: users/:id)', () => {
+describe('Cancella Pubblicazione (delete: publications/:id)', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
