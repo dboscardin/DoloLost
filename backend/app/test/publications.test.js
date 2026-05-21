@@ -506,10 +506,7 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
         expect(response.status).toBe(403);
         expect(response.body).toHaveProperty('message', 'Token not valid.');
       
-    });
-
-
-    
+    });   
 });
 
 describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
@@ -616,6 +613,48 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
     });
     
 });
+
+describe('Creazione pubblicazione (post: publications)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+
+    test('Caso 14: Creazione di una nuova pubblicazione valida', async () => {
+
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost"
+        };
+        
+        jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: "69fa1f15cff2d08355d32999", ...newPublicationData, user: tokenPayload.id
+        });
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        const response = await request(app).get('/api/v2/publications/69fa1f15cff2d08355d320f8').set('x-access-token', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("user", '69fa1f15cff2d08355d320e5');
+        
+    });
+
+    
+});
+
+
 
 
 

@@ -119,14 +119,25 @@ router.post('', tokenChecker ,async(req, res) => {
 
         //location di default
         const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
-        const newPub = await Publication.create({description, category, notes, location, image, date, type, user});
+        const newPub = await Publication.create({description, category, notes, location, image, type, date, user});
 
 
         let pubId = newPub._id;
 
-        //togliere il commento quando aggiungeremo la possibilità di vedere la pubblicazione singola
-        //res.location("/api/v1/publications/" + pubId).status(201).send();
-        res.status(201).json({success: true, message: "Pubblicazione creata con successo"});
+        res.status(201).json({
+            success: true,
+            message: "Pubblicazione creata con successo",
+            self: "/api/v2/publications/" + pubId,
+            _id: pubId,
+            description: description,
+            category: category,
+            notes: notes,
+            type: type,
+            date: date,
+            user: user,
+            location: location
+
+        });
 
     }
     catch (error) {
