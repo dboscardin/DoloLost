@@ -630,9 +630,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "type": "lost"
         };
         
-        jest.spyOn(Publication, 'create').mockResolvedValue({
-            _id: "69fa1f15cff2d08355d32999", ...newPublicationData, user: tokenPayload.id
-        });
+       const newId = "69fa1f15cff2d08355d32999";
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',
@@ -644,11 +642,45 @@ describe('Creazione pubblicazione (post: publications)', () => {
 
         const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-        const response = await request(app).get('/api/v2/publications/69fa1f15cff2d08355d320f8').set('x-access-token', token);
+         jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, ...newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        });
 
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty("user", '69fa1f15cff2d08355d320e5');
+        const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty("self", '/api/v2/publications/' + newId);
+        expect(Publication.create).toHaveBeenCalled();
+    });
+    test('Caso 15: Creazione senza description', async () => {
+
+        const newPublicationData = {
+            "description": "",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost"
+        };
         
+       const newId = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+         jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, ...newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        });
+
+        const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('error', 'La descrizione deve essere di almeno 5 caratteri.');
     });
 
     
