@@ -244,7 +244,7 @@ router.put('/:id', tokenChecker,async(req, res) => {
 router.get('/:id', tokenChecker, async (req, res) => {
     let pub = req['pub'];
     res.status(200).json({
-        self: '/api/v1/pub/' + pub._id,
+        self: '/api/v2/pub/' + pub._id,
         _id: pub._id,
         description: pub.description,
         category: pub.category,

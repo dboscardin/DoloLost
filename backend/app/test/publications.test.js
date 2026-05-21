@@ -512,6 +512,114 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
     
 });
 
+describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+
+    test('Caso 11: Recupero avvenuto con successo', async () => {
+
+
+        const mockPublications =
+    {
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                11.0395,
+                45.8902
+            ],
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
+        },
+        "_id": "69fa1f15cff2d08355d320f8",
+        "description": "Portafoglio nero",
+        "category": "accessori",
+        "notes": "",
+        "image": "https://images.pexels.com/photos/4568373/pexels-photo-4568373.jpeg",
+        "date": "2026-05-01T00:00:00.000Z",
+        "state": "unresolved",
+        "type": "found",
+        "user":  "69fa1f15cff2d08355d320e5"
+            
+        
+    }
+        const mockWhere = jest.fn().mockReturnThis();
+        const mockEquals = jest.fn().mockReturnThis();
+        const mockExec = jest.fn().mockResolvedValue(mockPublications);
+        const mockQueryObject = {
+        where: mockWhere,
+        equals: mockEquals,
+        exec: mockExec,
+        populate: jest.fn().mockReturnThis(), 
+        exec: jest.fn().mockResolvedValue(mockPublications) 
+    };
+        jest.spyOn(Publication, 'findById').mockReturnValue(mockQueryObject);
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        const response = await request(app).get('/api/v2/publications/69fa1f15cff2d08355d320f8').set('x-access-token', token);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("user", '69fa1f15cff2d08355d320e5');
+        
+    });
+
+    test('Caso 12: Id inesistente nel database', async () => {
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(null)
+        });
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        
+
+
+        const response = await request(app)
+            .get('/api/v2/publications/69fa1f15cff2d08355d320f8')
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(404);
+        expect(response.body).toHaveProperty('error', 'Pubblicazione non trovata');
+
+    });
+
+    test('Caso 13: Tentativo di accesso senza token', async () => {
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(null)
+        });
+
+       
+        const response = await request(app).get('/api/v2/publications/69fa1f15cff2d08355d320f8')
+
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('message', 'No token provided.');
+
+    });
+    
+});
+
+
+
+
 describe('Cancella Pubblicazione (delete: publications/:id)', () => {
 
     afterEach(() => {
