@@ -682,7 +682,57 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('error', 'La descrizione deve essere di almeno 5 caratteri.');
     });
+    test('Caso 16:Creazione con data nel futuro', async () => {
 
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2027-10-01T12:00:00Z",
+            "type": "lost"
+        };
+        
+       const newId = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+         jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, ...newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        });
+
+        const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('error', 'La data non può essere nel futuro.');
+    });
+    test('Caso 14: Creazione di una nuova pubblicazione valida', async () => {
+
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost"
+        };
+        
+       const newId = "69fa1f15cff2d08355d32999";
+
+        
+        jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, ...newPublicationData, self: "api/v2/publications/" + newId
+        });
+
+        const response = await request(app).post('/api/v2/publications').send(newPublicationData);
+
+        expect(response.status).toBe(401);
+        expect(response.body).toHaveProperty('message', 'No token provided.');
+    });
     
 });
 
