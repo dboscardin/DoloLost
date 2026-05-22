@@ -643,7 +643,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
          jest.spyOn(Publication, 'create').mockResolvedValue({
-            _id: newId, ...newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+            _id: newId, publication: newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
         });
 
         const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
@@ -682,7 +682,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('error', 'La descrizione deve essere di almeno 5 caratteri.');
     });
-    test('Caso 16:Creazione con data nel futuro', async () => {
+    test('Caso 16: Creazione con data nel futuro', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -712,7 +712,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('error', 'La data non può essere nel futuro.');
     });
-    test('Caso 14: Creazione di una nuova pubblicazione valida', async () => {
+    test('Caso 17: Tentativo di creazione senza token', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -736,7 +736,63 @@ describe('Creazione pubblicazione (post: publications)', () => {
     
 });
 
+describe('Modifica pubblicazione (put: publications)', () => {
 
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+    
+
+    test('Caso 17: Modifica stato della pubblicazione', async () => {
+
+        const id = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+        
+        const mockSave = jest.fn().mockResolvedValue({
+            _id: id,
+            description: "mazzo chiavi di casa",
+            category: "chiavi",
+            date: "2023-10-01T12:00:00Z",
+            type: "lost",
+            state: "solved", 
+            user: payload.id
+        });
+        
+        const mockPublicationInstance = {
+            _id: id,
+            description: "mazzo chiavi di casa",
+            category: "chiavi",
+            date: "2023-10-01T12:00:00Z",
+            type: "lost",
+            state: "unresolved", 
+            user: payload.id,    
+            save: mockSave       
+        };
+
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(mockPublicationInstance)
+        });
+
+        const response = await request(app).put('/api/v2/publications/' + id).set('x-access-token', token).send({"type" : "solved"});
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("self", '/api/v2/publications/' + id);
+        expect(mockSave).toHaveBeenCalled();
+    });
+
+    
+});
 
 
 

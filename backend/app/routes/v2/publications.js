@@ -124,11 +124,8 @@ router.post('', tokenChecker ,async(req, res) => {
 
         let pubId = newPub._id;
 
-        res.status(201).json({
-            success: true,
-            message: "Pubblicazione creata con successo",
-            self: "/api/v2/publications/" + pubId,
-            _id: pubId,
+        /*
+         _id: pubId,
             description: description,
             category: category,
             notes: notes,
@@ -136,6 +133,12 @@ router.post('', tokenChecker ,async(req, res) => {
             date: date,
             user: user,
             location: location
+        */
+        res.status(201).json({
+            success: true,
+            message: "Pubblicazione creata con successo",
+            self: "/api/v2/publications/" + pubId,
+            publication: newPub
 
         });
 
@@ -170,16 +173,7 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
     next()
 });
 
-router.delete('/:id', tokenChecker, async (req, res) => {
-    let pub = req['pub'];
-    const user = req.loggedUser.id;
-    //controllo che la pub sia dell'user o chiamata da un admin
-        if (pub.user.toString() !== user && req.loggedUser.role !== "admin") {
-            return res.status(403).json({ error: "Non sei autorizzato a eliminare questa pubblicazione." });
-        }
-    let result = await Publication.deleteOne({"_id": pub._id})
-    res.status(result? 200: 500).json({success: result})
-})
+
 
 
 router.put('/:id', tokenChecker,async(req, res) => {
@@ -236,7 +230,8 @@ router.put('/:id', tokenChecker,async(req, res) => {
         
         res.status(200).json({
             message: "Pubblicazione aggiornata con successo!",
-            publication: updatedPub
+            publication: updatedPub,
+            self: "/api/v2/publications/" + updatedPub._id
         });
 
     }
@@ -270,7 +265,16 @@ router.get('/:id', tokenChecker, async (req, res) => {
     });
 });
 
-
+router.delete('/:id', tokenChecker, async (req, res) => {
+    let pub = req['pub'];
+    const user = req.loggedUser.id;
+    //controllo che la pub sia dell'user o chiamata da un admin
+        if (pub.user.toString() !== user && req.loggedUser.role !== "admin") {
+            return res.status(403).json({ error: "Non sei autorizzato a eliminare questa pubblicazione." });
+        }
+    let result = await Publication.deleteOne({"_id": pub._id})
+    res.status(result? 200: 500).json({success: result})
+})
 
 
 //paramentri per filtrare:
