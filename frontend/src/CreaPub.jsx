@@ -67,11 +67,12 @@ const CreaPub = (props) => {
         <p style={styles.info}>{errText}</p>
         <form onSubmit={sendInfo} style={styles.form}>
           <label htmlFor="description" style={styles.label}>Descrizione:</label>
-          <textarea
+          <input
             id="description"
             value = {description}
             onChange={(e) => setDescription(e.target.value)}
             style={styles.input}
+            placeholder="Inserisci testo..."
             required
           />
           <label htmlFor="categoria" style={styles.label}>Categoria:</label>
@@ -81,13 +82,17 @@ const CreaPub = (props) => {
           <label htmlFor="data" style={styles.label}>Data segnalazione:</label>
           <input id="data" type="date" value={date} onChange={(e) => setDate(e.target.value)} style={styles.input}></input>
           <label style={styles.label}>Tipo Segnalazione:</label>
+          
           <div className="radioDiv">
-            <input id="typeTrovato" type="radio" name="type" value="found" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typeTrovato" style={styles.label}>trovato</label>
+            <input id="typeTrovato" type="radio" name="type" value="found" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typeTrovato">trovato</label>
           </div>
+
           <div className="radioDiv">
-            <input id="typePerduto" type="radio" name="type" value="lost" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typePerduto" style={styles.label}>perduto</label>
+            <input id="typePerduto" type="radio" name="type" value="lost" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typePerduto">perduto</label>
           </div>
-          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Note aggiuntive" style={styles.input}></input>
+
+          <label style={styles.label}>Note Aggiuntive (opzionale): </label>
+          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Inserisci testo..." style={styles.input}></input>
           <label style={styles.label}>Immagine (opzionale):</label>
           <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0] || null)}></input>
           <button type="submit" style={styles.button}>

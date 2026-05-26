@@ -119,7 +119,6 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
 function App() {
 
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
-
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -175,7 +174,7 @@ function App() {
         id: urlParams.id
       });
     }
-    
+
     loadData();
   }, []);
 
