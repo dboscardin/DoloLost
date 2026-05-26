@@ -7,8 +7,7 @@ const tokenChecker = function(req, res, next) {
     const token =
         req.body?.token ||
         req.query?.token ||
-        req.headers['x-access-token'] ||
-        (authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
+        req.headers['x-access-token']
 
     if (!token)
         return res.status(401).json({ success:false, message: 'No token provided.' })

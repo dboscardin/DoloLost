@@ -32,9 +32,7 @@ const CreaPub = (props) => {
       //console.log("TOKEN:", props.token);
       const response = await fetch("/api/v2/publications", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${props.token}`
-      },
+      headers: { 'x-access-token': props.token },
       body: formData
     });
 
@@ -49,7 +47,7 @@ const CreaPub = (props) => {
     }
     window.location.href="/"
     } catch (error) {
-    //  console.error("errore fetch:", error);
+     // console.error("errore fetch:", error);
       setErrText("Errore di rete o server non raggiungibile");
     }
   }
