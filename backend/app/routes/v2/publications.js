@@ -133,7 +133,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
 
         let image = null;
 
-        const newPub = await Publication.create({description, category, notes, location, image, type, date, user});
+        const newPub = await Publication.create({description, category, notes, location,image, type, date, user});
 
         let pubId = newPub._id;
 

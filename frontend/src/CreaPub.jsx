@@ -13,7 +13,7 @@ const CreaPub = (props) => {
 
   const sendInfo = async (e) => {
     e.preventDefault()
-    console.log("submit partito");
+   // console.log("submit partito");
     setErrText("");
 
     const formData = new FormData();
@@ -28,8 +28,8 @@ const CreaPub = (props) => {
     }
 
     try {
-      console.log("sto inviando");
-      console.log("TOKEN:", props.token);
+     // console.log("sto inviando");
+      //console.log("TOKEN:", props.token);
       const response = await fetch("/api/v2/publications", {
       method: "POST",
       headers: {
@@ -38,10 +38,10 @@ const CreaPub = (props) => {
       body: formData
     });
 
-    console.log("status:", response.status);
+ //   console.log("status:", response.status);
 
     const data = await response.json();
-    console.log("risposta backend:", data);
+    //console.log("risposta backend:", data);
 
     if (!response.ok || !data.success) {
       setErrText(data.error || data.message || "Errore nella creazione pubblicazione");
@@ -49,7 +49,7 @@ const CreaPub = (props) => {
     }
     window.location.href="/"
     } catch (error) {
-      console.error("errore fetch:", error);
+    //  console.error("errore fetch:", error);
       setErrText("Errore di rete o server non raggiungibile");
     }
   }
