@@ -23,7 +23,7 @@ delete 200 -> conferma, 204 -> no body
 router.use('/:id', async (req, res, next) => {
    
     let userr = await User.findById(req.params.id).exec();
-    if (!pub) {
+    if (!userr) {
         res.status(404).json({error: "Utente non trovato" })
         //console.log('user not found')
         return;
@@ -153,7 +153,7 @@ router.put("/:id", tokenChecker,  async (req, res) => {
             return res.status(403).json({ error: "Non sei autorizzato a modificare i dati di questo utente." });
         }
         //per ora non si può cambiare il ruolo nè l'id
-        const { username, password, email, name,surname } = req.body;
+        const { username, password, email, name, surname } = req.body;
 
         
         //check che username sia univoco
@@ -185,7 +185,7 @@ router.put("/:id", tokenChecker,  async (req, res) => {
         if (name) {
             user.name = name
         }
-        if (nasurnameme) {
+        if (surname) {
             user.surname = surname
         }
         const updatedUser = await user.save();
