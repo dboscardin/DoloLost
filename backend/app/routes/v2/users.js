@@ -159,7 +159,7 @@ router.put("/:id", tokenChecker,  async (req, res) => {
         //check che username sia univoco
         if (username) {
             const existingUser = await User.findOne({username})
-            if (existingUser) {
+            if (existingUser && String(existingUser.id) != String(userId)) {
                 return res.status(400).json({ error: "Username già esistente" });
             }
             user.username = username
@@ -167,7 +167,7 @@ router.put("/:id", tokenChecker,  async (req, res) => {
         //check che email sia univoca e regex
         if (email) {
             const existingUser = await User.findOne({email})
-            if (existingUser) {
+            if (existingUser && String(existingUser.id) != String(userId)) {
                 return res.status(400).json({ error: "Email già esistente" });
             }
             const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;

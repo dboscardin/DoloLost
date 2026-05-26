@@ -8,6 +8,7 @@ import PropriePub from './PropriePub.jsx'
 import CreaPub from './CreaPub.jsx'
 import ModificaPub from './ModificaPub.jsx'
 import Contatto from './Contatto.jsx'
+import ModificaUser from './ModificaUser.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -186,11 +187,6 @@ function App() {
     
     window.location.href = "/userLogin";
 };
-    
-  /*
-const token = searchParams.get("token")
-    
-  }*/
  
 
   return (
@@ -211,6 +207,7 @@ const token = searchParams.get("token")
               <Link onClick={logout} style={{btnStyle}}>Logout</Link>
               <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
               <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
+              <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
             </div>
           )}
         </div>
@@ -231,6 +228,7 @@ const token = searchParams.get("token")
         <Route path="/propriePub" element={<PropriePub  token={token} />} />
         <Route path="/creaPub" element={<CreaPub token={token}/>} />
         <Route path="/modificaPub/:pubId" element={<ModificaPub token={token} />} />
+        <Route path="/modificaUser/:userId" element={<ModificaUser token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
       </Routes>
     </div>
