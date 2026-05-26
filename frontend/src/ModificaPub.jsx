@@ -100,7 +100,7 @@ const ModificaPub = (props) => {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({})); 
-        throw new Error(errorData.message || `Errore HTTP: ${response.status}`);
+        throw new Error(errorData.error || errorData.message || `Errore HTTP: ${response.status}`);
     }
 
   await response.json();

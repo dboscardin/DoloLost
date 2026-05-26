@@ -150,17 +150,17 @@ router.put("/:id", tokenChecker,  async (req, res) => {
         
         //controllo sia l'user stesso o un admin
         if (String(user.id) !== String(userId) && req.loggedUser.role !== "admin") {
-            return res.status(403).json({ error: "Non sei autorizzato a modificare i dati di questo utente." });
+            return res.status(403).json({success: false, error: "Non sei autorizzato a modificare i dati di questo utente." });
         }
         //per ora non si può cambiare il ruolo nè l'id
-        const { username, password, email, name, surname } = req.body;
+        const { username, new_password, old_password, email, name, surname } = req.body;
 
         
         //check che username sia univoco
         if (username) {
             const existingUser = await User.findOne({username})
             if (existingUser && String(existingUser.id) != String(userId)) {
-                return res.status(400).json({ error: "Username già esistente" });
+                return res.status(400).json({success: false, error: "Username già esistente" });
             }
             user.username = username
         }
@@ -168,19 +168,29 @@ router.put("/:id", tokenChecker,  async (req, res) => {
         if (email) {
             const existingUser = await User.findOne({email})
             if (existingUser && String(existingUser.id) != String(userId)) {
-                return res.status(400).json({ error: "Email già esistente" });
+                return res.status(400).json({success: false, error: "Email già esistente" });
             }
             const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
             if(!emailRegex.test(email)) {
-                return res.status(400).json({ error: "Email non valida", });
+                return res.status(400).json({success: false, error: "Email non valida", });
             }
             user.email = email
         }
-        if (password) {
-            if (password.length < 8) {
-                return res.status(400).json({ error: "La password deve contenere almeno 8 caratteri" });
+        if (new_password) {
+            if (new_password.length < 8) {
+                return res.status(400).json({success: false, error: "La password deve contenere almeno 8 caratteri" });
             }
-            user.password = password
+            if(!old_password)
+            {
+                return res.status(400).json({success: false, error: "Inserire la vecchia password" });
+            }
+            const isMatch = await bcrypt.compare(old_password, user.password);
+            if(!isMatch)
+            {
+                return res.status(400).json({success: false, error: "Vecchia password errata" });
+            }
+            user.password = await bcrypt.hash(new_password, 10);
+
         }
         if (name) {
             user.name = name

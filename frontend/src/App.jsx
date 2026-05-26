@@ -9,6 +9,7 @@ import CreaPub from './CreaPub.jsx'
 import ModificaPub from './ModificaPub.jsx'
 import Contatto from './Contatto.jsx'
 import ModificaUser from './ModificaUser.jsx'
+import ModificaPassword from './ModificaPassword.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -229,6 +230,7 @@ function App() {
         <Route path="/creaPub" element={<CreaPub token={token}/>} />
         <Route path="/modificaPub/:pubId" element={<ModificaPub token={token} />} />
         <Route path="/modificaUser/:userId" element={<ModificaUser token={token} />} />
+        <Route path="/modificaPassword/:userId" element={<ModificaPassword token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
       </Routes>
     </div>

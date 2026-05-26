@@ -1,56 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from 'react-router-dom';
 
-const ModificaUser = (props) => {
+const ModificaPassword = (props) => {
 
   const [open, setOpen] = useState(false)
 
   const { userId } = useParams();
   const { token } = props;
   const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    username: ""
+    old_password: "", 
+    new_password: ""
   });
-
-  
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
 
   
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!token || !userId) return;
-      
-      try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
-          headers: { 'x-access-token': token }
-        });
 
-        if (!response.ok) throw new Error("Errore nel recupero dei dati.");
-        
-        const data = await response.json();
-        
-        setFormData({
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-          username: data.username
-        });
-      } catch (err) {
-        setError(err.message);
-        console.log(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [userId, token]);
 
   
   const handleChange = (e) => {
@@ -92,59 +58,35 @@ const ModificaUser = (props) => {
 
 
   if (!token) return <div style={styles.message}>Effettua il login per continuare.</div>;
-  if (loading) return <div style={styles.message}>Caricamento dettagli...</div>;
+
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Modifica i tuoi dati</h2>
-        <Link to={`/modificaPassword/${userId}`} style={btnStyle}>Cambia Password</Link>
 
         <div style={styles.errorBox}>{error}</div>
         <div style={styles.successBox}>{successMsg}</div>
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>Nome:</label>
-          <textarea
-            name="name"
-            value={formData.name}
+          <label style={styles.label}>Vecchia password:</label>
+          <input
+          type="password"
+            name="old_password"
+            value={formData.old_password}
             onChange={handleChange}
             style={styles.input}
             required
           />
-       
-          <label style={styles.label}>Cognome:</label>
-          <textarea
-            name="surname"
-            value={formData.surname}
+          <label style={styles.label}>Nuova password:</label>
+          <input
+            type="password"
+            name="new_password"
+            value={formData.new_password}
             onChange={handleChange}
             style={styles.input}
             required
           />
-
-          <label style={styles.label}>Username:</label>
-          <textarea
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
-
-          <label style={styles.label}>Email:</label>
-          <textarea
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            style={styles.input}
-            required
-          />
-
-         
-
-
-          
-
           <button type="submit" style={styles.button} disabled={saving}>
             {saving ? "Salvataggio..." : "Salva Modifiche"}
           </button>
@@ -212,6 +154,5 @@ const styles = {
     fontWeight: "bold"
   }
 };
-const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
 
-export default ModificaUser;
+export default ModificaPassword;
