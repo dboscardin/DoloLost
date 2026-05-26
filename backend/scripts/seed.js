@@ -164,7 +164,7 @@ const seedPublications = (users) => [
     description: 'Portafoglio nero smarrito vicino alla stazione',
     category: 'accessori',
     notes: 'Conteneva documenti e una tessera universitaria',
-    image: 'https://www.latigredicarta.it/wp-content/uploads/2019/11/Pokemon-1.jpg',
+    image: 'https://jssxqqwbglsmxrnujswa.supabase.co/storage/v1/object/public/Publications/portafoglio.jpg',
     date: new Date('2026-04-01'),
     location: {
       type: 'Point',
@@ -179,7 +179,7 @@ const seedPublications = (users) => [
     description: 'Mazzo di chiavi trovato in Piazza Rosmini',
     category: 'chiavi',
     notes: 'Portachiavi rosso',
-    image: 'https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png',
+    image: 'https://jssxqqwbglsmxrnujswa.supabase.co/storage/v1/object/public/Publications/chiavi.jpg',
     date: new Date('2026-04-02'),
     location: {
       type: 'Point',

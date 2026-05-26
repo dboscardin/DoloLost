@@ -3,9 +3,20 @@ import Publication from '../../models/publication.js'
 import User from '../../models/user.js'
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
+import { createClient } from '@supabase/supabase-js';
+import multer  from 'multer';
+
 const router = express.Router();
 
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 2 * 1024 * 1024 }
+});
 
 /*
 output messages
@@ -20,7 +31,7 @@ delete 200 -> conferma, 204 -> no body
 500 problema interno server
 */
 
-//aggiungere qui le route per le pubblicazioni
+
 //TENERE IN MINUSCOLO !!!!!!!
 const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
 
@@ -83,12 +94,12 @@ router.get('/attive', async(req, res) => {
 });
 
 
-router.post('', tokenChecker ,async(req, res) => {
+router.post('', tokenChecker, upload.single('image'), async(req, res) => {
     
    //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
         //quando si creano sono unresolved
-        const { description, category, notes, image, date, type } = req.body;
+        const { description, category, notes, date, type } = req.body;
         //prendo user da middleware
         const user = req.loggedUser.id;
 
@@ -119,31 +130,49 @@ router.post('', tokenChecker ,async(req, res) => {
 
         //location di default
         const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
-        const newPub = await Publication.create({description, category, notes, location, image, type, date, user});
 
+        let image = null;
+
+        const newPub = await Publication.create({description, category, notes, location, image, type, date, user});
 
         let pubId = newPub._id;
 
-        /*
-         _id: pubId,
-            description: description,
-            category: category,
-            notes: notes,
-            type: type,
-            date: date,
-            user: user,
-            location: location
-        */
+        if (req.file) {
+            const ext = req.file.originalname.split('.').pop();
+            const filePath = `publications/${newPub._id}/${Date.now()}.${ext}`;
+
+            const { error: uploadError } = await supabase
+                .storage
+                .from('publications')
+                .upload(filePath, req.file.buffer, {contentType: req.file.mimetype, upsert: false});
+
+            if(uploadError) {
+                await Publication.findByIdAndDelete(newPub._id);
+                return res.status(500).json({
+                    success: false,
+                    error: "Upload immagine fallito",
+                    details: uploadError.message
+                });
+            }
+
+            const { data: publicUrlData } = supabase
+                .storage
+                .from('publications')
+                .getPublicUrl(filePath);
+            
+            newPub.image = publicUrlData.publicUrl;
+            await newPub.save();
+        }
         res.status(201).json({
             success: true,
             message: "Pubblicazione creata con successo",
-            self: "/api/v2/publications/" + pubId,
+            self: "/api/v2/publications/" + newPub._id,
             publication: newPub
-
         });
 
-    }
-    catch (error) {
+
+
+    } catch (error) {
         console.error("Errore creazione:", error);
         res.status(500).json({
             success: false,
@@ -154,9 +183,6 @@ router.post('', tokenChecker ,async(req, res) => {
 
     return;
 })
-
-
-
 
 router.use('/:id', tokenChecker , async (req, res, next) => {
     //se entra in questa route perchè crede che /attive sia l'id va avanti

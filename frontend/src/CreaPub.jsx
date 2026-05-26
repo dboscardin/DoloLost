@@ -6,39 +6,54 @@ const CreaPub = (props) => {
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("altro")
   const [notes, setNotes] = useState("")
-  const [image, setImage] = useState("https://images.pexels.com/photos/4568373/pexels-photo-4568373.jpeg");
+  const [imageFile, setImageFile] = useState(null);
   const [date, setDate] = useState((new Date()).getFullYear() + "-" + String((new Date()).getMonth() + 1).padStart(2,0) + "-" + String((new Date()).getDate()).padStart(2,0))
   const [type, setType] = useState("found")
   const [errText, setErrText] = useState("")
 
-  const sendInfo = (e) => {
+  const sendInfo = async (e) => {
     e.preventDefault()
-    //console.log(description, category, notes, image,date, type, props.token)
-    fetch("/api/v2/publications", {
+    console.log("submit partito");
+    setErrText("");
+
+    const formData = new FormData();
+    formData.append("description", description);
+    formData.append("category", category);
+    formData.append("notes", notes);
+    formData.append("date", date);
+    formData.append("type", type);
+
+    if(imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    try {
+      console.log("sto inviando");
+      console.log("TOKEN:", props.token);
+      const response = await fetch("/api/v2/publications", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "x-access-token": props.token
+        Authorization: `Bearer ${props.token}`
       },
-      body: JSON.stringify({
-        "description": description,
-        "category": category,
-        "image": image,
-        "notes": notes,
-        "date": date,
-        "type": type
-      })
-    }).then(response => {
-      return response.json()
-    }).then(data => {
-      let success = data.success
-      if(!success){
-        setErrText(data.error)
-        return
-      }
-      window.location.href="/"
-    })
+      body: formData
+    });
+
+    console.log("status:", response.status);
+
+    const data = await response.json();
+    console.log("risposta backend:", data);
+
+    if (!response.ok || !data.success) {
+      setErrText(data.error || data.message || "Errore nella creazione pubblicazione");
+      return;
+    }
+    window.location.href="/"
+    } catch (error) {
+      console.error("errore fetch:", error);
+      setErrText("Errore di rete o server non raggiungibile");
+    }
   }
+
 
   if(!props.token){
     return(
@@ -68,12 +83,13 @@ const CreaPub = (props) => {
           <label style={styles.label}>Tipo Segnalazione:</label>
           <div className="radioDiv">
             <input id="typeTrovato" type="radio" name="type" value="found" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typeTrovato" style={styles.label}>trovato</label>
-             
           </div>
           <div className="radioDiv">
             <input id="typePerduto" type="radio" name="type" value="lost" onChange={(e) => setType(e.target.value)} style={styles.input} required></input> <label htmlFor="typePerduto" style={styles.label}>perduto</label>
           </div>
           <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Note aggiuntive" style={styles.input}></input>
+          <label style={styles.label}>Immagine (opzionale):</label>
+          <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0] || null)}></input>
           <button type="submit" style={styles.button}>
             Crea
           </button>

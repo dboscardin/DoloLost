@@ -159,9 +159,14 @@ function App() {
 
   // Carica i dati all'avvio
   useEffect(() => {
+    console.log("cookies:", cookies);
+    console.log("userCookies:", cookies.userCookies);
     
     const urlParams = cookies.userCookies? cookies.userCookies: {token: false};
-    const tokenParam = urlParams.token
+    const tokenParam = urlParams.token;
+
+    console.log("tokenParam:", tokenParam);
+
     if (tokenParam) {
       setToken(tokenParam);
       setUserData({
@@ -169,8 +174,8 @@ function App() {
         name: urlParams.name,
         id: urlParams.id
       });
-
-      }
+    }
+    
     loadData();
   }, []);
 
