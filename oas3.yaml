@@ -574,6 +574,115 @@ paths:
           description: Errore interno del server
 
   /api/v2/users:
+    put:
+      summary: Modifica dati utente
+      description: Consente di aggiornare i dati di un utente (username, email, password, nome, cognome). 
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID univoco dell'utente da modificare.
+          schema:
+            type: string
+        - name: x-access-token
+          in: header
+          required: true
+          description: Token JWT di autenticazione fornito in fase di login.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nuovo username dell'utente (deve essere univoco nel sistema).
+                  example: "alice02"
+                email:
+                  type: string
+                  format: email
+                  description: Nuova email dell'utente (deve essere univoca e rispettare il formato email valido).
+                  example: "alice02@gmail.com"
+                old_password:
+                  type: string
+                  description: Vecchia password corrente dell'utente. Obbligatoria solo se si inserisce new_password.
+                  example: "alice2025"
+                new_password:
+                  type: string
+                  minLength: 8
+                  description: Nuova password da impostare. Richiede la verifica della vecchia password e deve essere lunga almeno 8 caratteri.
+                  example: "alice2027"
+                name:
+                  type: string
+                  description: Nuovo nome dell'utente.
+                  example: "Alice"
+                surname:
+                  type: string
+                  description: Nuovo cognome dell'utente.
+                  example: "Rossi"
+      responses:
+        '200':
+          description: Utente aggiornato con successo. Restituisce l'oggetto utente aggiornato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User aggiornato con successo!"
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  self:
+                    type: string
+
+        '400':
+          description: |
+            Bad Request. Questo errore viene restituito in presenza di uno dei seguenti problemi di validazione:
+            - Username già esistente nel DB.
+            - Email già esistente nel DB.
+            - Formato Email non valido.
+            - Nuova password inferiore a 8 caratteri.
+            - Nuova password inserita senza la vecchia password.
+            - Vecchia password errata.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        '403':
+          description: Forbidden. L'utente autenticato non è il proprietario del profilo e non possiede i privilegi di amministratore.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                    example: "Non sei autorizzato a modificare i dati di questo utente."
+        '500':
+          description: Internal Server Error. Si è verificato un errore imprevisto durante la modifica o il salvataggio sul database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                  error:
+                    type: string
     post:
       summary: Registra un nuovo utente
       description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 
