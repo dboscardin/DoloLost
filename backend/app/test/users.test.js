@@ -12,7 +12,7 @@ describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
         jest.restoreAllMocks();
     });
 
-    test('Caso 29: Visualizzazione contatto corretto', async () => {
+    test('Caso 31: Visualizzazione contatto corretto', async () => {
         const validId = '69fa1f15cff2d08355d320e5';
         
        
@@ -41,7 +41,7 @@ describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
     });
 
 
-    test('Caso 30: Visualizzazione con id errato', async () => {
+    test('Caso 32: Visualizzazione con id errato', async () => {
         const invalidId = '69fa1f15cff2d08355d330e5';
 
   
