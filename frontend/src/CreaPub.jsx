@@ -95,7 +95,7 @@ const CreaPub = (props) => {
     //console.log("risposta backend:", data);
 
     if (!response.ok || !data.success) {
-      setErrText(data.error || data.message || "Errore nella creazione pubblicazione");
+      setErrText(data.error || data.message || data.details || "Errore nella creazione pubblicazione");
       return;
     }
     window.location.href="/"

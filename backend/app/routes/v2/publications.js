@@ -92,7 +92,20 @@ router.get('/attive', async(req, res) => {
     res.status(200).json(pubs);
     return;
 });
-
+router.use('/:id', tokenChecker , async (req, res, next) => {
+    //se entra in questa route perchè crede che /attive sia l'id va avanti
+    if (req.params.id === 'attive') return next();
+    let pub = await Publication.findById(req.params.id).exec();
+    if (!pub) {
+        res.status(404).json({error: "Pubblicazione non trovata" })
+        //console.log('Pubblicazione non trovata.')
+        return;
+    }
+    
+    
+    req['pub'] = pub;
+    next()
+});
 
 router.post('', tokenChecker, upload.single('image'), async(req, res) => {
     
@@ -135,6 +148,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
         let pubId = newPub._id;
 
         if (req.file) {
+            console.log("immagine arrivata")
             const ext = req.file.originalname.split('.').pop();
             const filePath = `publications/${newPub._id}/${Date.now()}.${ext}`;
 
@@ -180,24 +194,6 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
 
     return;
 })
-
-router.use('/:id', tokenChecker , async (req, res, next) => {
-    //se entra in questa route perchè crede che /attive sia l'id va avanti
-    if (req.params.id === 'attive') return next();
-    let pub = await Publication.findById(req.params.id).exec();
-    if (!pub) {
-        res.status(404).json({error: "Pubblicazione non trovata" })
-        //console.log('Pubblicazione non trovata.')
-        return;
-    }
-    
-    
-    req['pub'] = pub;
-    next()
-});
-
-
-
 
 router.put('/:id', tokenChecker, upload.single('image'),  async(req, res) => {
     try {
@@ -258,7 +254,7 @@ router.put('/:id', tokenChecker, upload.single('image'),  async(req, res) => {
                 .upload(filePath, req.file.buffer, {contentType: req.file.mimetype, upsert: false});
 
             if(uploadError) {
-                await Publication.findByIdAndDelete(publication.id);
+                //await Publication.findByIdAndDelete(publication.id);
                 return res.status(500).json({
                     success: false,
                     error: "Upload immagine fallito",
