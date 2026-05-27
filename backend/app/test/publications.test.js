@@ -4,6 +4,8 @@ import { expect, jest } from '@jest/globals';
 import Publication from '../models/publication.js'; 
 import jwt from 'jsonwebtoken';
 
+
+//manca crea pubblicazione con immagine
 describe('Visualizzazione pubblicazioni e Filtra pubblicazioni (get: publications)', () => {
 
    
