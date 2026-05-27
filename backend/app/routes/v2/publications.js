@@ -99,7 +99,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
    //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
         //quando si creano sono unresolved
-        const { description, category, notes, date, type } = req.body;
+        const { description, category, notes, date, type, lat, lng, address } = req.body;
         //prendo user da middleware
         const user = req.loggedUser.id;
 
@@ -127,10 +127,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
             return res.status(400).json({success: false, error: "La data non può essere nel futuro." });
         }
 
-
-        //location di default
-        const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
-
+        const location = { "type": "Point", "coordinates": [Number(lng), Number(lat)],"address": address}
         let image = null;
 
         const newPub = await Publication.create({description, category, notes, location,image, type, date, user});
