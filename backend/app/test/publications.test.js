@@ -616,10 +616,27 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
     
 });
 
+
+const mockUpload = jest.fn();
+const mockGetPublicUrl = jest.fn().mockReturnValue({ data: { publicUrl: 'http://fake-supabase-url.com/immagine.png' } });
+
+
+jest.unstable_mockModule('@supabase/supabase-js', () => ({
+    createClient: () => ({
+        storage: {
+            from: () => ({
+                upload: mockUpload,
+                getPublicUrl: mockGetPublicUrl
+            })
+        }
+    })
+}));
+
 describe('Creazione pubblicazione (post: publications)', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
+        
     });
     
 
@@ -771,42 +788,50 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.body.publication.publication).toHaveProperty("image", "");
     });
     test('Caso 19: Upload file troppo grande (>1MB)', async () => {
-
-        const buffer = Buffer.alloc(1024 * 1024 * 1.5);
+        const buffer = Buffer.alloc(1024 * 1024 * 1.5); // File da 1.5 MB
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
-            "type": "lost",
-            "image": ""
+            "type": "lost"
         };
         
-       const newId = "69fa1f15cff2d08355d32999";
-
+        const newId = "69fa1f15cff2d08355d32999";
         const payload = {
-                id: '69fa1f15cff2d08355d320e5',
-                username: 'alice01',
-                email: 'alice01@gmail.com',
-                role: 'user',
-            }
-        const options = { expiresIn: 3600 }
+            id: '69fa1f15cff2d08355d320e5',
+            username: 'alice01',
+            email: 'alice01@gmail.com',
+            role: 'user',
+        };
+        const token = jwt.sign(payload, process.env.SUPER_SECRET || 'test_secret', { expiresIn: 3600 });
 
-        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
-
-         jest.spyOn(Publication, 'create').mockResolvedValue({
-            _id: newId, publication: newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        
+        mockUpload.mockResolvedValue({
+            error: { message: "The object exceeded the maximum allowed size" },
+            data: null
         });
-        const response = await request(app).post('/api/v2/publications').set('x-access-token', token)
+
+        const mockNewPub = { _id: newId, ...newPublicationData, user: payload.id };
+        jest.spyOn(Publication, 'create').mockResolvedValue(mockNewPub);
+        jest.spyOn(Publication, 'findByIdAndDelete').mockResolvedValue(mockNewPub);
+
+
+        const response = await request(app)
+            .post('/api/v2/publications')
+            .set('x-access-token', token)
             .field('description', newPublicationData.description)
             .field('category', newPublicationData.category)
             .field('date', newPublicationData.date)
             .field('type', newPublicationData.type)
             .attach('image', buffer, 'immagine_pesante.png');
 
-        expect(response.body.error).toContain("file rifiutato per superamento limite dimensione");
+
         expect(response.status).toBe(500);
-        expect(Publication.create).not.toHaveBeenCalled();
+        expect(response.body.error).toContain("Upload immagine fallito");
+        expect(response.body.details).toContain("The object exceeded the maximum allowed size");
+        expect(Publication.create).toHaveBeenCalled();
+        expect(Publication.findByIdAndDelete).toHaveBeenCalledWith(newId);
     });
     
 });
