@@ -5,7 +5,7 @@ import Publication from '../models/publication.js';
 import jwt from 'jsonwebtoken';
 
 
-//manca crea pubblicazione con immagine e modifica pub
+//manca modifica pub
 describe('Visualizzazione pubblicazioni e Filtra pubblicazioni (get: publications)', () => {
 
    
