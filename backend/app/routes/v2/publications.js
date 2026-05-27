@@ -133,7 +133,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
 
         let image = null;
 
-        const newPub = await Publication.create({description, category, notes, location, image, type, date, user});
+        const newPub = await Publication.create({description, category, notes, location,image, type, date, user});
 
         let pubId = newPub._id;
 
@@ -202,7 +202,7 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
 
 
 
-router.put('/:id', tokenChecker,async(req, res) => {
+router.put('/:id', tokenChecker, upload.single('image'),  async(req, res) => {
     try {
        
         const user = req.loggedUser.id;
@@ -210,21 +210,21 @@ router.put('/:id', tokenChecker,async(req, res) => {
         
         //controllo che la pub sia dell'user o chiamata da un admin
         if (publication.user.toString() !== user && req.loggedUser.role !== "admin") {
-            return res.status(403).json({ error: "Non sei autorizzato a modificare questa pubblicazione." });
+            return res.status(403).json({success: false, error: "Non sei autorizzato a modificare questa pubblicazione." });
         }
 
         const { description, category, notes, image, date, type, state } = req.body;
 
         if (description) {
             if (description.trim().length < 5 || description.length > 500) {
-                return res.status(400).json({ error: "La descrizione deve essere tra 5 e 500 caratteri." });
+                return res.status(400).json({success: false, error: "La descrizione deve essere tra 5 e 500 caratteri." });
             }
             publication.description = description;
         }
 
         if (category) {
             if (!categories.includes(category.toLowerCase())) {
-                return res.status(400).json({ error: "Categoria non valida." });
+                return res.status(400).json({ success: false, error: "Categoria non valida." });
             }
             publication.category = category;
         }
@@ -232,7 +232,7 @@ router.put('/:id', tokenChecker,async(req, res) => {
         if (date) {
             const eventDate = new Date(date);
             if (isNaN(eventDate.getTime()) || eventDate > new Date()) {
-                return res.status(400).json({ error: "Data non valida o nel futuro." });
+                return res.status(400).json({success: false, error: "Data non valida o nel futuro." });
             }
             publication.date = date;
         }
@@ -240,21 +240,52 @@ router.put('/:id', tokenChecker,async(req, res) => {
         if (state) {
             const validStates = ['unresolved', 'solved', 'decayed'];
             if (!validStates.includes(state)) {
-                return res.status(400).json({ error: "Stato non valido (deve essere 'unresolved', 'solved', 'decayed')." });
+                return res.status(400).json({success: false, error: "Stato non valido (deve essere 'unresolved', 'solved', 'decayed')." });
             }
             publication.state = state;
         }
 
        
         if (notes !== undefined) publication.notes = notes;
-        if (image !== undefined) publication.image = image;
+       // if (image !== undefined) publication.image = image;
         if (type) publication.type = type;
+
+        if (req.file) {
+            console.log('file arrivato' + req.file);
+            const ext = req.file.originalname.split('.').pop();
+            const filePath = `publications/${publication._id}/${Date.now()}.${ext}`;
+
+            const { error: uploadError } = await supabase
+                .storage
+                .from('publications')
+                .upload(filePath, req.file.buffer, {contentType: req.file.mimetype, upsert: false});
+
+            if(uploadError) {
+                await Publication.findByIdAndDelete(publication.id);
+                return res.status(500).json({
+                    success: false,
+                    error: "Upload immagine fallito",
+                    details: uploadError.message
+                });
+            }
+
+            const { data: publicUrlData } = supabase
+                .storage
+                .from('publications')
+                .getPublicUrl(filePath);
+            
+            publication.image = publicUrlData.publicUrl;
+        }
 
         
         const updatedPub = await publication.save();
 
+
+
+
         
         res.status(200).json({
+            success: true,
             message: "Pubblicazione aggiornata con successo!",
             publication: updatedPub,
             self: "/api/v2/publications/" + updatedPub._id
@@ -264,6 +295,7 @@ router.put('/:id', tokenChecker,async(req, res) => {
     catch (error) {
         console.error("Errore modifica:", error);
         res.status(500).json({
+             success: false,
             message: "Errore nella modifica pubblicazione",
             error: error.message
         });

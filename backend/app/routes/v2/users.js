@@ -55,22 +55,22 @@ router.post("/", async (req, res) => {
 
         if(!username){
             return res.status(400).json({
-                message: "Username mancante",
+                success: false, message: "Username mancante",
             });
         }
         if(!surname){
             return res.status(400).json({
-                message: "Cognome mancante",
+                success: false, message: "Cognome mancante",
             });
         }
         if(!name){
             return res.status(400).json({
-                message: "Nome mancante",
+                success: false, message: "Nome mancante",
             });
         }
         if(!email){
             return res.status(400).json({
-                message: "Email mancante",
+                success: false, message: "Email mancante",
             });
         }
         
@@ -81,16 +81,16 @@ router.post("/", async (req, res) => {
 
         if(existingUser) {
             return res.status(400).json({
-                message: "Email o username già esistente",
+                success: false, message: "Email o username già esistente",
             });
         }
         if(!emailRegex.test(email)) {
             return res.status(400).json({
-                message: "Email non valida",
+                success: false, message: "Email non valida",
             });}
         if(!password || password.length < 8) {
             return res.status(400).json({
-                message: "La password deve contenere almeno 8 caratteri",
+               success: false,  message: "La password deve contenere almeno 8 caratteri",
             });
         }
     
@@ -120,6 +120,7 @@ router.post("/", async (req, res) => {
         //console.log("Token creato");
 
         res.status(201).json({
+            success: true,
             message: "registrazione completata",
             token,
             user: {

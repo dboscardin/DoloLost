@@ -8,18 +8,19 @@ const ModificaPub = (props) => {
 
   const [open, setOpen] = useState(false)
   const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
-
   const { pubId } = useParams();
   const { token } = props;
+  const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState({
     description: "",
     category: "altro",
     notes: "",
-    image: "",
     date: "",
     type: "found",
-    state: ""
+    state: "", 
+    image: ""
   });
+  
 
   
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ const ModificaPub = (props) => {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
 
-  
+
   useEffect(() => {
     const fetchPublication = async () => {
       if (!token || !pubId) return;
@@ -45,7 +46,6 @@ const ModificaPub = (props) => {
           description: data.description,
           category: data.category,
           notes: data.notes,
-          image: data.image,
           date:data.date.split('T')[0],
           type: data.type,
           state: data.state
@@ -63,7 +63,13 @@ const ModificaPub = (props) => {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    console.log("change di" + name + "in " + value)
+    if(name != "image"){
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    else{
+      setFormData(prev => ({ ...prev, [name]: e.target.files[0] || null }));
+    }
   };
 
   const handleDelete = async () => {
@@ -88,14 +94,31 @@ const ModificaPub = (props) => {
     setSaving(true);
     setError(null);
     setSuccessMsg("");
+    //const formData2 =  new FormData(formData);
+    
     try {
+      const dataToSend = new FormData();
+    
+   
+      dataToSend.append("description", formData.description);
+      dataToSend.append("category", formData.category);
+      dataToSend.append("notes", formData.notes);
+      dataToSend.append("date", formData.date);
+      dataToSend.append("type", formData.type);
+      dataToSend.append("state", formData.state);
+    
+    
+      if (formData.image) {
+        dataToSend.append("image", formData.image); 
+      }
+
+
         const response = await fetch(`/api/v2/publications/${pubId}`, {
             method: 'PUT',
             headers: {
-            'Content-Type': 'application/json',
             'x-access-token': token
         },
-        body: JSON.stringify(formData)
+        body: dataToSend
         });
 
     if (!response.ok) {
@@ -216,6 +239,8 @@ const ModificaPub = (props) => {
             onChange={handleChange} 
             style={styles.input} 
           />
+
+          <input type="file" name="image" accept="image/*" onChange={handleChange} ></input>
           
           <button type="submit" style={styles.button} disabled={saving}>
             {saving ? "Salvataggio..." : "Salva Modifiche"}
