@@ -20,6 +20,33 @@ delete 200 -> conferma, 204 -> no body
 404 obj non trovato
 500 problema interno server
 */
+
+//NON SPOSTARE DA QUI!
+router.delete('/me', tokenChecker, async (req, res) => {
+    try {
+        const loggedUserId = req.loggedUser.id;
+        const deletedUser = await User.findByIdAndDelete(loggedUserId);
+
+        if(!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Utente non trovato'
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Account eliminato con successo'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Errore nell'eliminazione dell'account",
+            error: error.message
+        });
+    }
+})
+
+
 router.use('/:id', async (req, res, next) => {
    
     let pub = await User.findById(req.params.id).exec();
@@ -143,5 +170,30 @@ router.post("/", async (req, res) => {
     };
 });
 
+//x ADMIN
+/*router.delete('/:id', tokenChecker, adminChecker, async (req, res) => {
+    try {
+        const targetUserId = req.params.id;
+
+        if(!targetUserId) {
+            return res.status(404).json({
+                success: false,
+                message: 'Utente non trovato'
+            });
+        }
+        await User.findByIdAndDelete(req.params.id);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Account eliminato con successo'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Errore nell'eliminazione dell'account",
+            error: error.message
+        });
+    }
+})*/
 
 export default router;

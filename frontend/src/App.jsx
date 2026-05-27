@@ -189,13 +189,36 @@ function App() {
     setUserData(null);
     
     window.location.href = "/userLogin";
-};
-    
-  /*
-const token = searchParams.get("token")
-    
-  }*/
- 
+  };
+
+  const deleteAccount = async() => {
+    const conferma = window.confirm("Sei sicura di voler eliminare definitivamente il tuo account?");
+      if (!conferma) return;
+
+      try {
+        console.log("TOKEN IN DELETE:", token);
+        const response = await fetch('/api/v2/users/me', {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.message || "Errore nell'eliminazione dell'account");
+          return;
+        }
+
+        logout();
+        alert("Account eliminato con successo");
+
+      } catch (error) {
+        console.error("Errore nell'eliminazione dell'account:", error);
+        alert("Errore di connessione col server");
+      }
+  }
 
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -213,6 +236,7 @@ const token = searchParams.get("token")
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <span>Benvenuto <b>{userData.username}</b></span>
               <Link onClick={logout} style={{btnStyle}}>Logout</Link>
+              <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
               <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
               <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
             </div>
