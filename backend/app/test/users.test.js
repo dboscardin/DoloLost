@@ -4,7 +4,7 @@ import User from '../models/user.js';
 import { jest } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 
-//manca registrazione e modifica dati utente
+//manca registrazione
 describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
 
    
@@ -186,8 +186,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
         expect(response.body).toHaveProperty('error', 'Email già esistente');
 
     });
-
-
+    
     test('Caso 40: Modifica password con vecchia password errata', async () => {
         
         const payload = {
