@@ -1,7 +1,98 @@
 import request from 'supertest';
 import app from '../app.js';
 import User from '../models/user.js';
-import { jest } from '@jest/globals';
+import jwt from 'jsonwebtoken';
+
+import { afterEach, jest } from '@jest/globals';
+
+
+describe('Eliminazione Account (DELETE /api/v2/users/me)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    test('Caso 41: Eliminazione account con token valido', async () => {
+
+        const validId = '6a057de239043fb7ec300106';
+
+        const token = jwt.sign(
+            {
+                _id: validId,
+                username: 'tozzifabio',
+                role: 'user',
+                email: 'fabiotozzi@gmail.com'
+            },
+            process.env.SUPER_SECRET,
+            { expiresIn: 86400 }
+        );
+
+        jest.spyOn(User, 'findByIdAndDelete').mockReturnValue({
+            _id: validId,
+            username: 'tozzifabio'
+        });
+
+        const response = await request(app)
+            .delete('/api/v2/users/me')
+            .set('x-access-token', token);
+
+        expect(User.findByIdAndDelete).toHaveBeenCalledWith(validId);
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toMatch(/Account eliminato/);
+
+
+    });
+
+    test('Caso 42: Eliminazione account senza token', async () => {
+        const response = await request(app)
+            .delete('/api/v2/users/me')
+
+        expect(response.status).toBe(401);
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toMatch('No token provided');
+    });
+
+    test('Caso 43: Eliminazione account con token non valido', async () => {
+
+        const response = await request(app)
+            .delete('/api/v2/users/me')
+            .set('x-access-token', 'tokenNonValido');
+
+        expect(response.status).toBe(403);
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toMatch('Token not valid');
+    });
+
+    test('Caso 44: Eliminazione utente inesistente', async () => {
+        const validId = '6a057de239043fb7ec300106';
+
+        const token = jwt.sign(
+            {
+                _id: validId,
+                username: 'username',
+                role: 'user',
+                email: 'username@gmail.com'
+            },
+            process.env.SUPER_SECRET,
+            { expiresIn: 86400 }
+        );
+        
+        jest.spyOn(User, 'findByIdAndDelete').mockResolvedValue(null);
+
+
+        const response = await request(app)
+            .delete('/api/v2/users/me')
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(404);
+        expect(response.body.success).toBe(false);
+        expect(response.body.message).toMatch('Utente non trovato');
+    });
+
+
+})
+
 
 
 describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
