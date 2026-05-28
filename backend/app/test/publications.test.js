@@ -5,7 +5,7 @@ import Publication from '../models/publication.js';
 import jwt from 'jsonwebtoken';
 
 
-//manca modifica pub
+
 describe('Visualizzazione pubblicazioni e Filtra pubblicazioni (get: publications)', () => {
 
    
@@ -890,11 +890,82 @@ describe('Modifica pubblicazione (put: publications)', () => {
         expect(response.body).toHaveProperty("self", '/api/v2/publications/' + id);
         expect(mockSave).toHaveBeenCalled();
     });
+    test('Caso 21: Modifica da utente non autorizzato', async () => {
 
+        const id = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+            
+        
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+        
+        const mockSave = jest.fn().mockResolvedValue({
+            _id: id,
+            description: "mazzo chiavi di casa",
+            category: "chiavi",
+            date: "2023-10-01T12:00:00Z",
+            type: "lost",
+            state: "solved", 
+            user: "69fa1f15cff2d08355d320e6"
+        });
+        
+        const mockPublicationInstance = {
+            _id: id,
+            description: "mazzo chiavi di casa",
+            category: "chiavi",
+            date: "2023-10-01T12:00:00Z",
+            type: "lost",
+            state: "unresolved", 
+            user: "69fa1f15cff2d08355d320e6",    
+            save: mockSave       
+        };
+
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(mockPublicationInstance)
+        });
+
+        const response = await request(app).put('/api/v2/publications/' + id).set('x-access-token', token).send({"type" : "solved"});
+
+        expect(response.status).toBe(403);
+        expect(response.body.error).toBe("Non sei autorizzato a modificare questa pubblicazione.");
+    });
+    test('Caso 22: Modifica su ID inesistente', async () => {
+
+        const id = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+        
+        
+
+
+        jest.spyOn(Publication, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(null)
+        });
+
+        const response = await request(app).put('/api/v2/publications/' + id).set('x-access-token', token).send({"type" : "solved"});
+
+        expect(response.status).toBe(404);
+        expect(response.body.error).toBe("Pubblicazione non trovata");
+    });
     
 });
-
-
 
 
 describe('Cancella Pubblicazione (delete: publications/:id)', () => {

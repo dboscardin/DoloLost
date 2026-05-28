@@ -82,22 +82,22 @@ router.post("/", async (req, res) => {
 
         if(!username){
             return res.status(400).json({
-                success: false, message: "Username mancante",
+                success: false, error: "Username mancante",
             });
         }
         if(!surname){
             return res.status(400).json({
-                success: false, message: "Cognome mancante",
+                success: false, error: "Cognome mancante",
             });
         }
         if(!name){
             return res.status(400).json({
-                success: false, message: "Nome mancante",
+                success: false, error: "Nome mancante",
             });
         }
         if(!email){
             return res.status(400).json({
-                success: false, message: "Email mancante",
+                success: false, error: "Email mancante",
             });
         }
         
@@ -108,16 +108,16 @@ router.post("/", async (req, res) => {
 
         if(existingUser) {
             return res.status(400).json({
-                success: false, message: "Email o username già esistente",
+                success: false, error: "Email o username già esistente",
             });
         }
         if(!emailRegex.test(email)) {
             return res.status(400).json({
-                success: false, message: "Email non valida",
+                success: false, error: "Email non valida",
             });}
         if(!password || password.length < 8) {
             return res.status(400).json({
-               success: false,  message: "La password deve contenere almeno 8 caratteri",
+               success: false,  error: "La password deve contenere almeno 8 caratteri",
             });
         }
     
