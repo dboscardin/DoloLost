@@ -54,7 +54,82 @@ describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
 
 
         expect(response.status).toBe(404);
-        expect(response.body).toEqual({ error: 'Utente non trovato' });
+        expect(response.body.error).toEqual( 'Utente non trovato');
+    });
+});
+describe('Eliminazione user (delete: users/:id)', () => {
+
+   
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    test('Caso 41: Eliminazione del proprio account con token valido', async () => {
+        const targetUserId = "6a057de239043fb7ec300106"
+        const payload = { id: targetUserId, email: 'user@test.com', role: 'user' };
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 3600 });
+
+        jest.spyOn(User, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue({ _id: targetUserId, email: 'user@test.com' })
+        });
+
+
+        jest.spyOn(User, 'findByIdAndDelete').mockResolvedValue({ _id: targetUserId });
+
+
+        const response = await request(app)
+            .delete(`/api/v2/users/${targetUserId}`)
+            .set('x-access-token', token);
+
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body).toHaveProperty("message","Account eliminato con successo");
+        expect(User.findByIdAndDelete).toHaveBeenCalledWith(targetUserId);
+    });
+    test('Caso 42: Eliminazione senza token', async () => {
+        const targetUserId = "6a057de239043fb7ec300106"
+        jest.spyOn(User, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue({ _id: targetUserId })
+        });
+        jest.spyOn(User, 'findByIdAndDelete');
+        const response = await request(app).delete('/api/v2/users/' + targetUserId);
+        expect(response.status).toBe(401);
+        expect(User.findByIdAndDelete).not.toHaveBeenCalled();
+    });
+    test('Caso 43: Eliminazione account di un altro utente', async () => {
+        const targetUserId = "6a057de239043fb7ec300106"
+        const targetUserId2 = "6a057de239043fb7ec300107"; 
+        const payload = { id: targetUserId2, role: 'user' };
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 3600 });
+
+        jest.spyOn(User, 'findById').mockReturnValue({
+            exec: jest.fn().mockResolvedValue({ _id: targetUserId })
+        });
+
+        const response = await request(app)
+            .delete('/api/v2/users/'+targetUserId)
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(403);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe("Non sei autorizzato a eliminare questo Utente.");
+    });
+
+    test('Caso 44: Eliminazione di un account non esistente', async () => {
+        const targetUserId = "6a057de239043fb7ec300106"
+        const payload = { id: targetUserId, role: 'user' };
+        const token = jwt.sign(payload,  process.env.SUPER_SECRET, { expiresIn: 3600 });
+
+        
+        jest.spyOn(User, 'findById').mockReturnValue({ exec: jest.fn().mockResolvedValue(null)});
+
+        const response = await request(app)
+            .delete('/api/v2/users/' + targetUserId)
+            .set('x-access-token', token);
+
+        expect(response.status).toBe(404);
+        expect(response.body.error).toBe("Utente non trovato");
     });
 });
 

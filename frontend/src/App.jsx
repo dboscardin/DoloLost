@@ -191,8 +191,33 @@ function App() {
     setUserData(null);
     
     window.location.href = "/userLogin";
-};
- 
+  };
+
+  const deleteAccount = async() => {
+    const conferma = window.confirm("Sei sicura di voler eliminare definitivamente il tuo account?");
+      if (!conferma) return;
+
+      try {
+        const response = await fetch(`/api/v2/users/${userData.id}`, {
+          method: 'DELETE',
+          headers: { 'x-access-token': token }
+      });
+   
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.message || "Errore nell'eliminazione dell'account");
+          return;
+        }
+
+        logout();
+        alert("Account eliminato con successo");
+
+      } catch (error) {
+        console.error("Errore nell'eliminazione dell'account:", error);
+        alert("Errore di connessione col server");
+      }
+  }
 
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
@@ -210,6 +235,7 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <span>Benvenuto <b>{userData.username}</b></span>
               <Link onClick={logout} style={{btnStyle}}>Logout</Link>
+              <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
               <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
               <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
               <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
