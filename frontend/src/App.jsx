@@ -196,14 +196,11 @@ function App() {
       if (!conferma) return;
 
       try {
-        console.log("TOKEN IN DELETE:", token);
         const response = await fetch('/api/v2/users/me', {
           method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
+          headers: { 'x-access-token': token }
+      });
+   
         const data = await response.json();
 
         if (!response.ok) {
