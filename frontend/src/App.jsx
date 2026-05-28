@@ -105,6 +105,8 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
                   </Link>
                 
+
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.location.address}</h4>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />

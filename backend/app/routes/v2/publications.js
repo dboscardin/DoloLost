@@ -30,7 +30,9 @@ delete 200 -> conferma, 204 -> no body
 404 obj non trovato
 500 problema interno server
 */
-
+//Via Dietro le Mura A, Centro storico, San Giuseppe - Santa Chiara, Villazzano, Trento, Territorio Val d'Adige, Trento, Trentino-Alto Adige, 38122, Italia
+//11.1239513
+//46.0651365
 
 //TENERE IN MINUSCOLO !!!!!!!
 const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
@@ -109,7 +111,6 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
 
 router.post('', tokenChecker, upload.single('image'), async(req, res) => {
     
-   //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
         //quando si creano sono unresolved
         const { description, category, notes, date, type, lat, lng, address } = req.body;
@@ -139,7 +140,18 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
         if (eventDate > new Date()) {
             return res.status(400).json({success: false, error: "La data non può essere nel futuro." });
         }
-
+        if(!address)
+        {
+            return res.status(400).json({success: false, error: "Indirizzo mancante" });
+        }
+        if(!lng || Number(lng) < -180 || Number(lng) >  180 )
+        {
+            return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        if(!lat || Number(lat) < -90 || Number(lat) >  90 )
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
         const location = { "type": "Point", "coordinates": [Number(lng), Number(lat)],"address": address}
         let image = null;
 
