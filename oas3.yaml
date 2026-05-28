@@ -298,13 +298,13 @@ paths:
                   $ref: '#/components/schemas/Publication'
     post:
       summary: Crea una nuova pubblicazione
-      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato. L'ID dell'utente viene estratto automaticamente dal token.
+      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato compilando i dati e allegando un file d'immagine reale. L'ID dell'utente viene estratto automaticamente dal token.
       security:
         - tokenAuth: []
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
@@ -318,35 +318,62 @@ paths:
                   minLength: 5
                   maxLength: 500
                   example: "Ho smarrito un mazzo di chiavi vicino alla stazione"
+                  description: La descrizione dell'oggetto (minimo 5 caratteri senza spazi vuoti iniziali/finali).
                 category:
                   type: string
                   enum: [accessori, elettronica, documenti, chiavi, abbigliamento, "borse e zaini", animali, altro]
                   example: "chiavi"
+                  description: Categoria dell'oggetto (verrà convertita in minuscolo per la validazione).
                 notes:
                   type: string
                   maxLength: 1000
                   example: "Il mazzo ha un portachiavi a forma di gatto"
-                image:
-                  type: string
-                  description: URL o stringa base64 dell'immagine
+                  description: Note o dettagli aggiuntivi facoltativi.
                 date:
                   type: string
                   format: date-time
-                  description: La data dell'evento (non può essere nel futuro)
+                  description: La data e l'ora dell'evento (obbligatoria e non può essere nel futuro).
                 type:
                   type: string
                   enum: [lost, found]
                   example: "lost"
+                  description: Specifica se l'oggetto è stato perso (lost) o ritrovato (found).
+                image:
+                  type: string
+                  format: binary
+                  description: Il file binario dell'immagine dell'oggetto da caricare (gestito via Multer).
       responses:
         '201':
           description: Pubblicazione creata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  self:
+                    type: string
+                  publication:
+                    $ref: '#/components/schemas/Publication'
         '400':
-          description: Errore di validazione (es. descrizione troppo corta, categoria non valida o data futura)
+          description: Errore di validazione (es. descrizione troppo corta/lunga, categoria non valida, note eccessive o data mancante/futura).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
         '401':
-          description: Token mancante o non valido (gestito dal tokenChecker)
+          description: Token x-access-token mancante o non valido (gestito dal middleware tokenChecker).
         '500':
-          description: Errore interno del server durante la creazione
-
+          description: Errore interno del server durante il salvataggio o fallimento del caricamento del file su Supabase (es. immagine troppo grande).
   /api/v2/publications/{id}:
     get:
       summary: Recupera una singola pubblicazione tramite ID
@@ -372,87 +399,87 @@ paths:
         '404':
           description: Pubblicazione non trovata nel database 
     put:
-      summary: Modifica una pubblicazione esistente
-      description: Consente all'autore originale della pubblicazione o a un utente con ruolo 'admin' di aggiornare i campi di una segnalazione
-      security:
-        - tokenAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: L'ID univoco della pubblicazione da modificare
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
+        summary: Modifica una pubblicazione esistente
+        description: Consente all'autore originale della pubblicazione o a un utente con ruolo 'admin' di aggiornare i campi di una segnalazione
+        security:
+          - tokenAuth: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            description: L'ID univoco della pubblicazione da modificare
             schema:
-              type: object
-              description: I campi inviati nel body sono facoltativi
-              properties:
-                description:
-                  type: string
-                  minLength: 5
-                  maxLength: 500
-                category:
-                  type: string
-                date:
-                  type: string
-                  format: date-time
-                state:
-                  type: string
-                  enum: [unresolved, solved, decayed]
-                notes:
-                  type: string
-                image:
-                  type: string
-                type:
-                  type: string
-                  enum: [lost, found]
-      responses:
-        '200':
-          description: Pubblicazione aggiornata con successo
+              type: string
+        requestBody:
+          required: true
           content:
             application/json:
               schema:
                 type: object
+                description: I campi inviati nel body sono facoltativi
                 properties:
-                  message:
+                  description:
                     type: string
-                  publication:
-                    $ref: '#/components/schemas/Publication'
-        '400':
-          description: Errore di validazione nei dati inviati
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    minLength: 5
+                    maxLength: 500
+                  category:
                     type: string
-        '401':
-          description: Token x-access-token mancante o non valido
-        '403':
-          description: Utente non autorizzato 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                  date:
                     type: string
-        '404':
-          description: La pubblicazione non esiste.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    format: date-time
+                  state:
                     type: string
-        '500':
-          description: Errore interno del server.
+                    enum: [unresolved, solved, decayed]
+                  notes:
+                    type: string
+                  image:
+                    type: string
+                  type:
+                    type: string
+                    enum: [lost, found]
+        responses:
+          '200':
+            description: Pubblicazione aggiornata con successo
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                    publication:
+                      $ref: '#/components/schemas/Publication'
+          '400':
+            description: Errore di validazione nei dati inviati
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '401':
+            description: Token x-access-token mancante o non valido
+          '403':
+            description: Utente non autorizzato 
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '404':
+            description: La pubblicazione non esiste.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+          '500':
+            description: Errore interno del server durante il salvataggio o fallimento del caricamento del file su Supabase (es. immagine troppo grande).
     delete:
       summary: Elimina una pubblicazione esistente
       description: Rimuove in modo permanente una pubblicazione dal database. Richiede che l'utente sia autenticato e che la pubblicazione esista.
@@ -574,6 +601,115 @@ paths:
           description: Errore interno del server
 
   /api/v2/users:
+    put:
+      summary: Modifica dati utente
+      description: Consente di aggiornare i dati di un utente (username, email, password, nome, cognome). 
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID univoco dell'utente da modificare.
+          schema:
+            type: string
+        - name: x-access-token
+          in: header
+          required: true
+          description: Token JWT di autenticazione fornito in fase di login.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Nuovo username dell'utente (deve essere univoco nel sistema).
+                  example: "alice02"
+                email:
+                  type: string
+                  format: email
+                  description: Nuova email dell'utente (deve essere univoca e rispettare il formato email valido).
+                  example: "alice02@gmail.com"
+                old_password:
+                  type: string
+                  description: Vecchia password corrente dell'utente. Obbligatoria solo se si inserisce new_password.
+                  example: "alice2025"
+                new_password:
+                  type: string
+                  minLength: 8
+                  description: Nuova password da impostare. Richiede la verifica della vecchia password e deve essere lunga almeno 8 caratteri.
+                  example: "alice2027"
+                name:
+                  type: string
+                  description: Nuovo nome dell'utente.
+                  example: "Alice"
+                surname:
+                  type: string
+                  description: Nuovo cognome dell'utente.
+                  example: "Rossi"
+      responses:
+        '200':
+          description: Utente aggiornato con successo. Restituisce l'oggetto utente aggiornato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User aggiornato con successo!"
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+                  self:
+                    type: string
+
+        '400':
+          description: |
+            Bad Request. Questo errore viene restituito in presenza di uno dei seguenti problemi di validazione:
+            - Username già esistente nel DB.
+            - Email già esistente nel DB.
+            - Formato Email non valido.
+            - Nuova password inferiore a 8 caratteri.
+            - Nuova password inserita senza la vecchia password.
+            - Vecchia password errata.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        '403':
+          description: Forbidden. L'utente autenticato non è il proprietario del profilo e non possiede i privilegi di amministratore.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                    example: "Non sei autorizzato a modificare i dati di questo utente."
+        '500':
+          description: Internal Server Error. Si è verificato un errore imprevisto durante la modifica o il salvataggio sul database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                  error:
+                    type: string
     post:
       summary: Registra un nuovo utente
       description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 

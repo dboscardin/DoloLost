@@ -8,6 +8,8 @@ import PropriePub from './PropriePub.jsx'
 import CreaPub from './CreaPub.jsx'
 import ModificaPub from './ModificaPub.jsx'
 import Contatto from './Contatto.jsx'
+import ModificaUser from './ModificaUser.jsx'
+import ModificaPassword from './ModificaPassword.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -236,6 +238,7 @@ function App() {
               <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
               <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
               <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
+              <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
             </div>
           )}
         </div>
@@ -256,6 +259,8 @@ function App() {
         <Route path="/propriePub" element={<PropriePub  token={token} />} />
         <Route path="/creaPub" element={<CreaPub token={token}/>} />
         <Route path="/modificaPub/:pubId" element={<ModificaPub token={token} />} />
+        <Route path="/modificaUser/:userId" element={<ModificaUser token={token} />} />
+        <Route path="/modificaPassword/:userId" element={<ModificaPassword token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
       </Routes>
     </div>

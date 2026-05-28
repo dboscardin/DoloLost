@@ -4,6 +4,8 @@ import { expect, jest } from '@jest/globals';
 import Publication from '../models/publication.js'; 
 import jwt from 'jsonwebtoken';
 
+
+//manca modifica pub
 describe('Visualizzazione pubblicazioni e Filtra pubblicazioni (get: publications)', () => {
 
    
@@ -614,10 +616,27 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
     
 });
 
+
+const mockUpload = jest.fn();
+const mockGetPublicUrl = jest.fn().mockReturnValue({ data: { publicUrl: 'http://fake-supabase-url.com/immagine.png' } });
+
+
+jest.unstable_mockModule('@supabase/supabase-js', () => ({
+    createClient: () => ({
+        storage: {
+            from: () => ({
+                upload: mockUpload,
+                getPublicUrl: mockGetPublicUrl
+            })
+        }
+    })
+}));
+
 describe('Creazione pubblicazione (post: publications)', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
+        
     });
     
 
@@ -627,7 +646,8 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "description": "mazzo chiavi di casa",
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
-            "type": "lost"
+            "type": "lost",
+            "image": "C:\\somepath\\image.png"
         };
         
        const newId = "69fa1f15cff2d08355d32999";
@@ -651,6 +671,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty("self", '/api/v2/publications/' + newId);
         expect(Publication.create).toHaveBeenCalled();
+        expect(response.body.publication.publication).toHaveProperty("image", "C:\\somepath\\image.png");
     });
     test('Caso 15: Creazione senza description', async () => {
 
@@ -733,6 +754,85 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(401);
         expect(response.body).toHaveProperty('message', 'No token provided.');
     });
+    test('Caso 18: Creazione pubblicazione senza immagine', async () => {
+
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost",
+            "image": ""
+        };
+        
+       const newId = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+         jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, publication: newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        });
+
+        const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty("self", '/api/v2/publications/' + newId);
+        expect(Publication.create).toHaveBeenCalled();
+        expect(response.body.publication.publication).toHaveProperty("image", "");
+    });
+    test('Caso 19: Upload file troppo grande (>1MB)', async () => {
+        const buffer = Buffer.alloc(1024 * 1024 * 1.5); // File da 1.5 MB
+
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost"
+        };
+        
+        const newId = "69fa1f15cff2d08355d32999";
+        const payload = {
+            id: '69fa1f15cff2d08355d320e5',
+            username: 'alice01',
+            email: 'alice01@gmail.com',
+            role: 'user',
+        };
+        const token = jwt.sign(payload, process.env.SUPER_SECRET || 'test_secret', { expiresIn: 3600 });
+
+        
+        mockUpload.mockResolvedValue({
+            error: { message: "The object exceeded the maximum allowed size" },
+            data: null
+        });
+
+        const mockNewPub = { _id: newId, ...newPublicationData, user: payload.id };
+        jest.spyOn(Publication, 'create').mockResolvedValue(mockNewPub);
+        jest.spyOn(Publication, 'findByIdAndDelete').mockResolvedValue(mockNewPub);
+
+
+        const response = await request(app)
+            .post('/api/v2/publications')
+            .set('x-access-token', token)
+            .field('description', newPublicationData.description)
+            .field('category', newPublicationData.category)
+            .field('date', newPublicationData.date)
+            .field('type', newPublicationData.type)
+            .attach('image', buffer, 'immagine_pesante.png');
+
+
+        expect(response.status).toBe(500);
+        expect(response.body.error).toContain("Upload immagine fallito");
+        expect(response.body.details).toContain("The object exceeded the maximum allowed size");
+        expect(Publication.create).toHaveBeenCalled();
+        expect(Publication.findByIdAndDelete).toHaveBeenCalledWith(newId);
+    });
     
 });
 
@@ -743,7 +843,7 @@ describe('Modifica pubblicazione (put: publications)', () => {
     });
     
 
-    test('Caso 17: Modifica stato della pubblicazione', async () => {
+    test('Caso 20: Modifica stato della pubblicazione', async () => {
 
         const id = "69fa1f15cff2d08355d32999";
 
@@ -804,7 +904,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
     });
     
 
-    test('Caso 31: Eliminazione con successo', async () => {
+    test('Caso 33: Eliminazione con successo', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',
@@ -838,7 +938,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
         expect(response.body.success).toHaveProperty('deletedCount', 1);
     });
 
-    test('Caso 32: Eliminazione pubblicazione non esistente', async () => {
+    test('Caso 34: Eliminazione pubblicazione non esistente', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',
@@ -863,7 +963,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
         expect(response.body).toHaveProperty('error', 'Pubblicazione non trovata');
     });
     
-    test('Caso 33: Eliminazione pubblicazione di un altro utente', async () => {
+    test('Caso 35: Eliminazione pubblicazione di un altro utente', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',

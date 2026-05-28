@@ -24,12 +24,13 @@ delete 200 -> conferma, 204 -> no body
 
 router.use('/:id', async (req, res, next) => {
    
-    let pub = await User.findById(req.params.id).exec();
-    if (!pub) {
+    let userr = await User.findById(req.params.id).exec();
+    if (!userr) {
         res.status(404).json({success: false, error: "Utente non trovato" })
+        //console.log('user not found')
         return;
     }
-    req['user'] = pub;
+    req['user'] = userr;
     next()
 });
 
@@ -168,6 +169,75 @@ router.post("/", async (req, res) => {
     };
 });
 
+router.put("/:id", tokenChecker,  async (req, res) => {
 
+    try {
+        const userId = req.loggedUser.id;
+        let user = req['user']
+        
+        //controllo sia l'user stesso o un admin
+        if (String(user.id) !== String(userId) && req.loggedUser.role !== "admin") {
+            return res.status(403).json({success: false, error: "Non sei autorizzato a modificare i dati di questo utente." });
+        }
+        //per ora non si può cambiare il ruolo nè l'id
+        const { username, new_password, old_password, email, name, surname } = req.body;
 
+        
+        //check che username sia univoco
+        if (username) {
+            const existingUser = await User.findOne({username})
+            if (existingUser && String(existingUser.id) != String(userId)) {
+                return res.status(400).json({success: false, error: "Username già esistente" });
+            }
+            user.username = username
+        }
+        //check che email sia univoca e regex
+        if (email) {
+            const existingUser = await User.findOne({email})
+            if (existingUser && String(existingUser.id) != String(userId)) {
+                return res.status(400).json({success: false, error: "Email già esistente" });
+            }
+            const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+            if(!emailRegex.test(email)) {
+                return res.status(400).json({success: false, error: "Email non valida", });
+            }
+            user.email = email
+        }
+        if (new_password) {
+            if (new_password.length < 8) {
+                return res.status(400).json({success: false, error: "La password deve contenere almeno 8 caratteri" });
+            }
+            if(!old_password)
+            {
+                return res.status(400).json({success: false, error: "Inserire la vecchia password" });
+            }
+            const isMatch = await bcrypt.compare(old_password, user.password);
+            if(!isMatch)
+            {
+                return res.status(400).json({success: false, error: "Vecchia password errata" });
+            }
+            user.password = await bcrypt.hash(new_password, 10);
+
+        }
+        if (name) {
+            user.name = name
+        }
+        if (surname) {
+            user.surname = surname
+        }
+        const updatedUser = await user.save();
+        res.status(200).json({
+            message: "User aggiornato con successo!",
+            user: updatedUser,
+            self: "/api/v2/users/" + userId
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Errore nella modifica Utente",
+            error: error.message
+        });
+    };
+});
 export default router;

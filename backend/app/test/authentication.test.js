@@ -3,7 +3,7 @@ import app from '../app.js';
 import { jest } from '@jest/globals';
 
 
-
+//manca login
 test('App module should be defined', () => {
     expect(app).toBeDefined();
 });
