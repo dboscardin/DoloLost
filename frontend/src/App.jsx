@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import {useCookies} from "react-cookie"
 import './App.css'
+import AdminHome from './AdminHome.jsx'
 import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
 import UserSignUp from './UserSignUp.jsx'
@@ -125,7 +126,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState('');
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState(null);
   const [filters, setFilters] = useState({
     description: '',
     category: '',
@@ -160,8 +161,9 @@ function App() {
 
   // Carica i dati all'avvio
   useEffect(() => {
-    console.log("cookies:", cookies);
-    console.log("userCookies:", cookies.userCookies);
+    console.log("APP cookies:", cookies);
+    console.log("APP userCookies:", cookies.userCookies);
+    console.log("APP role:", cookies.userCookies?.role);
     
     const urlParams = cookies.userCookies? cookies.userCookies: {token: false};
     const tokenParam = urlParams.token;
@@ -173,12 +175,16 @@ function App() {
       setUserData({
         username: urlParams.username,
         name: urlParams.name,
-        id: urlParams.id
+        id: urlParams.id,
+        role: urlParams.role
       });
+    } else {
+      setToken('');
+      setUserData(null);
     }
 
     loadData();
-  }, []);
+  }, [cookies]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -226,33 +232,43 @@ function App() {
     DoloLost
   </Link>
         <div>
-          {!(userData && userData.username) ? (
-            <div>
-              <Link to="/userLogin" style={btnStyle}>Login</Link>
-              <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <span>Benvenuto <b>{userData.username}</b></span>
-              <Link onClick={logout} style={{btnStyle}}>Logout</Link>
-              <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
-              <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
-              <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
-              <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
-            </div>
-          )}
+          {
+            !userData?.username ? (
+              <div>
+                <Link to="/userLogin" style={btnStyle}>Login</Link>
+                <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
+              </div>
+            ) : userData.role === "admin" ? (
+               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <span>Benvenuto <b>{userData.username}</b></span>
+                <button onClick={logout} style={btnStyle}>Logout</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <span>Benvenuto <b>{userData.username}</b></span>
+                <Link onClick={logout} style={{btnStyle}}>Logout</Link>
+                <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
+                <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
+                <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
+                <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
+              </div>
+            )
+          }            
         </div>
       </nav>
           
       <Routes>
-         <Route path="/" element={<HomePage 
-            publications={publications} 
-            loading={loading} 
-            filters={filters} 
-            handleFilterChange={handleFilterChange} 
-            loadData={loadData} 
+         <Route path="/" element={
+            userData?.role ==="admin" ? <AdminHome /> : <HomePage
+            publications={publications}
+            loading={loading}
+            filters={filters}
+            handleFilterChange={handleFilterChange}
+            loadData={loadData}
             token={token}
-          />} />
+          />
+          }
+        />
          
         <Route path="/userLogin" element={<UserLogin />} />
         <Route path="/userSignUp" element={<UserSignUp />} />
@@ -262,6 +278,9 @@ function App() {
         <Route path="/modificaUser/:userId" element={<ModificaUser token={token} />} />
         <Route path="/modificaPassword/:userId" element={<ModificaPassword token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
+        <Route path="/admin" element={<AdminHome />} />
+        <Route path="*" element={<div>Pagina non trovata</div>} />
+
       </Routes>
     </div>
   )
