@@ -647,7 +647,69 @@ paths:
                   message:
                     type: string
                     example: user not found
+    delete:
+      summary: Elimina un account utente
+      description: Consente l'eliminazione definitiva di un utente. L'operazione è permessa solo all'utente proprietario dell'account stesso oppure a un utente con privilegi di 'admin'.
+      security:
+        - tokenAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: L'ID univoco dell'utente da eliminare
+          schema:
+            type: string
 
+      responses:
+        '200':
+          description: Account eliminato con successo.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "Account eliminato con successo"
+        '401':
+          description: Token x-access-token mancante o non valido (gestito dal middleware tokenChecker).
+        '403':
+          description: Utente non autorizzato (il richiedente non è il proprietario dell'account e non è un amministratore).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        '404':
+          description: L'utente specificato nell'ID non esiste nel database (intercettato dal middleware router.use).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        '500':
+          description: Errore interno del server durante la cancellazione sul database.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  error:
+                    type: string
 
 
   /api/v2/auth:
