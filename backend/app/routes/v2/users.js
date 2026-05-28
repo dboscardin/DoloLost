@@ -21,18 +21,30 @@ delete 200 -> conferma, 204 -> no body
 500 problema interno server
 */
 
-//NON SPOSTARE DA QUI!
-router.delete('/me', tokenChecker, async (req, res) => {
+
+router.use('/:id', async (req, res, next) => {
+   
+    let pub = await User.findById(req.params.id).exec();
+    if (!pub) {
+        res.status(404).json({success: false, error: "Utente non trovato" })
+        return;
+    }
+    req['user'] = pub;
+    next()
+});
+
+router.delete('/:id', tokenChecker, async (req, res) => {
     try {
         const loggedUserId = req.loggedUser.id;
-        const deletedUser = await User.findByIdAndDelete(loggedUserId);
 
-        if(!deletedUser) {
-            return res.status(404).json({
-                success: false,
-                message: 'Utente non trovato'
-            });
+        //controllo che sia lo user stesso o chiamata da un admin
+        if (loggedUserId != req.params.id && req.loggedUser.role !== "admin") {
+            return res.status(403).json({success:false,  error: "Non sei autorizzato a eliminare questo Utente." });
         }
+
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+
+        
         return res.status(200).json({
             success: true,
             message: 'Account eliminato con successo'
@@ -45,19 +57,6 @@ router.delete('/me', tokenChecker, async (req, res) => {
         });
     }
 })
-
-
-router.use('/:id', async (req, res, next) => {
-   
-    let pub = await User.findById(req.params.id).exec();
-    if (!pub) {
-        res.status(404).json({error: "Utente non trovato" })
-        //console.log('user not found')
-        return;
-    }
-    req['user'] = pub;
-    next()
-});
 
 router.get('/:id', async (req, res) => {
     let user = req['user'];
@@ -133,7 +132,7 @@ router.post("/", async (req, res) => {
             password: hashedPassword,
             role,
         });
-       // console.log("Utente creato:", newUser);
+
         const token = jwt.sign(
             {
                 id: newUser._id,
@@ -144,7 +143,6 @@ router.post("/", async (req, res) => {
             process.env.SUPER_SECRET,
             { expiresIn: 86400 }
         );
-        //console.log("Token creato");
 
         res.status(201).json({
             success: true,
@@ -170,30 +168,6 @@ router.post("/", async (req, res) => {
     };
 });
 
-//x ADMIN
-/*router.delete('/:id', tokenChecker, adminChecker, async (req, res) => {
-    try {
-        const targetUserId = req.params.id;
 
-        if(!targetUserId) {
-            return res.status(404).json({
-                success: false,
-                message: 'Utente non trovato'
-            });
-        }
-        await User.findByIdAndDelete(req.params.id);
-
-        return res.status(200).json({
-            success: true,
-            message: 'Account eliminato con successo'
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Errore nell'eliminazione dell'account",
-            error: error.message
-        });
-    }
-})*/
 
 export default router;

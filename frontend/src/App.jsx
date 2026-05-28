@@ -196,7 +196,7 @@ function App() {
       if (!conferma) return;
 
       try {
-        const response = await fetch('/api/v2/users/me', {
+        const response = await fetch(`/api/v2/users/${userData.id}`, {
           method: 'DELETE',
           headers: { 'x-access-token': token }
       });
