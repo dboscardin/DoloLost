@@ -119,7 +119,7 @@ function AdminHome() {
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
+  //const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState('');
   const [userData, setUserData] = useState(null);
   const [filters, setFilters] = useState({
@@ -262,8 +262,8 @@ const cardStyle = { backgroundColor: 'white', borderRadius: '12px', overflow: 'h
 const imageStyle = { width: '100%', height: '220px', objectFit: 'cover' };
 const placeholderStyle = { width: '100%', height: '220px', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' };
 const badgeStyle = { padding: '5px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
-const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 10 };
-const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
+//const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 10 };
+//const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
 
 
 export default AdminHome

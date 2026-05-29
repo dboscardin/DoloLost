@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {useCookies} from "react-cookie"
 import './App.css'
 import AdminHome from './AdminHome.jsx'
-import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
+import { Routes, Route, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
 import UserSignUp from './UserSignUp.jsx'
 import PropriePub from './PropriePub.jsx'
@@ -121,12 +121,15 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
 
 function App() {
 
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
+  //const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState('');
   const [userData, setUserData] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [filters, setFilters] = useState({
     description: '',
     category: '',
@@ -135,8 +138,6 @@ function App() {
     date_before: ''
   });
   
-  //const name = searchParams.get("name");
-  //const autenticato = searchParams.get("username");
   const loadData = () => {
     setLoading(true);
     
@@ -157,6 +158,44 @@ function App() {
         console.error("Errore durante il fetch:", error);
         setLoading(false);
       });
+  };
+
+
+  const handleMenuAction = async (action) => {
+    setIsMenuOpen(false);
+
+    if (action === "mypubs") {
+      navigate('/propriePub');
+      return;
+    }
+
+    if (action === "edit") {
+      navigate(`/modificaUser/${userData.id}`);
+      return;
+    }
+
+    if (action === "create") {
+      navigate("/creaPub");
+      return;
+    }
+
+    if (action === "logout") {
+      logout();
+      return;
+    }
+
+    if (action === "delete") {
+      await deleteAccount();
+      return;
+    }
+
+    if (action === "users") {
+      /* Qui faremo comparire la lista utenti */
+    }
+
+    if (action === "creaAdmin") {
+      /* Creazione admin */
+    }
   };
 
   // Carica i dati all'avvio
@@ -184,6 +223,18 @@ function App() {
     }
 
     loadData();
+
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+      document.addEventListener("mousedown", handleClickOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
   }, [cookies]);
 
   const handleFilterChange = (e) => {
@@ -228,31 +279,54 @@ function App() {
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
       <nav style={navStyle}>
-        <Link to="/" style={{ fontSize: '22px', fontWeight: 'bold', color: '#1565c0', textDecoration: 'none', cursor: 'pointer' }}>
-    DoloLost
-  </Link>
+        <Link to="/" style={{ fontSize: '22px', fontWeight: 'bold', color: '#1565c0', textDecoration: 'none', cursor: 'pointer' }}> DoloLost </Link>
         <div>
-          {
-            !userData?.username ? (
-              <div>
-                <Link to="/userLogin" style={btnStyle}>Login</Link>
-                <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
-              </div>
-            ) : userData.role === "admin" ? (
-               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span>Benvenuto <b>{userData.username}</b></span>
-                <button onClick={logout} style={btnStyle}>Logout</button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span>Benvenuto <b>{userData.username}</b></span>
-                <Link onClick={logout} style={{btnStyle}}>Logout</Link>
-                <Link onClick={deleteAccount} style={btnStyle}>Elimina account</Link>
-                <Link to="/creaPub" style={btnStyle}>Crea Pubblicazione</Link>
-                <Link to="/propriePub" style={btnStyle}>Pubblicazioni</Link>
-                <Link to={`/modificaUser/${userData.id}`} style={btnStyle}>Profilo</Link>
-              </div>
-            )
+      {
+        !userData?.username ? (
+          <div>
+            <Link to="/userLogin" style={btnStyle}>Login</Link>
+            <Link to="/userSignUp" style={btnStyle}>Sign Up</Link>
+          </div>
+        ) : userData.role === "admin" ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span>Benvenuto <b>{userData.username}</b></span>
+
+            <div ref={dropdownRef} className="dropdown-wrapper">
+              <button type="button" onClick={() => setIsMenuOpen(prev => !prev)} className="dropdown-trigger" aria-expanded={isMenuOpen} aria-haspopup="menu"> Cosa vuoi fare? ▾</button>
+
+              {
+                isMenuOpen && (
+                  <div className="dropdown-menu" role="menu">
+                    <button className="dropdown-item" onClick={() => handleMenuAction("users")}> Lista utenti </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("creaAdmin")}> Crea un nuovo amministratore </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("edit")}> Modifica profilo </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("logout")}> Logout </button>
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span>Benvenuto <b>{userData.username}</b></span>
+
+            <div ref={dropdownRef} className="dropdown-wrapper">
+              <button type="button" onClick={() => setIsMenuOpen(prev => !prev)} className="dropdown-trigger" aria-expanded={isMenuOpen} aria-haspopup="menu"> Cosa vuoi fare? ▾</button>
+
+              {
+                isMenuOpen && (
+                  <div className="dropdown-menu" role="menu">
+                    <button className="dropdown-item" onClick={() => handleMenuAction("mypubs")}> Le mie pubblicazioni </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("create")}> Crea pubblicazione </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("edit")}> Modifica profilo </button>
+                    <button className="dropdown-item" onClick={() => handleMenuAction("logout")}> Logout </button>
+                    <button className="dropdown-item delete" onClick={() => handleMenuAction("delete")}> Elimina account </button>
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        )
           }            
         </div>
       </nav>
@@ -294,5 +368,7 @@ const placeholderStyle = { width: '100%', height: '220px', backgroundColor: '#ee
 const badgeStyle = { padding: '5px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' };
 const navStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 40px', backgroundColor: '#ffffff', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', position: 'sticky', top: 0, zIndex: 10 };
 const btnStyle = { textDecoration: 'none', color: 'white', backgroundColor: '#1565c0', padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', margin: 8 };
+
+
 
 export default App

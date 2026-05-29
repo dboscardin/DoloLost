@@ -98,7 +98,6 @@ const ModificaUser = (props) => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>Modifica i tuoi dati</h2>
-        <Link to={`/modificaPassword/${userId}`} style={btnStyle}>Cambia Password</Link>
 
         <div style={styles.errorBox}>{error}</div>
         <div style={styles.successBox}>{successMsg}</div>
@@ -145,9 +144,21 @@ const ModificaUser = (props) => {
 
           
 
-          <button type="submit" style={styles.button} disabled={saving}>
+          <button type="submit" style={styles.button} disabled={saving} >
             {saving ? "Salvataggio..." : "Salva Modifiche"}
           </button>
+          <Link to={`/modificaPassword/${userId}`}
+            style={{
+              ...styles.button,
+              backgroundColor: "#c62828",
+              color: "white",
+              textDecoration: "none",
+              display: "inline-block",
+              fontSize: "13px"
+            }}
+          >
+            Cambia Password
+          </Link>
 
         </form>
       </div>
