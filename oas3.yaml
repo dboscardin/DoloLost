@@ -846,7 +846,81 @@ paths:
                     type: string
                   error:
                     type: string
-
+  /api/v2/users/admin:
+    post:
+      summary: Registrazione nuovo Amministratore
+      description: Consente a un amministratore autenticato di creare un nuovo utente con ruolo `admin`.
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - surname
+                - username
+                - password
+              properties:
+                name:
+                  type: string
+                  description: Nome dell'amministratore
+                surname:
+                  type: string
+                  description: Cognome dell'amministratore
+                username:
+                  type: string
+                  description: Username univoco per l'accesso
+                password:
+                  type: string
+                  description: Password di accesso (minimo 8 caratteri)
+                  minLength: 8
+      responses:
+        '201':
+          description: Registrazione completata con successo. Restituisce il token e i dati dell'admin.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: registrazione completata
+                  token:
+                    type: string
+                    description: Token JWT generato per il nuovo amministratore
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Errori di Validazione. Può essere causata da campi mancanti, formato password errato o username già occupato.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+        '403':
+          description: Accesso negato. Il token non è di un amministratore o non è valido.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                    example: "Accesso negato: richiesti privilegi di amministratore"
+        '500':
+          description: Errore interno del server durante il salvataggio o la cifratura dei dati.
 
   /api/v2/auth:
     post:
