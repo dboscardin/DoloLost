@@ -439,6 +439,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
             username: "adminuser1",
             password: "password123",
             name: "Mario",
+            email:"test@test.com",
             surname: "Rossi"
         };
 
@@ -447,6 +448,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
             username: "adminuser1",
             name: "Mario",
             surname: "Rossi",
+            email:"test@test.com",
             role: "admin"
         };
         jest.spyOn(User, 'findOne').mockResolvedValue(null);
@@ -471,6 +473,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
             name: fakeCreatedAdmin.name,
             surname: fakeCreatedAdmin.surname,
             username: fakeCreatedAdmin.username,
+            email: fakeCreatedAdmin.email,
             role: fakeCreatedAdmin.role
         });
     });
@@ -480,6 +483,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
             username: "adminuser1",
             password: "password123",
             name: "Mario",
+            email:"test@test.com",
             surname: "Rossi"
         };
 
@@ -500,6 +504,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
             username: "adminuser1",
             password: "password123",
             name: "Mario",
+            email:"test@test.com",
             surname: "Rossi"
         };
 
@@ -519,7 +524,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
         
         expect(response.status).toBe(400);
         expect(response.body.success).toBe(false);
-        expect(response.body.error).toBe('Username già esistente');
+        expect(response.body.error).toBe('Username o email già esistente');
 
     });
 });

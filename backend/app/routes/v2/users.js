@@ -83,7 +83,7 @@ router.get('/:id', async (req, res) => {
 router.post("/admin",  adminChecker, async (req, res) => {
 
     try {
-        const { name, surname, username, password } = req.body;
+        const { name, surname, username, password, email } = req.body;
         const role = "admin"
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -103,13 +103,20 @@ router.post("/admin",  adminChecker, async (req, res) => {
             });
         }
 
+        if(!email){
+            return res.status(400).json({
+                success: false, error: "Email mancante",
+            });
+        }
         
 
-        const existingUser = await User.findOne({username:username})
+        const existingUser = await User.findOne({
+            $or: [{email}, {username}],
+        })
 
         if(existingUser) {
             return res.status(400).json({
-                success: false, error: "Username già esistente",
+                success: false, error: "Username o email già esistente",
             });
         }
         if(!password || password.length < 8) {
@@ -117,7 +124,10 @@ router.post("/admin",  adminChecker, async (req, res) => {
                success: false,  error: "La password deve contenere almeno 8 caratteri",
             });
         }
-    
+        if(!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false, error: "Email non valida",
+            });}
 
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -126,6 +136,7 @@ router.post("/admin",  adminChecker, async (req, res) => {
             name,
             surname,
             username,
+            email,
             password: hashedPassword,
             role,
         });
@@ -149,6 +160,7 @@ router.post("/admin",  adminChecker, async (req, res) => {
                 name: newUser.name,
                 surname: newUser.surname,
                 username: newUser.username,
+                email: newUser.email,
                 role: newUser.role,
             },
         });
