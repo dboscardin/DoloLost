@@ -14,9 +14,6 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: function () {
-            return this.role === 'user';
-        },
         trim: true,
         lowercase: true,
         match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, 'Email non valida']

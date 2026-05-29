@@ -129,7 +129,7 @@ const ModificaUser = (props) => {
             style={styles.input}
             required
           />
-
+          
           <label style={styles.label}>Email:</label>
           <textarea
             name="email"
