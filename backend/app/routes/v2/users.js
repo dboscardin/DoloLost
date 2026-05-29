@@ -24,7 +24,7 @@ delete 200 -> conferma, 204 -> no body
 
 
 router.use('/:id', async (req, res, next) => {
-   
+    if(req.params.id == "admin") {return next()}
     let userr = await User.findById(req.params.id).exec();
     if (!userr) {
         res.status(404).json({success: false, error: "Utente non trovato" })
@@ -80,7 +80,88 @@ router.get('/:id', async (req, res) => {
     });
 });
 
+router.post("/admin",  adminChecker, async (req, res) => {
 
+    try {
+        const { name, surname, username, password } = req.body;
+        const role = "admin"
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+        if(!username){
+            return res.status(400).json({
+                success: false, error: "Username mancante",
+            });
+        }
+        if(!surname){
+            return res.status(400).json({
+                success: false, error: "Cognome mancante",
+            });
+        }
+        if(!name){
+            return res.status(400).json({
+                success: false, error: "Nome mancante",
+            });
+        }
+
+        
+
+        const existingUser = await User.findOne({username:username})
+
+        if(existingUser) {
+            return res.status(400).json({
+                success: false, error: "Username già esistente",
+            });
+        }
+        if(!password || password.length < 8) {
+            return res.status(400).json({
+               success: false,  error: "La password deve contenere almeno 8 caratteri",
+            });
+        }
+    
+
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await User.create({
+            name,
+            surname,
+            username,
+            password: hashedPassword,
+            role,
+        });
+
+        const token = jwt.sign(
+            {
+                id: newUser._id,
+                username: newUser.username,
+                role: newUser.role,
+            },
+            process.env.SUPER_SECRET,
+            { expiresIn: 86400 }
+        );
+
+        res.status(201).json({
+            success: true,
+            message: "registrazione completata",
+            token,
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                surname: newUser.surname,
+                username: newUser.username,
+                role: newUser.role,
+            },
+        });
+    }
+    catch (error) {
+        console.error("Errore signup:", error);
+        res.status(500).json({
+            success: false,
+            message: "Errore nella registrazione",
+            error: error.message
+        });
+    };
+});
 router.post("/", async (req, res) => {
 
     try {
@@ -176,6 +257,8 @@ router.post("/", async (req, res) => {
         });
     };
 });
+
+
 
 router.put("/:id", tokenChecker,  async (req, res) => {
 
