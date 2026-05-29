@@ -93,6 +93,20 @@ router.get('/attive', async(req, res) => {
         query = query.where('date').lte(new Date(date_before));
     }
 
+    if(distance && distance < 0)
+    {
+        return res.status(400).json({success: false, error: "Distanza non valida" })
+    }
+    
+    if(userLngLat &&( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+    {
+        return res.status(400).json({success: false, error: "Longitudine non valida" });
+    }
+    if(userLngLat &&( Number(lnglat[1]) < -90 || lnglat[1] >  90 ))
+    {
+        return res.status(400).json({success: false, error: "Latitudine non valida" });
+    }
+
     if (distance && distance != 0 && userLngLat) {
         const lnglat = userLngLat.split(',')
         query = query.where('location').near({
@@ -113,7 +127,7 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
     if (req.params.id === 'attive') return next();
     let pub = await Publication.findById(req.params.id).exec();
     if (!pub) {
-        res.status(404).json({error: "Pubblicazione non trovata" })
+        res.status(404).json({success: false, error: "Pubblicazione non trovata" })
         //console.log('Pubblicazione non trovata.')
         return;
     }
@@ -371,7 +385,8 @@ router.get('/', async (req, res) => {
     const date_from = params.get('date_from');
     const date_before = params.get('date_before');
     const type = params.get('type');
-
+    const distance = params.get('distance');
+    const userLngLat = params.get('userLngLat')
     
     if(description){
         query = query.where('description').regex(new RegExp(description, 'i'));
@@ -392,6 +407,32 @@ router.get('/', async (req, res) => {
 
     if (date_before) {
         query = query.where('date').lte(new Date(date_before));
+    }
+
+    if(distance && distance < 0)
+    {
+        return res.status(400).json({success: false, error: "Distanza non valida" })
+    }
+    
+    if(userLngLat &&( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+    {
+        return res.status(400).json({success: false, error: "Longitudine non valida" });
+    }
+    if(userLngLat &&( Number(lnglat[1]) < -90 || lnglat[1] >  90 ))
+    {
+        return res.status(400).json({success: false, error: "Latitudine non valida" });
+    }
+
+
+    if (distance && distance != 0 && userLngLat) {
+        const lnglat = userLngLat.split(',')
+        query = query.where('location').near({
+            center: {
+                type: 'Point',
+                coordinates: [Number(lnglat[0]), Number(lnglat[1])]
+            },
+            maxDistance: distance
+        })
     }
 
     let pubs = await query.exec();
