@@ -5,6 +5,7 @@ import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
 import { createClient } from '@supabase/supabase-js';
 import multer  from 'multer';
+import user from '../../models/user.js';
 
 const router = express.Router();
 
@@ -67,6 +68,8 @@ router.get('/attive', async(req, res) => {
     const date_from = params.get('date_from');
     const date_before = params.get('date_before');
     const type = params.get('type');
+    const distance = params.get('distance');
+    const userLngLat = params.get('userLngLat')
 
 
     if(description){
@@ -88,6 +91,17 @@ router.get('/attive', async(req, res) => {
 
     if (date_before) {
         query = query.where('date').lte(new Date(date_before));
+    }
+
+    if (distance && distance != 0 && userLngLat) {
+        const lnglat = userLngLat.split(',')
+        query = query.where('location').near({
+            center: {
+                type: 'Point',
+                coordinates: [Number(lnglat[0]), Number(lnglat[1])]
+            },
+            maxDistance: distance
+        })
     }
 
     let pubs = await query.exec();
@@ -358,7 +372,7 @@ router.get('/', async (req, res) => {
     const date_before = params.get('date_before');
     const type = params.get('type');
 
-    console.log("generale")
+    
     if(description){
         query = query.where('description').regex(new RegExp(description, 'i'));
     }

@@ -64,6 +64,11 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
           <input type="date" name="date_before" value={filters.date_before} onChange={handleFilterChange} style={inputStyle} />
         </div>
 
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Distanza (Km)</label>
+          <input type="number" name="distance" min={0} step={100} value={filters.distance} onChange={handleFilterChange} style={inputStyle} />
+        </div>
+
         <button onClick={loadData} style={{
           backgroundColor: '#1565c0', color: 'white', border: 'none', 
           padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer'
@@ -133,7 +138,9 @@ function App() {
     category: '',
     type: '',
     date_from: '',
-    date_before: ''
+    date_before: '',
+    userLngLat: [11.12628,46.06661],
+    distance: ''
   });
   
   //const name = searchParams.get("name");
@@ -178,7 +185,10 @@ function App() {
         id: urlParams.id
       });
     }
-
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setFilters(({["userLngLat"]: [pos.coords.longitude, pos.coords.latitude]}))
+      console.log("FOUND POSITION")
+    })
     loadData();
   }, []);
 
