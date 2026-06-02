@@ -128,6 +128,9 @@ const ModificaPub = (props) => {
         body: dataToSend
         });
 
+        alert("Pubblicazione aggiornata con successo!")
+        window.location.href = "/"
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({})); 
         throw new Error(errorData.error || errorData.message || data.details ||  `Errore HTTP: ${response.status}`);

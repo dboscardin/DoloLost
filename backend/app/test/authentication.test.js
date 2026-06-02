@@ -100,4 +100,40 @@ describe('Login User (post:authentication)', () => {
         const compareSpy = jest.spyOn(bcrypt, 'compare');
         expect(compareSpy).not.toHaveBeenCalled();
     });
+
+    test('Caso 26:Autenticazione Admin', async () => {
+        const credentials = {
+            username: "admin03",
+            password: "adminpass3"
+        };
+
+        const fakeUserInDb = {
+            _id: "6a057de239043fb7ec300106",
+            username: "admin03",
+            name: "Tommaso",
+            email: "tommaso@test.com",
+            role: "admin",
+            password: "hashed_password_placeholder"
+        };
+
+        jest.spyOn(User, 'findOne').mockReturnValue({
+            exec: jest.fn().mockResolvedValue(fakeUserInDb)
+        });
+
+
+        jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+
+        const response = await request(app)
+            .post('/api/v2/auth')
+            .send(credentials);
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe('Enjoy your token!');
+        expect(response.body).toHaveProperty('token');
+        expect(response.body.username).toBe(fakeUserInDb.username);
+        expect(response.body.name).toBe(fakeUserInDb.name);
+        expect(response.body.id).toBe(fakeUserInDb._id);
+        expect(response.body.role).toBe(fakeUserInDb.role);
+    });
 });

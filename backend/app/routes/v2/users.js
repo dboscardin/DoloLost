@@ -41,7 +41,11 @@ router.delete('/:id', tokenChecker, async (req, res) => {
 
         //controllo che sia lo user stesso o chiamata da un admin
         if (loggedUserId != req.params.id && req.loggedUser.role !== "admin") {
-            return res.status(403).json({success:false,  error: "Non sei autorizzato a eliminare questo Utente." });
+            return res.status(403).json(
+                {success:false, 
+                    error: "Non sei autorizzato a eliminare questo utente."
+                }
+            );
         }
 
         //eliminazione pubblicazioni dell'user
@@ -53,7 +57,13 @@ router.delete('/:id', tokenChecker, async (req, res) => {
 
         const deletedUser = await User.findByIdAndDelete(req.params.id);
 
-        
+        if (!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: "Utente non trovato"
+            });
+        }
+
         return res.status(200).json({
             success: true,
             message: 'Account eliminato con successo'
@@ -128,8 +138,6 @@ router.post("/", async (req, res) => {
                success: false,  error: "La password deve contenere almeno 8 caratteri",
             });
         }
-    
-
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
