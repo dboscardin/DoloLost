@@ -589,35 +589,48 @@ paths:
                   success:
                     type: boolean
   /api/v2/publications/attive:
-    get:
+   get:
       summary: Pubblicazioni attive
-      description: Ottiene tutte le pubblicazioni attive
+      description: Ottiene tutte le pubblicazioni attive (con stato `unresolved`) applicando filtri testuali, temporali o geografici in base ai parametri passati in query string.
       parameters:
         - in: query
           name: description
-          description: Stringa contenuta nel campo description
+          description: Stringa contenuta nel campo description (ricerca case-insensitive)
           schema:
             type: string
         - in: query
           name: category 
-          description: Stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
+          description: Stringa contenuta nel campo category (ricerca case-insensitive)
           schema: 
             type: string
         - in: query
           name: type
-          description: Tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          description: Tipologia della pubblicazione, può essere smarrimento (lost) o ritrovamento (found)
           schema: 
             type: string
             enum: [lost, found]
         - in: query
           name: date_from
-          description: data da cui iniziare a filtrare le pubblicazioni
+          description: Data a partire dalla quale filtrare le pubblicazioni (formato ISO 8601 o stringa di data valida)
           schema: 
             type: string
+            format: date-time
         - in: query
           name: date_before
-          description: Data entro cui filtrare le pubblicazioni
+          description: Data entro la quale filtrare le pubblicazioni (formato ISO 8601 o stringa di data valida)
           schema: 
+            type: string
+            format: date-time
+        - in: query
+          name: distance
+          description: Raggio massimo di distanza espresso in metri/chilometri per la ricerca spaziale near. Deve essere un valore maggiore o uguale a 0.
+          schema:
+            type: number
+            minimum: 0
+        - in: query
+          name: userLngLat
+          description: Coordinate geografiche del centro di ricerca, fornite sotto forma di stringa con valori separati da virgola ("longitudine,latitudine"). La longitudine dev'essere compresa tra -180 e 180; la latitudine tra -90 e 90.
+          schema:
             type: string
       responses:
         '200':
@@ -628,7 +641,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Publication'
-
+        '400':
+          description: Errore di validazione sui parametri geografici. Viene restituito se la distanza è negativa o se le coordinate non rispettano i limiti terrestri.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                    example: Longitudine non valida, Latitudine non valida, Distanza non valida
   /api/v2/publications/proprie:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato
