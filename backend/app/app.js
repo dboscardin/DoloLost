@@ -40,6 +40,5 @@ app.use('/api/v2/publications', publicationRouter2);
 app.use('/api/v2/auth', authentication2);
 app.use('/api/v2/users', userRouter2);
 
-
 export default app;
 

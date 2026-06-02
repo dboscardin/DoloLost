@@ -5,9 +5,9 @@ import {useCookies} from "react-cookie";
 const UserLogin = () => {
 
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
-  useEffect(() => {
+  /*useEffect(() => {
     removeCookies("userCookies")
-  }, [])
+  }, [])*/
 
 
   const [username, setUsername] = useState("");
@@ -22,6 +22,7 @@ const UserLogin = () => {
     //chiamata API
     //const hashPassword = bcrypt.hash(password, 10) 
     fetch("/api/v2/auth", {
+
       method: "POST",
       headers: {
         "Content-Type" : "application/json",
@@ -30,22 +31,34 @@ const UserLogin = () => {
         "username": username,
         "password": password
       })
+
     }).then(response => {
+
       return response.json();
+
     }).then(data => {
+      console.log("LOGIN DATA:", data)
+
       //console.log(data)
       let success = data.success
       if(!success){
         setErrText(data.message)
         return
       }
+
       setCookies("userCookies", {
         token: data.token,
         username: data.username,
         name: data.name,
         id: data.id,
         role: data.role}, {path: "/", sameSite: "strict"})
-      window.location.href = "/"
+
+        console.log("ROLE:", data.role)
+      
+        if(data.role==='admin')
+          window.location.href = "/admin"
+        else 
+          window.location.href = "/"
     })
 
   };

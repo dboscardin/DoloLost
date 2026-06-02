@@ -409,7 +409,7 @@ describe('Eliminazione user (delete: users/:id)', () => {
 
         expect(response.status).toBe(403);
         expect(response.body.success).toBe(false);
-        expect(response.body.error).toBe("Non sei autorizzato a eliminare questo Utente.");
+        expect(response.body.error).toBe("Non sei autorizzato a eliminare questo utente.");
     });
 
     test('Caso 44: Eliminazione di un account non esistente', async () => {
