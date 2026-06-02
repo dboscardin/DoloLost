@@ -75,6 +75,7 @@ const PropriePub = (props) => {
                     </span>
                                    
                 </div>
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.location.address}</h4>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
                 <Link to={`/modificaPub/${publication._id}`} style={{ color: "#4f46e5", fontWeight: "bold" }}>

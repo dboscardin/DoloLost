@@ -17,6 +17,7 @@
     "react": "^19.2.5",
     "react-cookie": "^8.1.2",
     "react-dom": "^19.2.6",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.15.0",
     "reactjs-popup": "^2.0.6"
   },
