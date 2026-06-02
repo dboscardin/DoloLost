@@ -65,6 +65,11 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
           <input type="date" name="date_before" value={filters.date_before} onChange={handleFilterChange} style={inputStyle} />
         </div>
 
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Distanza (m)</label>
+          <input type="number" name="distance" min={0} step={100} value={filters.distance} onChange={handleFilterChange} style={inputStyle} />
+        </div>
+
         <button onClick={loadData} style={{
           backgroundColor: '#1565c0', color: 'white', border: 'none', 
           padding: '10px 20px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer'
@@ -106,6 +111,8 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
                   </Link>
                 
+
+                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.location.address}</h4>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
@@ -135,7 +142,9 @@ function App() {
     category: '',
     type: '',
     date_from: '',
-    date_before: ''
+    date_before: '',
+    userLngLat: [11.12628,46.06661],
+    distance: ''
   });
   
   const loadData = () => {
@@ -221,7 +230,10 @@ function App() {
       setToken('');
       setUserData(null);
     }
-
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setFilters(({["userLngLat"]: [pos.coords.longitude, pos.coords.latitude]}))
+      console.log("FOUND POSITION")
+    })
     loadData();
 
     const handleClickOutside = (event) => {

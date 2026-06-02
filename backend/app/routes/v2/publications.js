@@ -5,6 +5,7 @@ import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
 import { createClient } from '@supabase/supabase-js';
 import multer  from 'multer';
+import user from '../../models/user.js';
 
 const router = express.Router();
 
@@ -30,7 +31,9 @@ delete 200 -> conferma, 204 -> no body
 404 obj non trovato
 500 problema interno server
 */
-
+//Via Dietro le Mura A, Centro storico, San Giuseppe - Santa Chiara, Villazzano, Trento, Territorio Val d'Adige, Trento, Trentino-Alto Adige, 38122, Italia
+//11.1239513
+//46.0651365
 
 //TENERE IN MINUSCOLO !!!!!!!
 const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
@@ -65,6 +68,8 @@ router.get('/attive', async(req, res) => {
     const date_from = params.get('date_from');
     const date_before = params.get('date_before');
     const type = params.get('type');
+    const distance = params.get('distance');
+    const userLngLat = params.get('userLngLat')
 
 
     if(description){
@@ -88,6 +93,39 @@ router.get('/attive', async(req, res) => {
         query = query.where('date').lte(new Date(date_before));
     }
 
+    if(distance && distance < 0)
+    {
+        return res.status(400).json({success: false, error: "Distanza non valida" });
+    }
+    
+    if(userLngLat)
+    {
+        const lnglat = userLngLat.split(',')
+        if(( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+        {
+             return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        
+        if(Number(lnglat[1]) < -90 || lnglat[1] >  90)
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
+       
+    }
+
+
+    if (distance && distance != 0 && userLngLat) {
+        const lnglat = userLngLat.split(',')
+       // console.log("distanza da:" + userLngLat + " a distanza " + distance);
+        query = query.where('location').near({
+            center: {
+                type: 'Point',
+                coordinates: [Number(lnglat[0]), Number(lnglat[1])]
+            },
+            maxDistance: distance
+        })
+    }
+
     let pubs = await query.exec();
     res.status(200).json(pubs);
     return;
@@ -97,7 +135,7 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
     if (req.params.id === 'attive') return next();
     let pub = await Publication.findById(req.params.id).exec();
     if (!pub) {
-        res.status(404).json({error: "Pubblicazione non trovata" })
+        res.status(404).json({success: false, error: "Pubblicazione non trovata" })
         //console.log('Pubblicazione non trovata.')
         return;
     }
@@ -109,10 +147,9 @@ router.use('/:id', tokenChecker , async (req, res, next) => {
 
 router.post('', tokenChecker, upload.single('image'), async(req, res) => {
     
-   //al momento ho ignorato la parte di posizione, mettendo dei parametri di default
     try {
         //quando si creano sono unresolved
-        const { description, category, notes, date, type } = req.body;
+        const { description, category, notes, date, type, lat, lng, address } = req.body;
         //prendo user da middleware
         const user = req.loggedUser.id;
 
@@ -139,11 +176,19 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
         if (eventDate > new Date()) {
             return res.status(400).json({success: false, error: "La data non può essere nel futuro." });
         }
-
-
-        //location di default
-        const location = { "type": "Point", "coordinates": [ 11.0395, 45.890 ],"address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"}
-
+        if(!address)
+        {
+            return res.status(400).json({success: false, error: "Indirizzo mancante" });
+        }
+        if(!lng || Number(lng) < -180 || Number(lng) >  180 )
+        {
+            return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        if(!lat || Number(lat) < -90 || Number(lat) >  90 )
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
+        const location = { "type": "Point", "coordinates": [Number(lng), Number(lat)],"address": address}
         let image = null;
 
         const newPub = await Publication.create({description, category, notes, location,image, type, date, user});
@@ -151,7 +196,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
         let pubId = newPub._id;
 
         if (req.file) {
-            console.log("immagine arrivata")
+           // console.log("immagine arrivata")
             const ext = req.file.originalname.split('.').pop();
             const filePath = `publications/${newPub._id}/${Date.now()}.${ext}`;
 
@@ -247,7 +292,7 @@ router.put('/:id', tokenChecker, upload.single('image'),  async(req, res) => {
         if (type) publication.type = type;
 
         if (req.file) {
-            console.log('file arrivato' + req.file);
+           // console.log('file arrivato' + req.file);
             const ext = req.file.originalname.split('.').pop();
             const filePath = `publications/${publication._id}/${Date.now()}.${ext}`;
 
@@ -348,8 +393,9 @@ router.get('/', async (req, res) => {
     const date_from = params.get('date_from');
     const date_before = params.get('date_before');
     const type = params.get('type');
-
-    console.log("generale")
+    const distance = params.get('distance');
+    const userLngLat = params.get('userLngLat')
+    
     if(description){
         query = query.where('description').regex(new RegExp(description, 'i'));
     }
@@ -369,6 +415,40 @@ router.get('/', async (req, res) => {
 
     if (date_before) {
         query = query.where('date').lte(new Date(date_before));
+    }
+
+    if(distance && distance < 0)
+    {
+        return res.status(400).json({success: false, error: "Distanza non valida" })
+    }
+    
+   if(userLngLat )
+    {
+        const lnglat = userLngLat.split(',')
+        if(( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+        {
+             return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        
+        if(Number(lnglat[1]) < -90 || lnglat[1] >  90)
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
+       
+    }
+
+
+    if (distance && distance != 0 && userLngLat) {
+
+        const lnglat = userLngLat.split(',')
+       // console.log("distanza da:" + userLngLat);
+        query = query.where('location').near({
+            center: {
+                type: 'Point',
+                coordinates: [Number(lnglat[0]), Number(lnglat[1])]
+            },
+            maxDistance: distance
+        })
     }
 
     let pubs = await query.exec();

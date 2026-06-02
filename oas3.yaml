@@ -298,7 +298,7 @@ paths:
                   $ref: '#/components/schemas/Publication'
     post:
       summary: Crea una nuova pubblicazione
-      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato compilando i dati e allegando un file d'immagine reale. L'ID dell'utente viene estratto automaticamente dal token.
+      description: Permette a un utente autenticato di creare una segnalazione di oggetto smarrito o ritrovato compilando i dati, indicando la posizione geografica e allegando facoltativamente un file d'immagine. L'ID dell'utente viene estratto automaticamente dal token.
       security:
         - tokenAuth: []
       requestBody:
@@ -312,36 +312,55 @@ paths:
                 - category
                 - date
                 - type
+                - address
+                - lat
+                - lng
               properties:
                 description:
                   type: string
                   minLength: 5
                   maxLength: 500
                   example: "Ho smarrito un mazzo di chiavi vicino alla stazione"
-                  description: La descrizione dell'oggetto (minimo 5 caratteri senza spazi vuoti iniziali/finali).
+                  description: La descrizione dell'oggetto (minimo 5 caratteri escludendo gli spazi vuoti iniziali/finali).
                 category:
                   type: string
                   enum: [accessori, elettronica, documenti, chiavi, abbigliamento, "borse e zaini", animali, altro]
                   example: "chiavi"
-                  description: Categoria dell'oggetto (verrà convertita in minuscolo per la validazione).
+                  description: Categoria dell'oggetto
                 notes:
                   type: string
                   maxLength: 1000
                   example: "Il mazzo ha un portachiavi a forma di gatto"
-                  description: Note o dettagli aggiuntivi facoltativi.
+                  description: Note o dettagli aggiuntivi facoltativi (massimo 1000 caratteri).
                 date:
                   type: string
                   format: date-time
-                  description: La data e l'ora dell'evento (obbligatoria e non può essere nel futuro).
+                  description: La data e l'ora dell'evento (obbligatoria, valida e non può essere nel futuro).
                 type:
                   type: string
                   enum: [lost, found]
                   example: "lost"
                   description: Specifica se l'oggetto è stato perso (lost) o ritrovato (found).
+                address:
+                  type: string
+                  example: "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
+                  description: Indirizzo testuale del luogo dell'evento.
+                lat:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                  example: 45.89
+                  description: Latitudine della posizione geografica (compresa tra -90 e 90).
+                lng:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                  example: 11.0395
+                  description: Longitudine della posizione geografica (compresa tra -180 e 180).
                 image:
                   type: string
                   format: binary
-                  description: Il file binario dell'immagine dell'oggetto da caricare (gestito via Multer).
+                  description: Il file binario dell'immagine dell'oggetto da caricare (gestito via Multer, facoltativo).
       responses:
         '201':
           description: Pubblicazione creata con successo
@@ -355,12 +374,14 @@ paths:
                     example: true
                   message:
                     type: string
+                    example: "Pubblicazione creata con successo"
                   self:
                     type: string
+                    example: "/api/v2/publications/6a16fcd893e7289ccb256fc0"
                   publication:
                     $ref: '#/components/schemas/Publication'
         '400':
-          description: Errore di validazione (es. descrizione troppo corta/lunga, categoria non valida, note eccessive o data mancante/futura).
+          description: Errore di validazione nei dati inviati (es. coordinate fuori range, indirizzo mancante, data futura, descrizione non valida).
           content:
             application/json:
               schema:
@@ -368,12 +389,40 @@ paths:
                 properties:
                   success:
                     type: boolean
+                    example: false
                   error:
                     type: string
+                    oneOf:
+                      - example: "La descrizione deve essere di almeno 5 caratteri."
+                      - example: "La descrizione è troppo lunga (max 500 caratteri)."
+                      - example: "Categoria non valida"
+                      - example: "Le note non possono superare i 1000 caratteri."
+                      - example: "Data non valida o mancante."
+                      - example: "La data non può essere nel futuro."
+                      - example: "Indirizzo mancante"
+                      - example: "Longitudine non valida"
+                      - example: "Latitudine non valida"
         '401':
           description: Token x-access-token mancante o non valido (gestito dal middleware tokenChecker).
         '500':
-          description: Errore interno del server durante il salvataggio o fallimento del caricamento del file su Supabase (es. immagine troppo grande).
+          description: Errore interno del server (fallimento nel database o errore nel caricamento dell'immagine su Supabase storage).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Errore nella creazione pubblicazione"
+                  error:
+                    type: string
+                    example: "Upload immagine fallito"
+                  details:
+                    type: string
+                    example: "The object storage service is temporarily unavailable."
   /api/v2/publications/{id}:
     get:
       summary: Recupera una singola pubblicazione tramite ID
@@ -540,35 +589,48 @@ paths:
                   success:
                     type: boolean
   /api/v2/publications/attive:
-    get:
+   get:
       summary: Pubblicazioni attive
-      description: Ottiene tutte le pubblicazioni attive
+      description: Ottiene tutte le pubblicazioni attive (con stato `unresolved`) applicando filtri testuali, temporali o geografici in base ai parametri passati in query string.
       parameters:
         - in: query
           name: description
-          description: Stringa contenuta nel campo description
+          description: Stringa contenuta nel campo description (ricerca case-insensitive)
           schema:
             type: string
         - in: query
           name: category 
-          description: Stringa perfettamente uguale al campo category, l'utente dovrebbe poterne selezionare solo alcune pre-stabilite
+          description: Stringa contenuta nel campo category (ricerca case-insensitive)
           schema: 
             type: string
         - in: query
           name: type
-          description: Tipologia della pubblicazione, può essere smarrimento o ritrovamento
+          description: Tipologia della pubblicazione, può essere smarrimento (lost) o ritrovamento (found)
           schema: 
             type: string
             enum: [lost, found]
         - in: query
           name: date_from
-          description: data da cui iniziare a filtrare le pubblicazioni
+          description: Data a partire dalla quale filtrare le pubblicazioni (formato ISO 8601 o stringa di data valida)
           schema: 
             type: string
+            format: date-time
         - in: query
           name: date_before
-          description: Data entro cui filtrare le pubblicazioni
+          description: Data entro la quale filtrare le pubblicazioni (formato ISO 8601 o stringa di data valida)
           schema: 
+            type: string
+            format: date-time
+        - in: query
+          name: distance
+          description: Raggio massimo di distanza espresso in metri/chilometri per la ricerca spaziale near. Deve essere un valore maggiore o uguale a 0.
+          schema:
+            type: number
+            minimum: 0
+        - in: query
+          name: userLngLat
+          description: Coordinate geografiche del centro di ricerca, fornite sotto forma di stringa con valori separati da virgola ("longitudine,latitudine"). La longitudine dev'essere compresa tra -180 e 180; la latitudine tra -90 e 90.
+          schema:
             type: string
       responses:
         '200':
@@ -579,7 +641,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Publication'
-
+        '400':
+          description: Errore di validazione sui parametri geografici. Viene restituito se la distanza è negativa o se le coordinate non rispettano i limiti terrestri.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+                    example: Longitudine non valida, Latitudine non valida, Distanza non valida
   /api/v2/publications/proprie:
     get:
       summary: Recupera le pubblicazioni dell'utente autenticato

@@ -367,7 +367,27 @@ describe('Visualizzazione pubblicazioni attive e filtraggio (get: publications/a
         expect(mockEquals).toHaveBeenCalledWith('unresolved');
       
     });
+    test('Caso 7: Filtraggio con distanza non valida', async () => {
+        const response = await request(app)
+            .get('/api/v2/publications/attive')
+            .query({ distance: -1 }); 
 
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Distanza non valida');
+    });
+
+    test('Caso 8: Filtraggio con coordinate non valide (Longitudine fuori range)', async () => {
+        const response = await request(app)
+            .get('/api/v2/publications/attive')
+            .query({ userLngLat: '-181,50.01' }); 
+
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Longitudine non valida');
+    });
     
 });
 
@@ -647,7 +667,10 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
             "type": "lost",
-            "image": "C:\\somepath\\image.png"
+            "image": "C:\\somepath\\image.png",
+            "lat": "11.0395", 
+            "lng": "45.8902",
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
         };
         
        const newId = "69fa1f15cff2d08355d32999";
@@ -679,7 +702,10 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "description": "",
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
-            "type": "lost"
+            "type": "lost",
+            "lat": "11.0395", 
+            "lng": "45.8902",
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
         };
         
        const newId = "69fa1f15cff2d08355d32999";
@@ -761,7 +787,10 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
             "type": "lost",
-            "image": ""
+            "image": "",
+            "lat": "11.0395", 
+            "lng": "45.8902",
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
         };
         
        const newId = "69fa1f15cff2d08355d32999";
@@ -794,7 +823,10 @@ describe('Creazione pubblicazione (post: publications)', () => {
             "description": "mazzo chiavi di casa",
             "category": "chiavi",
             "date": "2023-10-01T12:00:00Z",
-            "type": "lost"
+            "type": "lost",
+            "lat": "11.0395", 
+            "lng": "45.8902",
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
         };
         
         const newId = "69fa1f15cff2d08355d32999";
@@ -824,6 +856,9 @@ describe('Creazione pubblicazione (post: publications)', () => {
             .field('category', newPublicationData.category)
             .field('date', newPublicationData.date)
             .field('type', newPublicationData.type)
+            .field("address", newPublicationData.address)
+            .field('lat', newPublicationData.lat)
+            .field('lng', newPublicationData.lng)
             .attach('image', buffer, 'immagine_pesante.png');
 
 
@@ -833,7 +868,40 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(Publication.create).toHaveBeenCalled();
         expect(Publication.findByIdAndDelete).toHaveBeenCalledWith(newId);
     });
-    
+    test('Caso 20: Lat non valida', async () => {
+
+        const newPublicationData = {
+            "description": "mazzo chiavi di casa",
+            "category": "chiavi",
+            "date": "2023-10-01T12:00:00Z",
+            "type": "lost",
+            "image": "C:\\somepath\\image.png",
+            "lat": "100", 
+            "lng": "45.8902",
+            "address": "Stazione ferroviaria di Trento, Piazza Dante, 38122 Trento TN"
+        };
+        
+       const newId = "69fa1f15cff2d08355d32999";
+
+        const payload = {
+                id: '69fa1f15cff2d08355d320e5',
+                username: 'alice01',
+                email: 'alice01@gmail.com',
+                role: 'user',
+            }
+        const options = { expiresIn: 3600 }
+
+        const token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+         jest.spyOn(Publication, 'create').mockResolvedValue({
+            _id: newId, publication: newPublicationData, user: payload.id, self: "api/v2/publications/" + newId
+        });
+
+        const response = await request(app).post('/api/v2/publications').set('x-access-token', token).send(newPublicationData);
+
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe("Latitudine non valida");
+    });
 });
 
 describe('Modifica pubblicazione (put: publications)', () => {
@@ -843,7 +911,7 @@ describe('Modifica pubblicazione (put: publications)', () => {
     });
     
 
-    test('Caso 20: Modifica stato della pubblicazione', async () => {
+    test('Caso 21: Modifica stato della pubblicazione', async () => {
 
         const id = "69fa1f15cff2d08355d32999";
 

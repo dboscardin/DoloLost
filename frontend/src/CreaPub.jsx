@@ -1,7 +1,15 @@
-import React, { useState/*, useEffect*/} from "react";
+import React, { useState, useEffect, useRef} from "react";
+import {MapContainer, TileLayer, useMap, useMapEvents, Marker} from "react-leaflet"
+import "leaflet/dist/leaflet.css"
 //import bcrypt from "bcryptjs";
 
+//Sleep per facilitare lo spostamento del marker sulla mappa
+async function sleep(ms){
+  await new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 const CreaPub = (props) => {
+  const position = useRef({"lat": 46.06661, "lng": 11.12628})
   const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("altro")
@@ -10,9 +18,71 @@ const CreaPub = (props) => {
   const [date, setDate] = useState((new Date()).getFullYear() + "-" + String((new Date()).getMonth() + 1).padStart(2,0) + "-" + String((new Date()).getDate()).padStart(2,0))
   const [type, setType] = useState("found")
   const [errText, setErrText] = useState("")
+  const [location, setLocation] = useState("")
+
+  //Trovare posizione di un indirizzo
+  
+
+  const LocationMarker = () => {
+    const [marker, setMarker] = useState(position.current)
+    const map = useMap()
+
+    useEffect(() => {
+      map.locate().on("locationfound", async (e) => {
+        position.current = e.latlng
+        map.setView(position.current, map.getZoom())
+        await sleep(100)
+        setMarker(map.getCenter())
+      })
+
+      map.on("click", async (e) => {
+        position.current = e.latlng
+        map.setView(position.current, map.getZoom())
+        await sleep(100)
+        setMarker(map.getCenter())
+      })
+
+    }, [map])
+
+    useEffect(() => {
+      if(location.trim() == ""){ return }
+      const locationQuery = encodeURIComponent(location + ", Trento").replaceAll("%20", "+")
+      const timeoutId = setTimeout(() => {
+        fetch(`https://nominatim.openstreetmap.org/search?q=${locationQuery}&format=geojson&limit=1&layer=address,poi`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain"
+          }
+        }).then((res) => {
+          return res.json()
+
+        }).then((data) => {
+          console.log(data)
+          let coords = data.features[0].geometry.coordinates
+          position.current.lat = coords[1]
+          position.current.lng = coords[0]
+          map.setView(position.current, map.getZoom())
+          setMarker(map.getCenter())
+        }).catch(() => {
+          return
+        })
+      }, 600)
+
+      return (() => {
+        clearTimeout(timeoutId)
+      })
+
+    }, [location])
+
+    return marker === null ? null : (
+      <Marker position={marker}></Marker>
+    )
+
+  }
 
   const sendInfo = async (e) => {
     e.preventDefault()
+    console.log(position.current)
    // console.log("submit partito");
     setErrText("");
 
@@ -22,6 +92,26 @@ const CreaPub = (props) => {
     formData.append("notes", notes);
     formData.append("date", date);
     formData.append("type", type);
+
+    //OTTENERE INDIRIZZO DA COORDINATE
+    await fetch(`https://nominatim.openstreetmap.org/reverse?format=geocodejson&lat=${position.current.lat}&lon=${position.current.lng}&zoom=18&layer=address,poi,manmade`,{
+      method: "GET",
+      headers: {
+        "Content-Type" : "text/plain"
+      }
+    }).then((res) => {
+      return res.json()
+    }).then((data) =>{
+      console.log(data)
+      let addr = data.features[0].properties.geocoding["label"]
+      formData.append("address", addr)
+      formData.append("lat", position.current.lat)
+      formData.append("lng", position.current.lng)
+    }).catch((err) => {
+      console.log(err)
+      setErrText("Errore selezione indirizzo, attendere e riprovare")
+    })
+    if (errText != ""){return}
 
     if(imageFile) {
       formData.append("image", imageFile);
@@ -93,6 +183,11 @@ const CreaPub = (props) => {
           <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Inserisci testo..." style={styles.input}></input>
           <label style={styles.label}>Immagine (opzionale):</label>
           <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0] || null)}></input>
+          <input type="text" placeholder="Località o Indirizzo" onChange={(e) => setLocation(e.target.value)}></input>
+          <MapContainer center={[46.06661,11.12628]} zoom={17} scrollWheelZoom={true} style={{height: "180px"}}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+            <LocationMarker></LocationMarker>
+          </MapContainer>
           <button type="submit" style={styles.button}>
             Crea
           </button>

@@ -6,7 +6,8 @@ import User from '../../models/user.js';
 const router = express.Router();
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
-
+import Publication  from '../../models/publication.js';
+import user from '../../models/user.js';
 
 /*
 output messages
@@ -47,6 +48,13 @@ router.delete('/:id', tokenChecker, async (req, res) => {
             );
         }
 
+        //eliminazione pubblicazioni dell'user
+        const toDelete = await User.findById(req.params.id);
+        if(toDelete.role == 'user')
+        {
+           await Publication.deleteMany({user:toDelete.id});
+        }
+
         const deletedUser = await User.findByIdAndDelete(req.params.id);
 
         if (!deletedUser) {
@@ -63,7 +71,7 @@ router.delete('/:id', tokenChecker, async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: "Errore nell'eliminazione dell'account",
+            message: "Errore nell'eliminazione dell'account " + error.message,
             error: error.message
         });
     }
