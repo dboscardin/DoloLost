@@ -1,8 +1,22 @@
 
 import jwt from 'jsonwebtoken';
-//controllo che sia admin, va sempre fatto in catena al controllo che sia un utente base
+
 const adminChecker = (req, res, next) => {
-    // req.loggedUser già aggiornato da tokenChecker
+
+ const authHeader = req.headers.authorization;
+    const token =
+        req.body?.token ||
+        req.query?.token ||
+        req.headers['x-access-token']
+
+    if (!token)
+        return res.status(401).json({ success:false, message: 'No token provided.' })
+    
+    jwt.verify(token, process.env.SUPER_SECRET, function(err, decoded) {
+        if (err) return res.status(403).json({success:false,message:'Token not valid.'})
+        
+        req.loggedUser = decoded;
+    });
     if (req.loggedUser && req.loggedUser.role === 'admin') {
         next(); 
     } else {

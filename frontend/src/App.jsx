@@ -11,6 +11,7 @@ import ModificaPub from './ModificaPub.jsx'
 import Contatto from './Contatto.jsx'
 import ModificaUser from './ModificaUser.jsx'
 import ModificaPassword from './ModificaPassword.jsx'
+import CreaAdmin from './CreaAdmin.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -203,7 +204,8 @@ function App() {
     }
 
     if (action === "creaAdmin") {
-      /* Creazione admin */
+      navigate("/creaAdmin");
+      return;
     }
   };
 
@@ -364,7 +366,8 @@ function App() {
         <Route path="/modificaUser/:userId" element={<ModificaUser token={token} />} />
         <Route path="/modificaPassword/:userId" element={<ModificaPassword token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
-        <Route path="/admin" element={<AdminHome />} />
+        <Route path="/admin" element={<AdminHome token={token}/>} />
+        <Route path="/creaAdmin" element={<CreaAdmin token={token}/>} />
         <Route path="*" element={<div>Pagina non trovata</div>} />
 
       </Routes>

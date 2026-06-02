@@ -3,7 +3,7 @@ import app from '../app.js';
 import User from '../models/user.js';
 import { jest } from '@jest/globals';
 import jwt from 'jsonwebtoken';
-
+import bcrypt from 'bcryptjs';
 
 describe('Registrazione User (post:users)', () => {
 
@@ -426,5 +426,105 @@ describe('Eliminazione user (delete: users/:id)', () => {
 
         expect(response.status).toBe(404);
         expect(response.body.error).toBe("Utente non trovato");
+    });
+});
+describe('Registrazione Admin (post:users/admin)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks(); 
+    });
+
+    test('Caso 46: Creazione con successo', async () => {
+        const newAdminData = {
+            username: "adminuser1",
+            password: "password123",
+            name: "Mario",
+            email:"test@test.com",
+            surname: "Rossi"
+        };
+
+        const fakeCreatedAdmin = {
+            _id: "6a057de239043fb7ec300105",
+            username: "adminuser1",
+            name: "Mario",
+            surname: "Rossi",
+            email:"test@test.com",
+            role: "admin"
+        };
+        jest.spyOn(User, 'findOne').mockResolvedValue(null);
+        
+       const token = jwt.sign({ id: "6a057de239043fb7ec300100", username: "admin_test", role: "admin" },process.env.SUPER_SECRET,{ expiresIn: '1h' });
+
+        jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashed_password_placeholder');
+        jest.spyOn(User, 'create').mockResolvedValue(fakeCreatedAdmin);
+
+        const response = await request(app)
+            .post('/api/v2/users/admin')
+            .set('x-access-token', token)
+            .send(newAdminData);
+
+
+        expect(response.status).toBe(201);
+        expect(response.body.success).toBe(true);
+        expect(response.body.message).toBe('registrazione completata');
+        expect(response.body).toHaveProperty('token');
+        expect(response.body.user).toEqual({
+            id: fakeCreatedAdmin._id,
+            name: fakeCreatedAdmin.name,
+            surname: fakeCreatedAdmin.surname,
+            username: fakeCreatedAdmin.username,
+            email: fakeCreatedAdmin.email,
+            role: fakeCreatedAdmin.role
+        });
+    });
+
+    test('Caso 47: Creazione con token non admin', async () => {
+        const newAdminData = {
+            username: "adminuser1",
+            password: "password123",
+            name: "Mario",
+            email:"test@test.com",
+            surname: "Rossi"
+        };
+
+        const token = jwt.sign({ id: "6a057de239043fb7ec300101", username: "user_test", role: "user" }, process.env.SUPER_SECRET, { expiresIn: '1h' });
+
+        const response = await request(app)
+            .post('/api/v2/users/admin')
+            .set('x-access-token', token)
+            .send(newAdminData);
+
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain('Accesso negato: richiesti privilegi di amministratore.');
+    });
+
+    test('Caso 48: Creazione con username già esistente', async () => {
+        const newAdminData = {
+            username: "adminuser1",
+            password: "password123",
+            name: "Mario",
+            email:"test@test.com",
+            surname: "Rossi"
+        };
+
+        const existingUserInDb = {
+            _id: "6a057de239043fb7ec300199",
+            username: "adminuser1"
+        };
+
+        jest.spyOn(User, 'findOne').mockResolvedValue(existingUserInDb);
+
+        const token = jwt.sign({ id: "6a057de239043fb7ec300100", username: "admin_test", role: "admin" },process.env.SUPER_SECRET,{ expiresIn: '1h' });
+
+        const response = await request(app)
+            .post('/api/v2/users/admin')
+            .set('x-access-token', token)
+            .send(newAdminData);
+        
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Username o email già esistente');
+
     });
 });
