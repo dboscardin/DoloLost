@@ -6,7 +6,8 @@ import User from '../../models/user.js';
 const router = express.Router();
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
-
+import Publication  from '../../models/publication.js';
+import user from '../../models/user.js';
 
 /*
 output messages
@@ -20,17 +21,51 @@ delete 200 -> conferma, 204 -> no body
 404 obj non trovato
 500 problema interno server
 */
+
+
 router.use('/:id', async (req, res, next) => {
    
     let userr = await User.findById(req.params.id).exec();
     if (!userr) {
-        res.status(404).json({error: "Utente non trovato" })
+        res.status(404).json({success: false, error: "Utente non trovato" })
         //console.log('user not found')
         return;
     }
     req['user'] = userr;
     next()
 });
+
+router.delete('/:id', tokenChecker, async (req, res) => {
+    try {
+        const loggedUserId = req.loggedUser.id;
+
+        //controllo che sia lo user stesso o chiamata da un admin
+        if (loggedUserId != req.params.id && req.loggedUser.role !== "admin") {
+            return res.status(403).json({success:false,  error: "Non sei autorizzato a eliminare questo Utente." });
+        }
+
+        //eliminazione pubblicazioni dell'user
+        const toDelete = await User.findById(req.params.id);
+        if(toDelete.role == 'user')
+        {
+           await Publication.deleteMany({user:toDelete.id});
+        }
+
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Account eliminato con successo'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Errore nell'eliminazione dell'account " + error.message,
+            error: error.message
+        });
+    }
+})
 
 router.get('/:id', async (req, res) => {
     let user = req['user'];
@@ -55,22 +90,22 @@ router.post("/", async (req, res) => {
 
         if(!username){
             return res.status(400).json({
-                success: false, message: "Username mancante",
+                success: false, error: "Username mancante",
             });
         }
         if(!surname){
             return res.status(400).json({
-                success: false, message: "Cognome mancante",
+                success: false, error: "Cognome mancante",
             });
         }
         if(!name){
             return res.status(400).json({
-                success: false, message: "Nome mancante",
+                success: false, error: "Nome mancante",
             });
         }
         if(!email){
             return res.status(400).json({
-                success: false, message: "Email mancante",
+                success: false, error: "Email mancante",
             });
         }
         
@@ -81,16 +116,16 @@ router.post("/", async (req, res) => {
 
         if(existingUser) {
             return res.status(400).json({
-                success: false, message: "Email o username già esistente",
+                success: false, error: "Email o username già esistente",
             });
         }
         if(!emailRegex.test(email)) {
             return res.status(400).json({
-                success: false, message: "Email non valida",
+                success: false, error: "Email non valida",
             });}
         if(!password || password.length < 8) {
             return res.status(400).json({
-               success: false,  message: "La password deve contenere almeno 8 caratteri",
+               success: false,  error: "La password deve contenere almeno 8 caratteri",
             });
         }
     
@@ -106,7 +141,7 @@ router.post("/", async (req, res) => {
             password: hashedPassword,
             role,
         });
-       // console.log("Utente creato:", newUser);
+
         const token = jwt.sign(
             {
                 id: newUser._id,
@@ -117,7 +152,6 @@ router.post("/", async (req, res) => {
             process.env.SUPER_SECRET,
             { expiresIn: 86400 }
         );
-        //console.log("Token creato");
 
         res.status(201).json({
             success: true,

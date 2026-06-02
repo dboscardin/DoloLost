@@ -369,7 +369,7 @@ router.delete('/:id', tokenChecker, async (req, res) => {
     const user = req.loggedUser.id;
     //controllo che la pub sia dell'user o chiamata da un admin
         if (pub.user.toString() !== user && req.loggedUser.role !== "admin") {
-            return res.status(403).json({ error: "Non sei autorizzato a eliminare questa pubblicazione." });
+            return res.status(403).json({success:false,  error: "Non sei autorizzato a eliminare questa pubblicazione." });
         }
     let result = await Publication.deleteOne({"_id": pub._id})
     res.status(result? 200: 500).json({success: result})

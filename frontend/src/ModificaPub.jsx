@@ -102,7 +102,14 @@ const ModificaPub = (props) => {
    
       dataToSend.append("description", formData.description);
       dataToSend.append("category", formData.category);
-      dataToSend.append("notes", formData.notes);
+      if(formData.notes != "undefined")
+      {
+        dataToSend.append("notes", formData.notes);
+      }
+      else{
+        dataToSend.append("notes", "");
+      }
+      
       dataToSend.append("date", formData.date);
       dataToSend.append("type", formData.type);
       dataToSend.append("state", formData.state);

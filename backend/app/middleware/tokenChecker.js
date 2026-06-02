@@ -21,5 +21,4 @@ const tokenChecker = function(req, res, next) {
         next();
     });
 };
-
 export default tokenChecker;
