@@ -98,17 +98,25 @@ router.get('/attive', async(req, res) => {
         return res.status(400).json({success: false, error: "Distanza non valida" })
     }
     
-    if(userLngLat &&( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+    if(userLngLat )
     {
-        return res.status(400).json({success: false, error: "Longitudine non valida" });
+        const lnglat = userLngLat.split(',')
+        if(( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+        {
+             return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        
+        if(Number(lnglat[1]) < -90 || lnglat[1] >  90)
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
+       
     }
-    if(userLngLat &&( Number(lnglat[1]) < -90 || lnglat[1] >  90 ))
-    {
-        return res.status(400).json({success: false, error: "Latitudine non valida" });
-    }
+
 
     if (distance && distance != 0 && userLngLat) {
         const lnglat = userLngLat.split(',')
+        console.log("distanza da:" + userLngLat + " a distanza " + distance);
         query = query.where('location').near({
             center: {
                 type: 'Point',
@@ -414,18 +422,26 @@ router.get('/', async (req, res) => {
         return res.status(400).json({success: false, error: "Distanza non valida" })
     }
     
-    if(userLngLat &&( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+   if(userLngLat )
     {
-        return res.status(400).json({success: false, error: "Longitudine non valida" });
-    }
-    if(userLngLat &&( Number(lnglat[1]) < -90 || lnglat[1] >  90 ))
-    {
-        return res.status(400).json({success: false, error: "Latitudine non valida" });
+        const lnglat = userLngLat.split(',')
+        if(( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
+        {
+             return res.status(400).json({success: false, error: "Longitudine non valida" });
+        }
+        
+        if(Number(lnglat[1]) < -90 || lnglat[1] >  90)
+        {
+            return res.status(400).json({success: false, error: "Latitudine non valida" });
+        }
+       
     }
 
 
     if (distance && distance != 0 && userLngLat) {
+
         const lnglat = userLngLat.split(',')
+        console.log("distanza da:" + userLngLat);
         query = query.where('location').near({
             center: {
                 type: 'Point',
