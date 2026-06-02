@@ -65,7 +65,7 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Distanza (Km)</label>
+          <label style={{ fontSize: '12px', fontWeight: 'bold' }}>Distanza (m)</label>
           <input type="number" name="distance" min={0} step={100} value={filters.distance} onChange={handleFilterChange} style={inputStyle} />
         </div>
 
