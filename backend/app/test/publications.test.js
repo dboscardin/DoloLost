@@ -367,7 +367,27 @@ describe('Visualizzazione pubblicazioni attive e filtraggio (get: publications/a
         expect(mockEquals).toHaveBeenCalledWith('unresolved');
       
     });
+    test('Caso 7: Filtraggio con distanza non valida', async () => {
+        const response = await request(app)
+            .get('/api/v2/publications/attive')
+            .query({ distance: -1 }); 
 
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Distanza non valida');
+    });
+
+    test('Caso 8: Filtraggio con coordinate non valide (Longitudine fuori range)', async () => {
+        const response = await request(app)
+            .get('/api/v2/publications/attive')
+            .query({ userLngLat: '-181,50.01' }); 
+
+
+        expect(response.status).toBe(400);
+        expect(response.body.success).toBe(false);
+        expect(response.body.error).toBe('Longitudine non valida');
+    });
     
 });
 

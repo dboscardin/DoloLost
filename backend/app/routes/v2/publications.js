@@ -95,10 +95,10 @@ router.get('/attive', async(req, res) => {
 
     if(distance && distance < 0)
     {
-        return res.status(400).json({success: false, error: "Distanza non valida" })
+        return res.status(400).json({success: false, error: "Distanza non valida" });
     }
     
-    if(userLngLat )
+    if(userLngLat)
     {
         const lnglat = userLngLat.split(',')
         if(( Number(lnglat[0]) < -180 || Number(lnglat[0]) >  180 ))
@@ -116,7 +116,7 @@ router.get('/attive', async(req, res) => {
 
     if (distance && distance != 0 && userLngLat) {
         const lnglat = userLngLat.split(',')
-        console.log("distanza da:" + userLngLat + " a distanza " + distance);
+       // console.log("distanza da:" + userLngLat + " a distanza " + distance);
         query = query.where('location').near({
             center: {
                 type: 'Point',
@@ -196,7 +196,7 @@ router.post('', tokenChecker, upload.single('image'), async(req, res) => {
         let pubId = newPub._id;
 
         if (req.file) {
-            console.log("immagine arrivata")
+           // console.log("immagine arrivata")
             const ext = req.file.originalname.split('.').pop();
             const filePath = `publications/${newPub._id}/${Date.now()}.${ext}`;
 
@@ -292,7 +292,7 @@ router.put('/:id', tokenChecker, upload.single('image'),  async(req, res) => {
         if (type) publication.type = type;
 
         if (req.file) {
-            console.log('file arrivato' + req.file);
+           // console.log('file arrivato' + req.file);
             const ext = req.file.originalname.split('.').pop();
             const filePath = `publications/${publication._id}/${Date.now()}.${ext}`;
 
@@ -441,7 +441,7 @@ router.get('/', async (req, res) => {
     if (distance && distance != 0 && userLngLat) {
 
         const lnglat = userLngLat.split(',')
-        console.log("distanza da:" + userLngLat);
+       // console.log("distanza da:" + userLngLat);
         query = query.where('location').near({
             center: {
                 type: 'Point',
