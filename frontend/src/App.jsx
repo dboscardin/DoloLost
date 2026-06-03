@@ -152,7 +152,14 @@ function App() {
   const loadData = () => {
     setLoading(true);
     
-    // Rimuove i campi vuoti dai parametri per pulire l'URL
+
+    if (filters.distance && Number(filters.distance) < 0) {
+      alert("Errore: La distanza non può essere un valore negativo.");
+      setLoading(false);
+      return; 
+    }
+    
+
     const activeFilters = Object.fromEntries(
       Object.entries(filters).filter(([_, value]) => value !== "")
     );
@@ -160,13 +167,28 @@ function App() {
     const queryString = new URLSearchParams(activeFilters).toString();
     
     fetch(`/api/v2/publications/attive?${queryString}`)
-      .then((response) => response.json())
+      .then((response) => {
+
+        if (!response.ok) {
+          return response.json().then((errData) => {
+            throw new Error(errData.error || "Errore durante il caricamento dei dati");
+          });
+        }
+        return response.json();
+      })
       .then((data) => {
-        setPublications(data);
+        if (Array.isArray(data)) {
+          setPublications(data);
+        } else {
+          setPublications([]);
+        }
         setLoading(false);
       })
       .catch((error) => {
         console.error("Errore durante il fetch:", error);
+
+        alert(error.message); 
+        setPublications([]); 
         setLoading(false);
       });
   };

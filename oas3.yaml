@@ -826,6 +826,25 @@ paths:
                   error:
                     type: string
                     description: Descrizione dell'errore
+    get:
+      summary: Ottenimento di tutti gli utenti registrati
+      description: Restituisce la lista completa di tutti gli utenti presenti nel database. Questa operazione richiede privilegi di amministratore.
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: OK - Lista di tutti gli utenti recuperata con successo.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized - Token mancante o non fornito nell'header.
+        '403':
+          description: Forbidden - L'utente è autenticato ma non possiede il ruolo di amministratore.
+
   /api/v2/users/{id}:
     get:
       summary: Recupera i dettagli di un utente

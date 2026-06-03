@@ -9,7 +9,7 @@ const ListUsers = (props) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [token2, setToken2] = useState(null)
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -32,6 +32,7 @@ const ListUsers = (props) => {
                 }
 
                 const data = await response.json();
+                setToken2(token);
                 setUsers(data);
             } catch (err) {
                 setError(err.message);
@@ -53,7 +54,7 @@ const ListUsers = (props) => {
       try {
         const response = await fetch(`/api/v2/users/${userId}`, {
           method: 'DELETE',
-          headers: { 'x-access-token': token }
+          headers: { 'x-access-token': token2 }
       });
    
         const data = await response.json();
@@ -63,7 +64,7 @@ const ListUsers = (props) => {
           return;
         }
 
-        logout();
+        
         alert("Account eliminato con successo");
 
       } catch (error) {
@@ -89,21 +90,14 @@ const ListUsers = (props) => {
                 <p style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.name}</p>
                 <p style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.surname}</p>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{user.email}</p>
-               
+               <button style= {btnStyle} onClick={() => deleteUserByAdmin(user._id)}>Cancella Utente</button>
 
               </div>
            
           ))}
         </div>
                 )
-             }
-
-
-
-
-
-
-            
+             }            
        </div>
     
   

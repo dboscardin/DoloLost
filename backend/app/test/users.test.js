@@ -528,3 +528,67 @@ describe('Registrazione Admin (post:users/admin)', () => {
 
     });
 });
+
+describe('Ottenimento tutti gli utenti (get: users/)', () => {
+
+    afterEach(() => {
+        jest.restoreAllMocks(); 
+    });
+
+    test('Caso 52: Ottenimento degli utenti', async () => {
+       const validAdminToken = jwt.sign(
+            { id: 'admin_id_123', username: 'adminuser', role: 'admin' },
+            process.env.SUPER_SECRET || 'test_secret',
+            { expiresIn: '1h' }
+        );
+
+        const mockUsers = [
+            { _id: '6a057de239043fb7ec300106', username: 'tommaso14', role: 'user' },
+            { _id: 'admin_id_123', username: 'adminuser', role: 'admin' }
+        ];
+        
+        const findSpy = jest.spyOn(User, 'find').mockImplementation(() => ({
+            exec: jest.fn().mockResolvedValue(mockUsers)
+        }));
+
+        const response = await request(app)
+            .get('/api/v2/users')
+            .set('x-access-token', validAdminToken); 
+
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body.length).toBe(2);
+        expect(response.body[0].username).toBe('tommaso14');
+        expect(User.find).toHaveBeenCalledTimes(1);
+
+
+        findSpy.mockRestore();
+    });
+
+
+    test('Caso 53: Ottenimento senza autenticazione admin', async () => {
+        
+        const invalidAdminToken = jwt.sign(
+            { id: 'user_id_456', username: 'regularuser', role: 'user' },
+            process.env.SUPER_SECRET || 'test_secret',
+            { expiresIn: '1h' }
+        );
+
+
+        jest.spyOn(User, 'find');
+
+        const response = await request(app)
+            .get('/api/v2/users')
+            .set('x-access-token', invalidAdminToken);
+
+
+        expect(response.status).toBe(403);
+        
+
+        const errorMessage = response.body.error || response.body.message;
+        expect(errorMessage).toBe('Accesso negato: richiesti privilegi di amministratore.');
+
+        expect(User.find).not.toHaveBeenCalled();
+    });
+});
