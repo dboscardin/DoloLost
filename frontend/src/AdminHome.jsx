@@ -9,6 +9,7 @@ import Contatto from './Contatto.jsx'
 import ModificaUser from './ModificaUser.jsx'
 import ModificaPassword from './ModificaPassword.jsx'
 import App from './App.jsx'
+import ListUsers from './ListUsers.jsx'
 
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
 
@@ -250,6 +251,7 @@ function AdminHome() {
         <Route path="/modificaPassword/:userId" element={<ModificaPassword token={token} />} />
         <Route path="/contatto/:userId" element={<Contatto />} />
         <Route path="/admin" element={<AdminHome />} />
+        <Route path="/listUsers" element={<ListUsers token={token}/>} />
         <Route path="*" element={<div>Pagina non trovata</div>} />
         
 
