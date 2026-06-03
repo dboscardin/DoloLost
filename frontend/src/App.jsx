@@ -12,6 +12,7 @@ import Contatto from './Contatto.jsx'
 import ModificaUser from './ModificaUser.jsx'
 import ModificaPassword from './ModificaPassword.jsx'
 import CreaAdmin from './CreaAdmin.jsx'
+import ListUsers from './ListUsers.jsx'
 
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
@@ -200,7 +201,8 @@ function App() {
     }
 
     if (action === "users") {
-      /* Qui faremo comparire la lista utenti */
+      navigate("/listUsers");
+      return;
     }
 
     if (action === "creaAdmin") {
@@ -369,6 +371,7 @@ function App() {
         <Route path="/admin" element={<AdminHome token={token}/>} />
         <Route path="/creaAdmin" element={<CreaAdmin token={token}/>} />
         <Route path="*" element={<div>Pagina non trovata</div>} />
+        <Route path="/listUsers" element={<ListUsers token={token}/>} />
 
       </Routes>
     </div>

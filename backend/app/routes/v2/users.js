@@ -7,7 +7,7 @@ const router = express.Router();
 import tokenChecker from '../../middleware/tokenChecker.js'
 import adminChecker from '../../middleware/adminChecker.js'
 import Publication  from '../../models/publication.js';
-import user from '../../models/user.js';
+//import user from '../../models/user.js';
 
 /*
 output messages
@@ -279,7 +279,6 @@ router.post("/", async (req, res) => {
 });
 
 
-
 router.put("/:id", tokenChecker,  async (req, res) => {
 
     try {
@@ -350,5 +349,10 @@ router.put("/:id", tokenChecker,  async (req, res) => {
             error: error.message
         });
     };
+});
+
+router.get('/', adminChecker, async (req, res) => {
+    let users = await User.find().exec();
+    res.status(200).json(users);
 });
 export default router;
