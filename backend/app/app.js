@@ -14,6 +14,8 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
 
+import cors from 'cors';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = Path.dirname(__filename);
@@ -39,6 +41,13 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v2/publications', publicationRouter2);
 app.use('/api/v2/auth', authentication2);
 app.use('/api/v2/users', userRouter2);
+
+app.use(cors({
+  origin: [
+    'https://dololost-frontend.onrender.com',
+    'http://localhost:5173'
+  ]
+}));
 
 export default app;
 
