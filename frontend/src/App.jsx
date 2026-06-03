@@ -16,7 +16,6 @@ import CreaAdmin from './CreaAdmin.jsx'
 //Lista categorie (da usare nel menu a tendina)
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
 
-
 const HomePage = ({ publications, loading, filters, handleFilterChange, loadData }) => (
     <div style={{ padding: '40px 20px' }}>
       <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>Bacheca Segnalazioni</h1>
@@ -129,6 +128,7 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
 
 function App() {
 
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
@@ -157,8 +157,8 @@ function App() {
     );
     
     const queryString = new URLSearchParams(activeFilters).toString();
-    
-    fetch(`/api/v2/publications/attive?${queryString}`)
+
+    fetch(`${API_URL}/api/v2/publications/attive?${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         setPublications(data);
@@ -269,7 +269,7 @@ function App() {
       if (!conferma) return;
 
       try {
-        const response = await fetch(`/api/v2/users/${userData.id}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userData.id}`, {
           method: 'DELETE',
           headers: { 'x-access-token': token }
       });

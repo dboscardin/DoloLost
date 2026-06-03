@@ -14,11 +14,10 @@ const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
 const sendSignUpInfo = async (e) => {
     e.preventDefault();
     //console.log("submit partito");
-
-    
+    const API_URL = import.meta.env.VITE_API_URL;    
 
     try {
-        const response = await fetch("/api/v2/users/", {
+        const response = await fetch(`${API_URL}/api/v2/users/`, {
         method: "POST",
         headers: {
         "Content-Type": "application/json",

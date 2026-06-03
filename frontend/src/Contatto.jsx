@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Contatto = () => {
+    const API_URL = import.meta.env.VITE_API_URL;
     const { userId } = useParams(); 
     const navigate = useNavigate();
     
@@ -15,7 +16,7 @@ const Contatto = () => {
                
                 
                 // rotta backend GET /api/v2/users/:id
-                const response = await fetch(`/api/v2/users/${userId}`, {
+                const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
                     headers: {
                         'Content-Type': 'application/json'
                     }

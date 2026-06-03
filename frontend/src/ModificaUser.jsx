@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const ModificaUser = (props) => {
 
   const [open, setOpen] = useState(false)
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const { userId } = useParams();
   const { token } = props;
@@ -27,7 +28,7 @@ const ModificaUser = (props) => {
       if (!token || !userId) return;
       
       try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
           headers: { 'x-access-token': token }
         });
 
@@ -66,7 +67,7 @@ const ModificaUser = (props) => {
     setError(null);
     setSuccessMsg("");
     try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
             method: 'PUT',
             headers: {
             'Content-Type': 'application/json',

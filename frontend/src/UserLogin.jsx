@@ -5,6 +5,8 @@ import {useCookies} from "react-cookie";
 const UserLogin = () => {
 
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
+  const API_URL = import.meta.env.VITE_API_URL;
+
   /*useEffect(() => {
     removeCookies("userCookies")
   }, [])*/
@@ -21,7 +23,7 @@ const UserLogin = () => {
 
     //chiamata API
     //const hashPassword = bcrypt.hash(password, 10) 
-    fetch("/api/v2/auth", {
+    fetch(`${API_URL}/api/v2/auth`, {
 
       method: "POST",
       headers: {

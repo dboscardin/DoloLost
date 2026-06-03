@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const CreaAdmin = (props) => {
+    const API_URL = import.meta.env.VITE_API_URL;
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -31,7 +32,7 @@ const CreaAdmin = (props) => {
         }
 
         try {
-            const response = await fetch('/api/v2/users/admin', {
+            const response = await fetch(`${API_URL}/api/v2/users/admin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

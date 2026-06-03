@@ -14,8 +14,7 @@ const ModificaPassword = (props) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
-
-  
+  const API_URL = import.meta.env.VITE_API_URL;  
 
 
   
@@ -32,7 +31,7 @@ const ModificaPassword = (props) => {
     setError(null);
     setSuccessMsg("");
     try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
             method: 'PUT',
             headers: {
             'Content-Type': 'application/json',

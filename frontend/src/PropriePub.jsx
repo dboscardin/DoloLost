@@ -6,6 +6,7 @@ const PropriePub = (props) => {
     const [publications, setPublications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const API_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         const loadData = async () => {
@@ -13,7 +14,7 @@ const PropriePub = (props) => {
                 const token = props.token; 
                 if (!token) return;
 
-                const response = await fetch('/api/v2/publications/proprie', {
+                const response = await fetch(`${API_URL}/api/v2/publications/proprie`, {
                     method: 'GET',
                     headers: {
                         'x-access-token': token,

@@ -22,7 +22,7 @@ const ModificaPub = (props) => {
   });
   
 
-  
+  const API_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -34,7 +34,7 @@ const ModificaPub = (props) => {
       if (!token || !pubId) return;
       
       try {
-        const response = await fetch(`/api/v2/publications/${pubId}`, {
+        const response = await fetch(`${API_URL}/api/v2/publications/${pubId}`, {
           headers: { 'x-access-token': token }
         });
 
@@ -73,7 +73,7 @@ const ModificaPub = (props) => {
   };
 
   const handleDelete = async () => {
-    await fetch(`/api/v2/publications/${pubId}`, {
+    await fetch(`${API_URL}/api/v2/publications/${pubId}`, {
         method: "DELETE",
         headers: {"x-access-token": token}
     }).then(response => {
@@ -120,7 +120,7 @@ const ModificaPub = (props) => {
       }
 
 
-        const response = await fetch(`/api/v2/publications/${pubId}`, {
+        const response = await fetch(`${API_URL}/api/v2/publications/${pubId}`, {
             method: 'PUT',
             headers: {
             'x-access-token': token

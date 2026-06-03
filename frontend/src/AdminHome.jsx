@@ -116,6 +116,7 @@ const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbiglia
 
 function AdminHome() {
 
+  const API_URL = import.meta.env.VITE_API_URL;
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
   const [publications, setPublications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +141,7 @@ function AdminHome() {
     
     const queryString = new URLSearchParams(activeFilters).toString();
     
-    fetch(`/api/v2/publications/attive?${queryString}`)
+    fetch(`${API_URL}/api/v2/publications/attive?${queryString}`)
       .then((response) => response.json())
       .then((data) => {
         setPublications(data);
@@ -197,7 +198,7 @@ function AdminHome() {
       if (!conferma) return;
 
       try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
           method: 'DELETE',
           headers: { 'x-access-token': token }
       });

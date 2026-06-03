@@ -19,6 +19,7 @@ const CreaPub = (props) => {
   const [type, setType] = useState("found")
   const [errText, setErrText] = useState("")
   const [location, setLocation] = useState("")
+  const API_URL = import.meta.env.VITE_API_URL;
 
   //Trovare posizione di un indirizzo
   
@@ -120,7 +121,7 @@ const CreaPub = (props) => {
     try {
      // console.log("sto inviando");
       //console.log("TOKEN:", props.token);
-      const response = await fetch("/api/v2/publications", {
+      const response = await fetch(`${API_URL}/api/v2/publications`, {
       method: "POST",
       headers: { 'x-access-token': props.token },
       body: formData
