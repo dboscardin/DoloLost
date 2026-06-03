@@ -13,6 +13,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
+    "start": "node index.js",
     "dev": "node -r dotenv/config index.js",
     "seed": "node scripts/seed.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --setupFiles dotenv/config"
