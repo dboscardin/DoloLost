@@ -24,6 +24,13 @@ const swaggerDocument = yaml.load(readFileSync(Path.join(__dirname, '..', '..', 
 
 const app = express();
 
+app.use(cors({
+  origin: [
+    'https://dololost-frontend.onrender.com',
+    'http://localhost:5173'
+  ]
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -41,13 +48,6 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v2/publications', publicationRouter2);
 app.use('/api/v2/auth', authentication2);
 app.use('/api/v2/users', userRouter2);
-
-app.use(cors({
-  origin: [
-    'https://dololost-frontend.onrender.com',
-    'http://localhost:5173'
-  ]
-}));
 
 export default app;
 
