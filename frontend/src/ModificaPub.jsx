@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Popup from 'reactjs-popup'
 
 
 
 const ModificaPub = (props) => {
 
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false)
   const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
   const { pubId } = useParams();
@@ -81,7 +82,7 @@ const ModificaPub = (props) => {
     }).then(data =>{
       if(data.success){
         setOpen(false)
-        window.location.href="/propriePub"
+        navigate("/propriePub");
       }else{
         setError("Errore nell'eliminazione!")
         setOpen(false)

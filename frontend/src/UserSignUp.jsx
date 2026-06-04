@@ -1,17 +1,22 @@
 import { useState } from "react";
-import {useCookies} from "react-cookie"
+import {useCookies} from "react-cookie";
+import { useNavigate } from "react-router-dom";
+
+
 const UserSignUp = () => {
-const [name, setName] = useState("");
-const [surname, setSurname] = useState("");
-const [username, setUsername] = useState("");
-const [email, setEmail] = useState("");
-const [password, setPassword] = useState("");
-const [errText, setErrText] = useState("");
-const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
-/*const [errors, setErrors] = useState({});*/
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errText, setErrText] = useState("");
+  const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
+  /*const [errors, setErrors] = useState({});*/
 
 
-const sendSignUpInfo = async (e) => {
+  const sendSignUpInfo = async (e) => {
     e.preventDefault();
     //console.log("submit partito");
     const API_URL = import.meta.env.VITE_API_URL;    
@@ -58,7 +63,7 @@ const sendSignUpInfo = async (e) => {
       name: data.user.name,
       id: data.user.id,
       role: data.user.role}, {path: "/", sameSite: "strict"})
-    window.location.href = `${API_URL}/`
+    navigate("/");
 
   } catch (error) {
     console.error(error.message);

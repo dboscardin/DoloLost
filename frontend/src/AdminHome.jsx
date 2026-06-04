@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {useCookies} from "react-cookie"
 import './AdminHome'
-import { Routes, Route, Link, useSearchParams } from 'react-router-dom'
+import { Routes, Route, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import UserLogin from './UserLogin.jsx'
 import UserSignUp from './UserSignUp.jsx'
 import ModificaPub from './ModificaPub.jsx'
@@ -12,6 +12,8 @@ import App from './App.jsx'
 import ListUsers from './ListUsers.jsx'
 
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
+const navigate = useNavigate();
+
 
  const AdminPage = ({ publications, loading, filters, handleFilterChange, loadData }) => (
   <div style={{ padding: '40px 20px' }}>
@@ -191,7 +193,7 @@ function AdminHome() {
     setToken(null);
     setUserData(null);
     
-    window.location.href = `${API_URL}/userLogin`;
+    navigate("/userLogin");
   };
 
   const deleteUserByAdmin = async(userId) => {
