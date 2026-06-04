@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef} from "react";
 import {MapContainer, TileLayer, useMap, useMapEvents, Marker} from "react-leaflet"
+//import "./leaflet.css"
 import "leaflet/dist/leaflet.css"
+import L from "leaflet"
 //import bcrypt from "bcryptjs";
 
 //Sleep per facilitare lo spostamento del marker sulla mappa
@@ -9,6 +11,7 @@ async function sleep(ms){
 }
 
 const CreaPub = (props) => {
+  L.Icon.Default.imagePath = "/leaflet-images/"
   const position = useRef({"lat": 46.06661, "lng": 11.12628})
   const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
   const [description, setDescription] = useState("")
@@ -32,14 +35,14 @@ const CreaPub = (props) => {
       map.locate().on("locationfound", async (e) => {
         position.current = e.latlng
         map.setView(position.current, map.getZoom())
-        await sleep(100)
+        await sleep(150)
         setMarker(map.getCenter())
       })
 
       map.on("click", async (e) => {
         position.current = e.latlng
         map.setView(position.current, map.getZoom())
-        await sleep(100)
+        await sleep(150)
         setMarker(map.getCenter())
       })
 
