@@ -1,8 +1,11 @@
 import /*React,*/ { useState, useEffect} from "react";
 import {useCookies} from "react-cookie";
+import { useNavigate } from "react-router-dom";
+
 //import bcrypt from "bcryptjs";
 
 const UserLogin = () => {
+  const navigate = useNavigate();
 
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
   const API_URL = import.meta.env.VITE_API_URL;
@@ -58,9 +61,9 @@ const UserLogin = () => {
         console.log("ROLE:", data.role)
       
         if(data.role==='admin')
-          window.location.href = "/admin"
+          navigate("/admin");
         else 
-          window.location.href = "/"
+          navigate("/");
     })
 
   };

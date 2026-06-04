@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef} from "react";
-import {MapContainer, TileLayer, useMap, useMapEvents, Marker} from "react-leaflet"
-//import "./leaflet.css"
+import {MapContainer, TileLayer, useMap, useMapEvents, Marker } from "react-leaflet";
+import { useNavigate } from 'react-router-dom';
+
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 //import bcrypt from "bcryptjs";
@@ -11,6 +12,7 @@ async function sleep(ms){
 }
 
 const CreaPub = (props) => {
+  const navigate = useNavigate();
   L.Icon.Default.imagePath = "/leaflet-images/"
   const position = useRef({"lat": 46.06661, "lng": 11.12628})
   const categories = ["accessori", "elettronica", "documenti", "chiavi", "abbigliamento", "borse e zaini", "animali", "altro"];
@@ -139,7 +141,7 @@ const CreaPub = (props) => {
       setErrText(data.error || data.message || data.details || "Errore nella creazione pubblicazione");
       return;
     }
-    window.location.href="/"
+    navigate("/");
     } catch (error) {
      // console.error("errore fetch:", error);
       setErrText("Errore di rete o server non raggiungibile");
