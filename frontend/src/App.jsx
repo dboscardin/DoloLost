@@ -110,12 +110,12 @@ const HomePage = ({ publications, loading, filters, handleFilterChange, loadData
 
                 <Link to={`/contatto/${publication.user._id}`}>
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
-                  </Link>
+                </Link>
                 
+                <h4 style={{ margin: '0 0 0 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
+                <p style={{ margin: '0 0 10px 0', color: '#555', fontSize: '16px', flexGrow: 1 }}>{publication.notes}</p>
+                <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: '#444' }}>{publication.location.address}</p>
 
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.location.address}</h4>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
-                <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
                 <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
                 <div style={{ fontSize: '12px', color: '#888' }}>📅 {new Date(publication.date).toLocaleDateString('it-IT')}</div>
               </div>

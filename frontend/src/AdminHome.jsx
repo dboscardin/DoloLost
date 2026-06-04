@@ -12,8 +12,6 @@ import App from './App.jsx'
 import ListUsers from './ListUsers.jsx'
 
 const categories = ["Accessori", "Elettronica", "Documenti", "Chiavi", "Abbigliamento", "Borse e Zaini", "Animali", "Altro"];
-const navigate = useNavigate();
-
 
  const AdminPage = ({ publications, loading, filters, handleFilterChange, loadData }) => (
   <div style={{ padding: '40px 20px' }}>
@@ -99,14 +97,21 @@ const navigate = useNavigate();
                 <span style={{ ...badgeStyle, backgroundColor: '#e3f2fd', color: '#1565c0' }}>
                   {publication.category}
                 </span>
+                <span style={{ ...badgeStyle, marginLeft: 'auto'}}>
+                  <Link to={`/modificaPub/${publication._id}`}>🖊 Modifica</Link>
+                </span>
               </div>
+
+
 
               <Link to={`/contatto/${publication.user._id}`}>
                   <h3 style={{ margin: '0 0 10px 0', fontSize: '18px' }}>👤 {publication.user?.username || "Utente"}</h3>
                 </Link>
               
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
-              <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{publication.notes}</p>
+              <h4 style={{ margin: '0 0 0 0', fontSize: '16px', color: '#444' }}>{publication.description}</h4>
+              <p style={{ margin: '0 0 10px 0', color: '#555', fontSize: '16px', flexGrow: 1 }}>{publication.notes}</p>
+              <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: '#444' }}>{publication.location.address}</p>
+
               <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
               <div style={{ fontSize: '12px', color: '#888' }}>📅 {new Date(publication.date).toLocaleDateString('it-IT')}</div>
             </div>
@@ -119,6 +124,7 @@ const navigate = useNavigate();
 
 function AdminHome() {
 
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
   const [cookies, setCookies, removeCookies] = useCookies(["userCookies"])
   const [publications, setPublications] = useState([]);

@@ -86,11 +86,10 @@ const ListUsers = (props) => {
         }}>
           {users.map((user) => (
             <div key={user._id} style={cardStyle}>
-                <h4 style={{ margin: '0 0 1px 0', fontSize: '16px', color: '#444' }}>{user.role}</h4>
-                <h4 style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.username}</h4>
-                <p style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.name}</p>
-                <p style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.surname}</p>
+                <h4 style={{ margin: '10px 0 10px 0', fontSize: '16px', color: '#444' }}>@{user.username}</h4>
+                <p style={{ margin: '0 0 10px 0', fontSize: '16px', color: '#444' }}>{user.name} {user.surname}</p>
                 <p style={{ color: '#555', fontSize: '14px', flexGrow: 1 }}>{user.email}</p>
+                <p style={{ margin: '0 0 1px 0', fontSize: '14px', color: '#555' }}>Ruolo: {user.role}</p>
                <button style= {btnStyle} onClick={() => deleteUserByAdmin(user._id)}>Cancella Utente</button>
 
               </div>
