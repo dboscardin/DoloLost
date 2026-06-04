@@ -58,9 +58,9 @@ const UserLogin = () => {
         console.log("ROLE:", data.role)
       
         if(data.role==='admin')
-          window.location.href = "/admin"
+          window.location.href = `${API_URL}/admin`
         else 
-          window.location.href = "/"
+          window.location.href = `${API_URL}/`
     })
 
   };

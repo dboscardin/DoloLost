@@ -136,7 +136,7 @@ const CreaPub = (props) => {
       setErrText(data.error || data.message || data.details || "Errore nella creazione pubblicazione");
       return;
     }
-    window.location.href="/"
+    window.location.href=`${API_URL}/`
     } catch (error) {
      // console.error("errore fetch:", error);
       setErrText("Errore di rete o server non raggiungibile");

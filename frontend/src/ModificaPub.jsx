@@ -129,7 +129,7 @@ const ModificaPub = (props) => {
         });
 
         alert("Pubblicazione aggiornata con successo!")
-        window.location.href = "/"
+        window.location.href = `${API_URL}/`
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({})); 

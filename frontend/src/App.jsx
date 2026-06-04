@@ -285,7 +285,7 @@ function App() {
     setToken(null);
     setUserData(null);
     
-    window.location.href = "/userLogin";
+    window.location.href = `${API_URL}/userLogin`;
   };
 
   const deleteAccount = async() => {

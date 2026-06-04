@@ -191,7 +191,7 @@ function AdminHome() {
     setToken(null);
     setUserData(null);
     
-    window.location.href = "/userLogin";
+    window.location.href = `${API_URL}/userLogin`;
   };
 
   const deleteUserByAdmin = async(userId) => {

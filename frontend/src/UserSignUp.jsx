@@ -58,7 +58,7 @@ const sendSignUpInfo = async (e) => {
       name: data.user.name,
       id: data.user.id,
       role: data.user.role}, {path: "/", sameSite: "strict"})
-    window.location.href = "/"
+    window.location.href = `${API_URL}/`
 
   } catch (error) {
     console.error(error.message);
