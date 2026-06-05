@@ -26,7 +26,7 @@ const app = express();
 
 app.use(cors({
   origin: [
-    'https://dololost-frontend.onrender.com',
+    'https://dololost.onrender.com',
     'http://localhost:5173'
   ]
 }));
