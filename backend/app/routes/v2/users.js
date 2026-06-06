@@ -58,22 +58,25 @@ router.delete('/:id', tokenChecker, async (req, res) => {
         const deletedUser = await User.findByIdAndDelete(req.params.id);
 
         if (!deletedUser) {
-            return res.status(404).json({
+            res.status(404).json({
                 success: false,
                 message: "Utente non trovato"
             });
+            return
         }
 
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             message: 'Account eliminato con successo'
         });
+        return
     } catch (error) {
         res.status(500).json({
             success: false,
             message: "Errore nell'eliminazione dell'account " + error.message,
             error: error.message
         });
+        return
     }
 })
 
