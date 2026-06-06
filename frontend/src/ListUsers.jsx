@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 const ListUsers = (props) => {
+    const API_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ const ListUsers = (props) => {
                 const token = props.token; 
                 if (!token) return;
 
-                const response = await fetch('/api/v2/users', {
+                const response = await fetch(`${API_URL}/api/v2/users`, {
                     method: 'GET',
                     headers: {
                         'x-access-token': token,
