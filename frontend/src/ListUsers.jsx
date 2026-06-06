@@ -53,7 +53,7 @@ const ListUsers = (props) => {
       if (!conferma) return;
 
       try {
-        const response = await fetch(`/api/v2/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/v2/users/${userId}`, {
           method: 'DELETE',
           headers: { 'x-access-token': token2,
             "Content-Type" : "text/plain"
