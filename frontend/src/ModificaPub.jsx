@@ -256,7 +256,8 @@ const ModificaPub = (props) => {
           <button type="submit" style={styles.button} disabled={saving}>
             {saving ? "Salvataggio..." : "Salva Modifiche"}
           </button>
-          <button style={styles.evilButton} onClick={() => setOpen(true)}>
+        </form>
+        <button style={styles.evilButton} onClick={() => setOpen(true)}>
               Elimina pubblicazione
           </button>
           <Popup open={open} closeOnDocumentClick onClose={() => setOpen(false)} position={"right center"}>
@@ -268,7 +269,6 @@ const ModificaPub = (props) => {
               </div>
             </div>
           </Popup>
-        </form>
       </div>
     </div>
   );
