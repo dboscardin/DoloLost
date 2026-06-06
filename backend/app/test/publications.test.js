@@ -397,7 +397,7 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
     afterEach(() => {
         jest.restoreAllMocks();
     });
-    test('Caso 7: Recupero corretto con token valido', async () => {
+    test('Caso 9: Recupero corretto con token valido', async () => {
 
         const mockPublications =[
     {
@@ -460,7 +460,7 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
         expect(mockEquals).toHaveBeenCalledWith('69fa1f15cff2d08355d320e5');
       
     });
-    test('Caso 8: Recupero corretto con token valido ma senza pubblicazioni', async () => {
+    test('Caso 10: Recupero corretto con token valido ma senza pubblicazioni', async () => {
 
         const mockPublications =[];
 
@@ -501,7 +501,7 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
         expect(mockEquals).toHaveBeenCalledWith('69fa1f15cff2d08355d320e5');
       
     });
-    test('Caso 9: Tentativo di accesso senza token', async () => {
+    test('Caso 11: Tentativo di accesso senza token', async () => {
 
         const mockPublications =[];
         const response = await request(app).get('/api/v2/publications/proprie');
@@ -509,7 +509,7 @@ describe('Ottenimento proprie pubblicazioni (get:publications/proprie)', () => {
         expect(response.body).toHaveProperty('message', 'No token provided.');
       
     });
-    test('Caso 10: Tentativo di accesso con token alterato o scaduto', async () => {
+    test('Caso 12: Tentativo di accesso con token alterato o scaduto', async () => {
 
         const mockPublications =[];
 
@@ -538,7 +538,7 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
     });
     
 
-    test('Caso 11: Recupero avvenuto con successo', async () => {
+    test('Caso 13: Recupero avvenuto con successo', async () => {
 
 
         const mockPublications =
@@ -592,7 +592,7 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
         
     });
 
-    test('Caso 12: Id inesistente nel database', async () => {
+    test('Caso 14: Id inesistente nel database', async () => {
 
         jest.spyOn(Publication, 'findById').mockReturnValue({
             exec: jest.fn().mockResolvedValue(null)
@@ -620,7 +620,7 @@ describe('Ottenimento singola Pubblicazione (get: publications/:id)', () => {
 
     });
 
-    test('Caso 13: Tentativo di accesso senza token', async () => {
+    test('Caso 15: Tentativo di accesso senza token', async () => {
 
         jest.spyOn(Publication, 'findById').mockReturnValue({
             exec: jest.fn().mockResolvedValue(null)
@@ -660,7 +660,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
     });
     
 
-    test('Caso 14: Creazione di una nuova pubblicazione valida', async () => {
+    test('Caso 16: Creazione di una nuova pubblicazione valida', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -696,7 +696,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(Publication.create).toHaveBeenCalled();
         expect(response.body.publication.publication).toHaveProperty("image", "C:\\somepath\\image.png");
     });
-    test('Caso 15: Creazione senza description', async () => {
+    test('Caso 17: Creazione senza description', async () => {
 
         const newPublicationData = {
             "description": "",
@@ -729,7 +729,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('error', 'La descrizione deve essere di almeno 5 caratteri.');
     });
-    test('Caso 16: Creazione con data nel futuro', async () => {
+    test('Caso 18: Creazione con data nel futuro', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -759,7 +759,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(400);
         expect(response.body).toHaveProperty('error', 'La data non può essere nel futuro.');
     });
-    test('Caso 17: Tentativo di creazione senza token', async () => {
+    test('Caso 19: Tentativo di creazione senza token', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -780,7 +780,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(response.status).toBe(401);
         expect(response.body).toHaveProperty('message', 'No token provided.');
     });
-    test('Caso 18: Creazione pubblicazione senza immagine', async () => {
+    test('Caso 20: Creazione pubblicazione senza immagine', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -816,7 +816,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(Publication.create).toHaveBeenCalled();
         expect(response.body.publication.publication).toHaveProperty("image", "");
     });
-    test('Caso 19: Upload file troppo grande (>1MB)', async () => {
+    test('Caso 21: Upload file troppo grande (>1MB)', async () => {
         const buffer = Buffer.alloc(1024 * 1024 * 1.5); // File da 1.5 MB
 
         const newPublicationData = {
@@ -868,7 +868,7 @@ describe('Creazione pubblicazione (post: publications)', () => {
         expect(Publication.create).toHaveBeenCalled();
         expect(Publication.findByIdAndDelete).toHaveBeenCalledWith(newId);
     });
-    test('Caso 20: Lat non valida', async () => {
+    test('Caso 22: Lat non valida', async () => {
 
         const newPublicationData = {
             "description": "mazzo chiavi di casa",
@@ -911,7 +911,7 @@ describe('Modifica pubblicazione (put: publications)', () => {
     });
     
 
-    test('Caso 21: Modifica stato della pubblicazione', async () => {
+    test('Caso 23: Modifica stato della pubblicazione', async () => {
 
         const id = "69fa1f15cff2d08355d32999";
 
@@ -958,7 +958,7 @@ describe('Modifica pubblicazione (put: publications)', () => {
         expect(response.body).toHaveProperty("self", '/api/v2/publications/' + id);
         expect(mockSave).toHaveBeenCalled();
     });
-    test('Caso 21: Modifica da utente non autorizzato', async () => {
+    test('Caso 24: Modifica da utente non autorizzato', async () => {
 
         const id = "69fa1f15cff2d08355d32999";
 
@@ -1005,7 +1005,7 @@ describe('Modifica pubblicazione (put: publications)', () => {
         expect(response.status).toBe(403);
         expect(response.body.error).toBe("Non sei autorizzato a modificare questa pubblicazione.");
     });
-    test('Caso 22: Modifica su ID inesistente', async () => {
+    test('Caso 25: Modifica su ID inesistente', async () => {
 
         const id = "69fa1f15cff2d08355d32999";
 
@@ -1043,7 +1043,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
     });
     
 
-    test('Caso 33: Eliminazione con successo', async () => {
+    test('Caso 37: Eliminazione con successo', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',
@@ -1077,7 +1077,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
         expect(response.body.success).toHaveProperty('deletedCount', 1);
     });
 
-    test('Caso 34: Eliminazione pubblicazione non esistente', async () => {
+    test('Caso 38: Eliminazione pubblicazione non esistente', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',
@@ -1102,7 +1102,7 @@ describe('Cancella Pubblicazione (delete: publications/:id)', () => {
         expect(response.body).toHaveProperty('error', 'Pubblicazione non trovata');
     });
     
-    test('Caso 35: Eliminazione pubblicazione di un altro utente', async () => {
+    test('Caso 39: Eliminazione pubblicazione di un altro utente', async () => {
 
         const payload = {
                 id: '69fa1f15cff2d08355d320e5',

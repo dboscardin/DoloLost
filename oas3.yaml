@@ -674,20 +674,79 @@ paths:
           description: Errore interno del server
 
   /api/v2/users:
+    post:
+      summary: Registra un nuovo utente
+      description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegisterInput'
+      responses:
+        '201':
+          description: Registrazione completata con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: registrazione completata
+                  token:
+                    type: string
+                    description: 'JWT token'
+                  user:
+                    $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
+        '500':
+          description: Errore sconosciuto nella registrazione
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Falso in caso di errore
+                  message:
+                    type: string
+                    example: Errore nella registrazione
+                  error:
+                    type: string
+                    description: Descrizione dell'errore
+    get:
+      summary: Ottenimento di tutti gli utenti registrati
+      description: Restituisce la lista completa di tutti gli utenti presenti nel database. Questa operazione richiede privilegi di amministratore.
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          description: OK - Lista di tutti gli utenti recuperata con successo.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized - Token mancante o non fornito nell'header.
+        '403':
+          description: Forbidden - L'utente è autenticato ma non possiede il ruolo di amministratore.
+
+  /api/v2/users/{id}:
     put:
       summary: Modifica dati utente
       description: Consente di aggiornare i dati di un utente (username, email, password, nome, cognome). 
+      security:
+        - tokenAuth: []
       parameters:
         - name: id
           in: path
           required: true
-          description: ID univoco dell'utente da modificare.
-          schema:
-            type: string
-        - name: x-access-token
-          in: header
-          required: true
-          description: Token JWT di autenticazione fornito in fase di login.
+          description: L'ID univoco dell'utente da modificare
           schema:
             type: string
       requestBody:
@@ -783,69 +842,6 @@ paths:
                     type: string
                   error:
                     type: string
-    post:
-      summary: Registra un nuovo utente
-      description: Permette ad un utente anonimo di creare un nuovo profilo e in caso di successo viene automaticamente autenticato con tale profilo 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRegisterInput'
-      responses:
-        '201':
-          description: Registrazione completata con successo
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: registrazione completata
-                  token:
-                    type: string
-                    description: 'JWT token'
-                  user:
-                    $ref: '#/components/schemas/UserResponse'
-        '400':
-          description: Email o username già esistente || Email non valida || La password deve contenere almeno 8 caratteri
-        '500':
-          description: Errore sconosciuto nella registrazione
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    description: Falso in caso di errore
-                  message:
-                    type: string
-                    example: Errore nella registrazione
-                  error:
-                    type: string
-                    description: Descrizione dell'errore
-    get:
-      summary: Ottenimento di tutti gli utenti registrati
-      description: Restituisce la lista completa di tutti gli utenti presenti nel database. Questa operazione richiede privilegi di amministratore.
-      security:
-        - TokenAuth: []
-      responses:
-        '200':
-          description: OK - Lista di tutti gli utenti recuperata con successo.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserResponse'
-        '401':
-          description: Unauthorized - Token mancante o non fornito nell'header.
-        '403':
-          description: Forbidden - L'utente è autenticato ma non possiede il ruolo di amministratore.
-
-  /api/v2/users/{id}:
     get:
       summary: Recupera i dettagli di un utente
       description: Cerca nel database un utente tramite il suo ID univoco e ne restituisce i dati di contatto (id ,nome, cognome, username, email, ruolo).
@@ -943,7 +939,7 @@ paths:
       summary: Registrazione nuovo Amministratore
       description: Consente a un amministratore autenticato di creare un nuovo utente con ruolo `admin`.
       security:
-        - TokenAuth: []
+        - tokenAuth: []
       requestBody:
         required: true
         content:

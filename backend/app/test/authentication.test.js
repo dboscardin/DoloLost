@@ -7,13 +7,11 @@ import User from '../models/user.js';
 
 describe('Login User (post:authentication)', () => {
 
-
-
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    test('Caso 23: Autenticazione con credenziali valide', async () => {
+    test('Caso 26: Autenticazione con credenziali valide', async () => {
         const credentials = {
             username: "tommaso14",
             password: "tommaso14"
@@ -49,7 +47,7 @@ describe('Login User (post:authentication)', () => {
         expect(response.body.role).toBe(fakeUserInDb.role);
     });
 
-    test('Caso 24: Autenticazione con password sbagliata', async () => {
+    test('Caso 27: Autenticazione con password sbagliata', async () => {
         const credentials = {
             username: "tommaso14",
             password: "tommaso15"
@@ -77,7 +75,7 @@ describe('Login User (post:authentication)', () => {
         expect(response.body).not.toHaveProperty('token');
     });
 
-    test('Caso 25: Autenticazione con utente non trovato', async () => {
+    test('Caso 28: Autenticazione con utente non trovato', async () => {
         const credentials = {
             username: "tommaso15",
             password: "tommaso14"
@@ -101,7 +99,7 @@ describe('Login User (post:authentication)', () => {
         expect(compareSpy).not.toHaveBeenCalled();
     });
 
-    test('Caso 26:Autenticazione Admin', async () => {
+    test('Caso 29:Autenticazione Admin', async () => {
         const credentials = {
             username: "admin03",
             password: "adminpass3"

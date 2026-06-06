@@ -11,7 +11,7 @@ describe('Registrazione User (post:users)', () => {
     afterEach(() => {
         jest.restoreAllMocks();
     });
-    test('Caso 26: Registrazione nuovo utente con successo', async () => {
+    test('Caso 30: Registrazione nuovo utente con successo', async () => {
         const fakeUserData = {
             username: "user1",
             password: "password123",
@@ -45,7 +45,7 @@ describe('Registrazione User (post:users)', () => {
         expect(response.body).toHaveProperty("token");
 
     });
-    test('Caso 27: Registrazione nuovo utente con successo', async () => {
+    test('Caso 31: Registrazione con email già esistente', async () => {
         const fakeUserData = {
             username: "user1",
             password: "password123",
@@ -78,7 +78,7 @@ describe('Registrazione User (post:users)', () => {
         expect(response.body.error).toBe("Email o username già esistente");
 
     });
-    test('Caso 28: Registrazione con password troppo corta', async () => {
+    test('Caso 32: Registrazione con password troppo corta', async () => {
         const fakeUserData = {
             username: "user1",
             password: "pass",
@@ -97,7 +97,7 @@ describe('Registrazione User (post:users)', () => {
         expect(response.body.success).toBe(false);
         expect(response.body.error).toBe("La password deve contenere almeno 8 caratteri");
     });
-    test('Caso 29: Registrazione con email non valida', async () => {
+    test('Caso 33: Registrazione con email non valida', async () => {
         const fakeUserData = {
             username: "user1",
             password: "password123",
@@ -116,7 +116,7 @@ describe('Registrazione User (post:users)', () => {
         expect(response.body.success).toBe(false);
         expect(response.body.error).toBe("Email non valida");
     });
-    test('Caso 30: Registrazione con mancanti dati obbligatori', async () => {
+    test('Caso 34: Registrazione con mancanti dati obbligatori', async () => {
         const fakeUserData = {
             password: "password123",
             name: "Mario",
@@ -142,7 +142,7 @@ describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
         jest.restoreAllMocks();
     });
 
-    test('Caso 31: Visualizzazione contatto corretto', async () => {
+    test('Caso 35: Visualizzazione contatto corretto', async () => {
         const validId = '69fa1f15cff2d08355d320e5';
         
        
@@ -171,7 +171,7 @@ describe('Visualizzazione Contatto (GET /api/v2/users/:id)', () => {
     });
 
 
-    test('Caso 32: Visualizzazione con id errato', async () => {
+    test('Caso 36: Visualizzazione con id errato', async () => {
         const invalidId = '69fa1f15cff2d08355d330e5';
 
   
@@ -196,7 +196,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
     afterEach(() => {
         jest.restoreAllMocks();
     });
-    test('Caso 36: Modifica corretta con vari dati', async () => {
+    test('Caso 40: Modifica corretta con vari dati', async () => {
         
         const payload = {
                         id: '69fa1f15cff2d08355d320e5',
@@ -231,7 +231,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
         expect(response.body.user.name).toBe('alice');
     });
 
-    test('Caso 37: Modifica di un altro utente', async () => {
+    test('Caso 41: Modifica di un altro utente', async () => {
         
         const payload = {
                         id: '69fa1f15cff2d08355d320e6',
@@ -259,7 +259,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
         expect(response.body).toHaveProperty('error', 'Non sei autorizzato a modificare i dati di questo utente.');
     });
 
-    test('Caso 38: Modifica username in uno già esistente', async () => {
+    test('Caso 42: Modifica username in uno già esistente', async () => {
         
         const payload = {
                         id: '69fa1f15cff2d08355d320e5',
@@ -288,7 +288,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
 
     });
 
-    test('Caso 39: Modifica mail in una già esistente', async () => {
+    test('Caso 43: Modifica mail in una già esistente', async () => {
         
         const payload = {
                         id: '69fa1f15cff2d08355d320e5',
@@ -318,7 +318,7 @@ describe('Modifica dati utente (put: users/:id)', () => {
 
     });
     
-    test('Caso 40: Modifica password con vecchia password errata', async () => {
+    test('Caso 44: Modifica password con vecchia password errata', async () => {
         
         const payload = {
                         id: '69fa1f15cff2d08355d320e5',
@@ -360,7 +360,7 @@ describe('Eliminazione user (delete: users/:id)', () => {
         jest.restoreAllMocks();
     });
 
-    test('Caso 41: Eliminazione del proprio account con token valido', async () => {
+    test('Caso 45: Eliminazione del proprio account con token valido', async () => {
         const targetUserId = "6a057de239043fb7ec300106"
         const payload = { id: targetUserId, email: 'user@test.com', role: 'user' };
         const token = jwt.sign(payload, process.env.SUPER_SECRET, { expiresIn: 3600 });
@@ -383,7 +383,7 @@ describe('Eliminazione user (delete: users/:id)', () => {
         expect(response.body).toHaveProperty("message","Account eliminato con successo");
         expect(User.findByIdAndDelete).toHaveBeenCalledWith(targetUserId);
     });
-    test('Caso 42: Eliminazione senza token', async () => {
+    test('Caso 46: Eliminazione senza token', async () => {
         const targetUserId = "6a057de239043fb7ec300106"
         jest.spyOn(User, 'findById').mockReturnValue({
             exec: jest.fn().mockResolvedValue({ _id: targetUserId })
@@ -393,7 +393,7 @@ describe('Eliminazione user (delete: users/:id)', () => {
         expect(response.status).toBe(401);
         expect(User.findByIdAndDelete).not.toHaveBeenCalled();
     });
-    test('Caso 43: Eliminazione account di un altro utente', async () => {
+    test('Caso 47: Eliminazione account di un altro utente', async () => {
         const targetUserId = "6a057de239043fb7ec300106"
         const targetUserId2 = "6a057de239043fb7ec300107"; 
         const payload = { id: targetUserId2, role: 'user' };
@@ -412,7 +412,7 @@ describe('Eliminazione user (delete: users/:id)', () => {
         expect(response.body.error).toBe("Non sei autorizzato a eliminare questo utente.");
     });
 
-    test('Caso 44: Eliminazione di un account non esistente', async () => {
+    test('Caso 48: Eliminazione di un account non esistente', async () => {
         const targetUserId = "6a057de239043fb7ec300106"
         const payload = { id: targetUserId, role: 'user' };
         const token = jwt.sign(payload,  process.env.SUPER_SECRET, { expiresIn: 3600 });
@@ -434,7 +434,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
         jest.restoreAllMocks(); 
     });
 
-    test('Caso 46: Creazione con successo', async () => {
+    test('Caso 49: Creazione con successo', async () => {
         const newAdminData = {
             username: "adminuser1",
             password: "password123",
@@ -478,7 +478,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
         });
     });
 
-    test('Caso 47: Creazione con token non admin', async () => {
+    test('Caso 50: Creazione con token non admin', async () => {
         const newAdminData = {
             username: "adminuser1",
             password: "password123",
@@ -499,7 +499,7 @@ describe('Registrazione Admin (post:users/admin)', () => {
         expect(response.body.message).toContain('Accesso negato: richiesti privilegi di amministratore.');
     });
 
-    test('Caso 48: Creazione con username già esistente', async () => {
+    test('Caso 51: Creazione con username già esistente', async () => {
         const newAdminData = {
             username: "adminuser1",
             password: "password123",
