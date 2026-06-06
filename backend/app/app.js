@@ -24,8 +24,6 @@ const swaggerDocument = yaml.load(readFileSync(Path.join(__dirname, '..', '..', 
 
 const app = express();
 
-app.use(express.static(Path.join(__dirname, "..", "..", "frontend")))
-
 app.use(cors({
   origin: [
     'https://dololost.onrender.com',
@@ -52,9 +50,6 @@ app.use('/api/v2/publications', publicationRouter2);
 app.use('/api/v2/auth', authentication2);
 app.use('/api/v2/users', userRouter2);
 
-app.use((req, res) => {
-  res.sendFile(Path.join(__dirname, "..", "..", "index.html"))
-})
 
 export default app;
 
