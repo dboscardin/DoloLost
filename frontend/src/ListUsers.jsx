@@ -56,7 +56,9 @@ const ListUsers = (props) => {
       try {
         const response = await fetch(`/api/v2/users/${userId}`, {
           method: 'DELETE',
-          headers: { 'x-access-token': token2 }
+          headers: { 'x-access-token': token2,
+            "Content-Type" : "text/plain"
+          }
       });
    
         const data = await response.json();

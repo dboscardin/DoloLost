@@ -41,11 +41,12 @@ router.delete('/:id', tokenChecker, async (req, res) => {
 
         //controllo che sia lo user stesso o chiamata da un admin
         if (loggedUserId != req.params.id && req.loggedUser.role !== "admin") {
-            return res.status(403).json(
+            res.status(403).json(
                 {success:false, 
                     error: "Non sei autorizzato a eliminare questo utente."
                 }
             );
+            return
         }
 
         //eliminazione pubblicazioni dell'user
