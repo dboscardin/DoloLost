@@ -326,7 +326,9 @@ const styles = {
     fontWeight: "bold",
   },
   evilButton: {
+    width: "100%",
     padding: "0.75rem",
+    marginTop: "0.25rem",
     borderRadius: "8px",
     border: "none",
     backgroundColor: "#7f1111",
