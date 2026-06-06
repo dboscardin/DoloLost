@@ -53,7 +53,7 @@ app.use('/api/v2/auth', authentication2);
 app.use('/api/v2/users', userRouter2);
 
 app.use((req, res) => {
-  res.redirect("/")
+  res.sendFile(Path.join(__dirname, "..", "..", "index.html"))
 })
 
 export default app;
