@@ -129,15 +129,15 @@ const ModificaPub = (props) => {
         body: dataToSend
         });
 
-        alert("Pubblicazione aggiornata con successo!")
         //window.location.href = `${API_URL}/`
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({})); 
         throw new Error(errorData.error || errorData.message || data.details ||  `Errore HTTP: ${response.status}`);
     }
+    
 
-  await response.json();
+    await response.json();
 
     setSuccessMsg("Pubblicazione aggiornata con successo!");  
     } catch (err) {
